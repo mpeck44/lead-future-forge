@@ -19,6 +19,7 @@ export type Database = {
           created_at: string | null
           description: string | null
           estimated_hours: number | null
+          featured: boolean | null
           id: string
           is_published: boolean | null
           path_type: string | null
@@ -31,6 +32,7 @@ export type Database = {
           created_at?: string | null
           description?: string | null
           estimated_hours?: number | null
+          featured?: boolean | null
           id?: string
           is_published?: boolean | null
           path_type?: string | null
@@ -43,6 +45,7 @@ export type Database = {
           created_at?: string | null
           description?: string | null
           estimated_hours?: number | null
+          featured?: boolean | null
           id?: string
           is_published?: boolean | null
           path_type?: string | null
