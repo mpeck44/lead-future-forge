@@ -21,6 +21,8 @@ export const useAdminRole = (): UseAdminRoleReturn => {
       }
 
       try {
+        console.log('Checking admin role for user:', user.id);
+        
         const { data, error } = await supabase
           .from('user_roles')
           .select('role')
@@ -28,10 +30,13 @@ export const useAdminRole = (): UseAdminRoleReturn => {
           .eq('role', 'admin')
           .maybeSingle();
 
+        console.log('Admin role query result:', { data, error });
+
         if (error) {
           console.error('Error checking admin role:', error);
           setIsAdmin(false);
         } else {
+          console.log('Setting isAdmin to:', !!data);
           setIsAdmin(!!data);
         }
       } catch (err) {
