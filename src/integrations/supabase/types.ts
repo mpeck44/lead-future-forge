@@ -53,6 +53,44 @@ export type Database = {
         }
         Relationships: []
       }
+      modules: {
+        Row: {
+          course_id: string
+          created_at: string | null
+          estimated_minutes: number | null
+          id: string
+          sequence_order: number
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          course_id: string
+          created_at?: string | null
+          estimated_minutes?: number | null
+          id?: string
+          sequence_order: number
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          course_id?: string
+          created_at?: string | null
+          estimated_minutes?: number | null
+          id?: string
+          sequence_order?: number
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "modules_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string | null
