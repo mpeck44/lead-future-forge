@@ -33,7 +33,7 @@ const Hero = () => {
 
           {/* Subheadline */}
           <p 
-            className="font-body text-lg sm:text-xl text-light-teal/90 max-w-2xl mx-auto mb-10 leading-relaxed animate-fade-in"
+            className="font-body text-lg sm:text-xl text-white/90 max-w-2xl mx-auto mb-10 leading-relaxed animate-fade-in"
             style={{ animationDelay: "0.2s" }}
           >
             Empowering school administrators and educational leaders with the knowledge 
@@ -55,7 +55,7 @@ const Hero = () => {
             <Button 
               size="lg" 
               variant="outline" 
-              className="font-body font-semibold border-light-teal/50 text-white hover:bg-light-teal/10 px-8 py-6 text-base"
+              className="font-body font-semibold border-white/60 text-white hover:bg-white/10 hover:border-white px-8 py-6 text-base"
             >
               Learn More
             </Button>
@@ -63,18 +63,15 @@ const Hero = () => {
 
           {/* Trust Indicator */}
           <div 
-            className="mt-16 pt-8 border-t border-white/10 animate-fade-in"
+            className="mt-16 animate-fade-in"
             style={{ animationDelay: "0.4s" }}
           >
-            <p className="font-body text-sm text-light-teal/70">
+            <p className="font-body text-sm text-white/80">
               Designed specifically for principals, superintendents, and district leaders
             </p>
           </div>
         </div>
       </div>
-
-      {/* Bottom Gradient Fade */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent" />
     </section>
   );
 };
