@@ -98,12 +98,12 @@ const Header = () => {
             ) : (
               // Logged-out navigation
               <>
-                <a
-                  href="#courses"
+                <Link
+                  to="/courses"
                   className="font-body text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
                 >
                   Courses
-                </a>
+                </Link>
                 <a
                   href="#about"
                   className="font-body text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
@@ -218,13 +218,13 @@ const Header = () => {
               ) : (
                 // Logged-out mobile navigation
                 <>
-                  <a
-                    href="#courses"
+                  <Link
+                    to="/courses"
                     className="font-body text-sm font-medium text-muted-foreground hover:text-primary transition-colors py-2"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Courses
-                  </a>
+                  </Link>
                   <a
                     href="#about"
                     className="font-body text-sm font-medium text-muted-foreground hover:text-primary transition-colors py-2"
