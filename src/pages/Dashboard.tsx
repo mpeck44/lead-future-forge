@@ -120,7 +120,7 @@ const Dashboard = () => {
                   Browse our courses and enroll in your first one to begin your AI leadership journey.
                 </p>
                 <Button asChild>
-                  <Link to="/#courses" className="font-body">
+                  <Link to="/courses" className="font-body">
                     Browse Courses
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
@@ -143,7 +143,7 @@ const Dashboard = () => {
                   You haven't enrolled in any courses yet.
                 </p>
                 <Button variant="outline" asChild>
-                  <Link to="/#courses" className="font-body">
+                  <Link to="/courses" className="font-body">
                     Explore Courses
                   </Link>
                 </Button>
