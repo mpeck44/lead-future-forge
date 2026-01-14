@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Menu, X, ChevronDown, User, Settings, LogOut, LayoutDashboard, BookOpen, Briefcase } from "lucide-react";
+import { Menu, X, ChevronDown, User, Settings, LogOut, LayoutDashboard, BookOpen, Briefcase, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -11,12 +11,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from "@/hooks/useAuth";
+import { useAdminRole } from "@/hooks/useAdminRole";
 import { supabase } from "@/integrations/supabase/client";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [userName, setUserName] = useState<string | null>(null);
   const { user, signOut } = useAuth();
+  const { isAdmin } = useAdminRole();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -136,6 +138,17 @@ const Header = () => {
                       Profile Settings
                     </Link>
                   </DropdownMenuItem>
+                  {isAdmin && (
+                    <>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem asChild>
+                        <Link to="/admin" className="flex items-center cursor-pointer">
+                          <Shield className="mr-2 h-4 w-4" />
+                          Admin Console
+                        </Link>
+                      </DropdownMenuItem>
+                    </>
+                  )}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer">
                     <LogOut className="mr-2 h-4 w-4" />
@@ -205,6 +218,16 @@ const Header = () => {
                       <Settings className="h-4 w-4" />
                       Profile Settings
                     </Link>
+                    {isAdmin && (
+                      <Link
+                        to="/admin"
+                        className="flex items-center gap-2 font-body text-sm font-medium text-muted-foreground hover:text-primary transition-colors py-2"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        <Shield className="h-4 w-4" />
+                        Admin Console
+                      </Link>
+                    )}
                     <Button 
                       variant="outline" 
                       onClick={handleSignOut}
