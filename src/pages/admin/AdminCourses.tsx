@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { AdminLayout } from '@/components/admin/AdminLayout';
 import { CourseFormDialog, CourseFormValues } from '@/components/admin/CourseFormDialog';
@@ -49,6 +50,7 @@ interface CourseWithCounts {
 
 export default function AdminCourses() {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -389,7 +391,7 @@ export default function AdminCourses() {
                             Edit
                           </DropdownMenuItem>
                           <DropdownMenuItem
-                            onClick={() => window.location.href = `/admin/courses/${course.id}/content`}
+                            onClick={() => navigate(`/admin/courses/${course.id}/content`)}
                           >
                             <FileText className="h-4 w-4 mr-2" />
                             Manage Content
