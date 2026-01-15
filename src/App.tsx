@@ -16,6 +16,7 @@ import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminCourses from "./pages/admin/AdminCourses";
+import AdminCourseContent from "./pages/admin/AdminCourseContent";
 import AdminUsers from "./pages/admin/AdminUsers";
 
 const queryClient = new QueryClient();
@@ -85,6 +86,14 @@ const App = () => (
               element={
                 <AdminProtectedRoute>
                   <AdminUsers />
+                </AdminProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/courses/:courseId/content"
+              element={
+                <AdminProtectedRoute>
+                  <AdminCourseContent />
                 </AdminProtectedRoute>
               }
             />

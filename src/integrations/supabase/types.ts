@@ -110,6 +110,8 @@ export type Database = {
           created_at: string | null
           estimated_minutes: number | null
           id: string
+          is_published: boolean | null
+          lesson_type: string | null
           module_id: string
           sequence_order: number
           template_url: string | null
@@ -122,6 +124,8 @@ export type Database = {
           created_at?: string | null
           estimated_minutes?: number | null
           id?: string
+          is_published?: boolean | null
+          lesson_type?: string | null
           module_id: string
           sequence_order: number
           template_url?: string | null
@@ -134,6 +138,8 @@ export type Database = {
           created_at?: string | null
           estimated_minutes?: number | null
           id?: string
+          is_published?: boolean | null
+          lesson_type?: string | null
           module_id?: string
           sequence_order?: number
           template_url?: string | null
