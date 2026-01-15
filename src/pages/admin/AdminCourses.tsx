@@ -28,7 +28,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Plus, Search, MoreHorizontal, Pencil, Copy, Trash2, ExternalLink } from 'lucide-react';
+import { Plus, Search, MoreHorizontal, Pencil, Copy, Trash2, ExternalLink, FileText } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -387,6 +387,12 @@ export default function AdminCourses() {
                           <DropdownMenuItem onClick={() => openEditDialog(course)}>
                             <Pencil className="h-4 w-4 mr-2" />
                             Edit
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => window.location.href = `/admin/courses/${course.id}/content`}
+                          >
+                            <FileText className="h-4 w-4 mr-2" />
+                            Manage Content
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={() => duplicateCourseMutation.mutate(course)}
