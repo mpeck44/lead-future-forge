@@ -24,6 +24,7 @@ import { useEffect, useState } from "react";
 import { FileText, HelpCircle, ClipboardCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 import RichTextEditor from "./RichTextEditor";
+import { sanitizeHtml } from "@/lib/sanitize";
 
 const lessonFormSchema = z.object({
   title: z.string().min(1, "Title is required").max(100, "Title must be less than 100 characters"),
@@ -210,7 +211,7 @@ const LessonFormDialog = ({
                         <TabsContent value="preview" className="mt-0">
                           <div
                             className="min-h-[200px] p-3 border border-input rounded-md prose prose-sm max-w-none bg-muted/30"
-                            dangerouslySetInnerHTML={{ __html: contentValue || "<p class='text-muted-foreground'>No content yet</p>" }}
+                            dangerouslySetInnerHTML={{ __html: sanitizeHtml(contentValue || "<p class='text-muted-foreground'>No content yet</p>") }}
                           />
                         </TabsContent>
                       </Tabs>
