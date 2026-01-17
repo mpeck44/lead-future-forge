@@ -1,9 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
-
 const Hero = () => {
-  return (
-    <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden pt-20">
+  return <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden pt-20">
       {/* Background Gradient */}
       <div className="absolute inset-0 bg-gradient-to-br from-navy via-dark-teal to-navy opacity-95" />
       
@@ -23,57 +21,44 @@ const Hero = () => {
           </div>
 
           {/* Headline */}
-          <h1 
-            className="font-display text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold text-white mb-6 animate-fade-in"
-            style={{ animationDelay: "0.1s" }}
-          >
+          <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold text-white mb-6 animate-fade-in" style={{
+          animationDelay: "0.1s"
+        }}>
             Lead with Confidence{" "}
             <span className="text-gold">in the AI Era</span>
           </h1>
 
           {/* Subheadline */}
-          <p 
-            className="font-body text-lg sm:text-xl text-white/90 max-w-2xl mx-auto mb-10 leading-relaxed animate-fade-in"
-            style={{ animationDelay: "0.2s" }}
-          >
+          <p className="font-body text-lg sm:text-xl text-white/90 max-w-2xl mx-auto mb-10 leading-relaxed animate-fade-in" style={{
+          animationDelay: "0.2s"
+        }}>
             Empowering school administrators and educational leaders with the knowledge 
             and skills to navigate AI integration thoughtfully and strategically.
           </p>
 
           {/* CTA Buttons */}
-          <div 
-            className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in"
-            style={{ animationDelay: "0.3s" }}
-          >
-            <Button 
-              size="lg" 
-              className="font-body font-semibold bg-gold hover:bg-gold/90 text-navy px-8 py-6 text-base group"
-            >
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in text-secondary-foreground" style={{
+          animationDelay: "0.3s"
+        }}>
+            <Button size="lg" className="font-body font-semibold bg-gold hover:bg-gold/90 text-navy px-8 py-6 text-base group">
               Explore Courses
               <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Button>
-            <Button 
-              size="lg" 
-              variant="outline" 
-              className="font-body font-semibold border-white/60 text-white hover:bg-white/10 hover:border-white px-8 py-6 text-base"
-            >
+            <Button size="lg" variant="outline" className="font-body font-semibold border-white/60 text-white hover:bg-white/10 hover:border-white px-8 py-6 text-base">
               Learn More
             </Button>
           </div>
 
           {/* Trust Indicator */}
-          <div 
-            className="mt-16 animate-fade-in"
-            style={{ animationDelay: "0.4s" }}
-          >
+          <div className="mt-16 animate-fade-in" style={{
+          animationDelay: "0.4s"
+        }}>
             <p className="font-body text-sm text-white/80">
               Designed specifically for principals, superintendents, and district leaders
             </p>
           </div>
         </div>
       </div>
-    </section>
-  );
+    </section>;
 };
-
 export default Hero;
