@@ -9,6 +9,7 @@ import { ArrowLeft, Plus, Loader2 } from "lucide-react";
 import ModuleCard from "@/components/admin/ModuleCard";
 import ModuleFormDialog from "@/components/admin/ModuleFormDialog";
 import LessonFormDialog from "@/components/admin/LessonFormDialog";
+import LessonPreviewDialog from "@/components/admin/LessonPreviewDialog";
 import { DeleteConfirmDialog } from "@/components/admin/DeleteConfirmDialog";
 
 interface Lesson {
@@ -46,12 +47,14 @@ const AdminCourseContent = () => {
   // Dialog states
   const [moduleDialogOpen, setModuleDialogOpen] = useState(false);
   const [lessonDialogOpen, setLessonDialogOpen] = useState(false);
+  const [lessonPreviewDialogOpen, setLessonPreviewDialogOpen] = useState(false);
   const [deleteModuleDialogOpen, setDeleteModuleDialogOpen] = useState(false);
   const [deleteLessonDialogOpen, setDeleteLessonDialogOpen] = useState(false);
 
   // Editing states
   const [editingModule, setEditingModule] = useState<Module | null>(null);
   const [editingLesson, setEditingLesson] = useState<Lesson | null>(null);
+  const [previewingLesson, setPreviewingLesson] = useState<Lesson | null>(null);
   const [deletingModule, setDeletingModule] = useState<Module | null>(null);
   const [deletingLesson, setDeletingLesson] = useState<Lesson | null>(null);
   const [activeModuleId, setActiveModuleId] = useState<string | null>(null);
@@ -507,6 +510,10 @@ const AdminCourseContent = () => {
                 }}
                 onMoveLessonUp={handleLessonMoveUp}
                 onMoveLessonDown={handleLessonMoveDown}
+                onPreviewLesson={(lesson) => {
+                  setPreviewingLesson(lesson);
+                  setLessonPreviewDialogOpen(true);
+                }}
               />
             ))}
           </div>
@@ -538,6 +545,16 @@ const AdminCourseContent = () => {
         onSubmit={handleLessonSubmit}
         lesson={editingLesson}
         isLoading={createLessonMutation.isPending || updateLessonMutation.isPending}
+      />
+
+      {/* Lesson Preview Dialog */}
+      <LessonPreviewDialog
+        open={lessonPreviewDialogOpen}
+        onOpenChange={(open) => {
+          setLessonPreviewDialogOpen(open);
+          if (!open) setPreviewingLesson(null);
+        }}
+        lesson={previewingLesson}
       />
 
       {/* Delete Module Confirmation */}

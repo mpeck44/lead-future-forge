@@ -50,6 +50,7 @@ interface ModuleCardProps {
   onDeleteLesson: (lesson: Lesson) => void;
   onMoveLessonUp: (lesson: Lesson) => void;
   onMoveLessonDown: (lesson: Lesson) => void;
+  onPreviewLesson: (lesson: Lesson) => void;
 }
 
 const ModuleCard = ({
@@ -65,6 +66,7 @@ const ModuleCard = ({
   onDeleteLesson,
   onMoveLessonUp,
   onMoveLessonDown,
+  onPreviewLesson,
 }: ModuleCardProps) => {
   const [isOpen, setIsOpen] = useState(true);
   const sortedLessons = [...module.lessons].sort((a, b) => a.sequence_order - b.sequence_order);
@@ -176,6 +178,7 @@ const ModuleCard = ({
                     onDelete={onDeleteLesson}
                     onMoveUp={onMoveLessonUp}
                     onMoveDown={onMoveLessonDown}
+                    onPreview={onPreviewLesson}
                   />
                 ))}
                 <div className="px-4 py-2 border-t bg-muted/20">

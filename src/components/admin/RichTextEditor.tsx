@@ -1,6 +1,6 @@
 import React, { useRef, useCallback, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Bold, Italic, Underline, List, ListOrdered, Link, RemoveFormatting } from "lucide-react";
+import { Bold, Italic, Underline, List, ListOrdered, Link, RemoveFormatting, Youtube } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface RichTextEditorProps {
@@ -9,6 +9,19 @@ interface RichTextEditorProps {
   placeholder?: string;
   className?: string;
 }
+
+const parseYouTubeUrl = (url: string): string | null => {
+  const patterns = [
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/,
+  ];
+  for (const pattern of patterns) {
+    const match = url.match(pattern);
+    if (match && match[1]) {
+      return match[1];
+    }
+  }
+  return null;
+};
 
 const RichTextEditor = ({ value, onChange, placeholder = "Start typing...", className }: RichTextEditorProps) => {
   const editorRef = useRef<HTMLDivElement>(null);
@@ -48,6 +61,23 @@ const RichTextEditor = ({ value, onChange, placeholder = "Start typing...", clas
       execCommand("createLink", url);
     }
   }, [execCommand]);
+
+  const handleYouTubeEmbed = useCallback(() => {
+    const url = prompt("Enter YouTube URL:");
+    if (url) {
+      const videoId = parseYouTubeUrl(url);
+      if (videoId) {
+        const embedHtml = `<div class="video-embed" contenteditable="false" style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;max-width:100%;margin:16px 0;"><iframe src="https://www.youtube.com/embed/${videoId}" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;border-radius:8px;" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div><p><br></p>`;
+        document.execCommand("insertHTML", false, embedHtml);
+        if (editorRef.current) {
+          isInternalChange.current = true;
+          onChange(editorRef.current.innerHTML);
+        }
+      } else {
+        alert("Invalid YouTube URL. Please use a valid YouTube link.");
+      }
+    }
+  }, [onChange]);
 
   const handlePaste = useCallback((e: React.ClipboardEvent) => {
     e.preventDefault();
@@ -130,6 +160,17 @@ const RichTextEditor = ({ value, onChange, placeholder = "Start typing...", clas
           title="Clear Formatting"
         >
           <RemoveFormatting className="h-4 w-4" />
+        </Button>
+        <div className="w-px h-6 bg-border mx-1" />
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          onClick={handleYouTubeEmbed}
+          className="h-8 w-8 p-0"
+          title="Embed YouTube Video"
+        >
+          <Youtube className="h-4 w-4" />
         </Button>
       </div>
 
