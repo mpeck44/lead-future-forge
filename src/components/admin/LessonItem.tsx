@@ -31,6 +31,7 @@ interface LessonItemProps {
   onDelete: (lesson: Lesson) => void;
   onMoveUp: (lesson: Lesson) => void;
   onMoveDown: (lesson: Lesson) => void;
+  onPreview: (lesson: Lesson) => void;
 }
 
 const lessonTypeConfig = {
@@ -47,6 +48,7 @@ const LessonItem = ({
   onDelete,
   onMoveUp,
   onMoveDown,
+  onPreview,
 }: LessonItemProps) => {
   const type = (lesson.lesson_type as keyof typeof lessonTypeConfig) ?? "material";
   const config = lessonTypeConfig[type] || lessonTypeConfig.material;
@@ -116,7 +118,7 @@ const LessonItem = ({
             <Pencil className="mr-2 h-4 w-4" />
             Edit
           </DropdownMenuItem>
-          <DropdownMenuItem disabled>
+          <DropdownMenuItem onClick={() => onPreview(lesson)}>
             <Eye className="mr-2 h-4 w-4" />
             Preview
           </DropdownMenuItem>
