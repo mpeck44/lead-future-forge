@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { FileText, HelpCircle, ClipboardCheck, Clock, Video, Download, ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { sanitizeHtml } from "@/lib/sanitize";
 
 interface Lesson {
   id: string;
@@ -106,7 +107,7 @@ const LessonPreviewDialog = ({ open, onOpenChange, lesson }: LessonPreviewDialog
           {lesson.content && (
             <div className="prose prose-sm max-w-none dark:prose-invert">
               <div 
-                dangerouslySetInnerHTML={{ __html: lesson.content }}
+                dangerouslySetInnerHTML={{ __html: sanitizeHtml(lesson.content) }}
                 className="[&_.video-embed]:my-4 [&_.video-embed_iframe]:rounded-lg"
               />
             </div>

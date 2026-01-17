@@ -2,6 +2,7 @@ import React, { useRef, useCallback, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Bold, Italic, Underline, List, ListOrdered, Link, RemoveFormatting, Youtube } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { sanitizeHtml } from "@/lib/sanitize";
 
 interface RichTextEditorProps {
   value: string;
@@ -31,8 +32,9 @@ const RichTextEditor = ({ value, onChange, placeholder = "Start typing...", clas
   useEffect(() => {
     if (editorRef.current && !isInternalChange.current) {
       // Only set content if it's different from current content
-      if (editorRef.current.innerHTML !== value) {
-        editorRef.current.innerHTML = value;
+      const sanitizedValue = sanitizeHtml(value);
+      if (editorRef.current.innerHTML !== sanitizedValue) {
+        editorRef.current.innerHTML = sanitizedValue;
       }
     }
     isInternalChange.current = false;
