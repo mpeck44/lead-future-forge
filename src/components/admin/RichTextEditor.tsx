@@ -1,4 +1,4 @@
-import React, { useRef, useCallback } from "react";
+import React, { useRef, useCallback, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Bold, Italic, Underline, List, ListOrdered, Link, RemoveFormatting } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -12,18 +12,32 @@ interface RichTextEditorProps {
 
 const RichTextEditor = ({ value, onChange, placeholder = "Start typing...", className }: RichTextEditorProps) => {
   const editorRef = useRef<HTMLDivElement>(null);
+  const isInternalChange = useRef(false);
 
-  const execCommand = useCallback((command: string, value?: string) => {
-    document.execCommand(command, false, value);
+  // Only update the editor content when value changes externally (not from typing)
+  useEffect(() => {
+    if (editorRef.current && !isInternalChange.current) {
+      // Only set content if it's different from current content
+      if (editorRef.current.innerHTML !== value) {
+        editorRef.current.innerHTML = value;
+      }
+    }
+    isInternalChange.current = false;
+  }, [value]);
+
+  const execCommand = useCallback((command: string, cmdValue?: string) => {
+    document.execCommand(command, false, cmdValue);
     editorRef.current?.focus();
     // Trigger onChange after command
     if (editorRef.current) {
+      isInternalChange.current = true;
       onChange(editorRef.current.innerHTML);
     }
   }, [onChange]);
 
   const handleInput = useCallback(() => {
     if (editorRef.current) {
+      isInternalChange.current = true;
       onChange(editorRef.current.innerHTML);
     }
   }, [onChange]);
@@ -126,7 +140,6 @@ const RichTextEditor = ({ value, onChange, placeholder = "Start typing...", clas
         className="min-h-[200px] p-3 focus:outline-none prose prose-sm max-w-none"
         onInput={handleInput}
         onPaste={handlePaste}
-        dangerouslySetInnerHTML={{ __html: value }}
         data-placeholder={placeholder}
         style={{
           minHeight: "200px",
