@@ -44,7 +44,7 @@ const Hero = () => {
               Explore Courses
               <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Button>
-            <Button size="lg" variant="outline" className="font-body font-semibold border-white/60 text-white hover:bg-white/10 hover:border-white px-8 py-6 text-base">
+            <Button size="lg" variant="outline" className="font-body font-semibold border-white/60 text-black hover:bg-white/10 hover:border-white px-8 py-6 text-base">
               Learn More
             </Button>
           </div>
