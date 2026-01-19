@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { ChevronDown, ChevronRight, MoreVertical, ArrowUp, ArrowDown, Pencil, Trash2, Plus } from "lucide-react";
+import { ChevronDown, ChevronRight, MoreVertical, ArrowUp, ArrowDown, Pencil, Trash2, Plus, Target, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -27,6 +28,8 @@ interface Lesson {
   is_published: boolean | null;
   sequence_order: number;
   module_id: string;
+  is_quick_start?: boolean | null;
+  is_first_deliverable?: boolean | null;
 }
 
 interface Module {
@@ -35,6 +38,9 @@ interface Module {
   estimated_minutes: number | null;
   sequence_order: number;
   lessons: Lesson[];
+  description?: string | null;
+  deliverable_name?: string | null;
+  path_type?: string | null;
 }
 
 interface ModuleCardProps {
@@ -53,6 +59,13 @@ interface ModuleCardProps {
   onPreviewLesson: (lesson: Lesson) => void;
 }
 
+const pathTypeConfig: Record<string, { label: string; color: string }> = {
+  foundation: { label: "Foundation", color: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400" },
+  path_1: { label: "Path 1", color: "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400" },
+  path_2: { label: "Path 2", color: "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400" },
+  path_3: { label: "Path 3", color: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" },
+};
+
 const ModuleCard = ({
   module,
   isFirst,
@@ -70,6 +83,12 @@ const ModuleCard = ({
 }: ModuleCardProps) => {
   const [isOpen, setIsOpen] = useState(true);
   const sortedLessons = [...module.lessons].sort((a, b) => a.sequence_order - b.sequence_order);
+  
+  // Calculate total estimated time from lessons
+  const totalMinutes = sortedLessons.reduce((sum, lesson) => sum + (lesson.estimated_minutes || 0), 0);
+  const displayMinutes = module.estimated_minutes || totalMinutes;
+
+  const pathConfig = module.path_type ? pathTypeConfig[module.path_type] : null;
 
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
@@ -87,16 +106,37 @@ const ModuleCard = ({
           </CollapsibleTrigger>
 
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <span className="font-semibold">Module {module.sequence_order}:</span>
               <span className="font-medium truncate">{module.title}</span>
-            </div>
-            <div className="flex items-center gap-3 text-sm text-muted-foreground mt-0.5">
-              <span>{sortedLessons.length} lesson{sortedLessons.length !== 1 ? "s" : ""}</span>
-              {module.estimated_minutes && (
-                <span>• {module.estimated_minutes} min</span>
+              {pathConfig && (
+                <Badge variant="secondary" className={cn("text-xs", pathConfig.color)}>
+                  {pathConfig.label}
+                </Badge>
               )}
             </div>
+            
+            <div className="flex items-center gap-3 text-sm text-muted-foreground mt-0.5 flex-wrap">
+              <span>{sortedLessons.length} lesson{sortedLessons.length !== 1 ? "s" : ""}</span>
+              {displayMinutes > 0 && (
+                <span className="flex items-center gap-1">
+                  <Clock className="h-3 w-3" />
+                  {displayMinutes} min
+                </span>
+              )}
+              {module.deliverable_name && (
+                <span className="flex items-center gap-1 text-primary">
+                  <Target className="h-3 w-3" />
+                  {module.deliverable_name}
+                </span>
+              )}
+            </div>
+
+            {module.description && (
+              <p className="text-sm text-muted-foreground mt-1 line-clamp-1">
+                {module.description}
+              </p>
+            )}
           </div>
 
           {/* Move Buttons */}
