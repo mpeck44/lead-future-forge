@@ -4,7 +4,6 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
-import { sanitizeHtml } from '@/lib/sanitize';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
@@ -18,14 +17,21 @@ import {
   ChevronDown,
   ChevronLeft,
   ChevronRight,
-  Download,
   Menu,
-  Play,
   FileText,
+  Video,
+  Pencil,
+  MessageSquare,
   HelpCircle,
-  ClipboardList,
+  ClipboardCheck,
   BookOpen
 } from 'lucide-react';
+
+// Import lesson type components
+import ContentLesson from '@/components/course/ContentLesson';
+import VideoLesson from '@/components/course/VideoLesson';
+import ActivityLesson from '@/components/course/ActivityLesson';
+import ReflectionLesson from '@/components/course/ReflectionLesson';
 
 interface Lesson {
   id: string;
@@ -36,6 +42,15 @@ interface Lesson {
   video_url: string | null;
   template_url: string | null;
   is_published: boolean | null;
+  // Enhanced fields
+  learning_objective: string | null;
+  key_takeaways: string[] | null;
+  video_transcript: string | null;
+  resource_type: string | null;
+  resource_name: string | null;
+  download_button_text: string | null;
+  completion_type: string | null;
+  character_limit: number | null;
 }
 
 interface Module {
@@ -69,7 +84,7 @@ const CourseViewer = () => {
   const [openModules, setOpenModules] = useState<Set<string>>(new Set());
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // Fetch course with modules and lessons
+  // Fetch course with modules and lessons (including enhanced fields)
   const { data: course, isLoading: courseLoading, error: courseError } = useQuery({
     queryKey: ['course-viewer', slug],
     queryFn: async () => {
@@ -81,7 +96,10 @@ const CourseViewer = () => {
             id, title, sequence_order,
             lessons (
               id, title, sequence_order, lesson_type,
-              content, video_url, template_url, is_published
+              content, video_url, template_url, is_published,
+              learning_objective, key_takeaways, video_transcript,
+              resource_type, resource_name, download_button_text,
+              completion_type, character_limit
             )
           )
         `)
@@ -148,6 +166,25 @@ const CourseViewer = () => {
     enabled: !!course?.id && !!user?.id
   });
 
+  // Fetch reflection responses for the current lesson
+  const { data: reflectionResponse, refetch: refetchReflection } = useQuery({
+    queryKey: ['reflection-response', currentLessonId, user?.id],
+    queryFn: async () => {
+      if (!currentLessonId || !user?.id) return null;
+      
+      const { data, error } = await supabase
+        .from('reflection_responses')
+        .select('response')
+        .eq('user_id', user.id)
+        .eq('lesson_id', currentLessonId)
+        .maybeSingle();
+      
+      if (error) throw error;
+      return data?.response || null;
+    },
+    enabled: !!currentLessonId && !!user?.id
+  });
+
   // Mark lesson complete mutation
   const markCompleteMutation = useMutation({
     mutationFn: async (lessonId: string) => {
@@ -178,6 +215,45 @@ const CourseViewer = () => {
       toast({
         title: 'Error',
         description: 'Failed to save progress. Please try again.',
+        variant: 'destructive',
+      });
+    }
+  });
+
+  // Save reflection response mutation
+  const saveReflectionMutation = useMutation({
+    mutationFn: async ({ lessonId, response }: { lessonId: string; response: string }) => {
+      if (!user?.id) throw new Error('Not authenticated');
+      
+      const { error } = await supabase
+        .from('reflection_responses')
+        .upsert({
+          user_id: user.id,
+          lesson_id: lessonId,
+          response: response,
+          updated_at: new Date().toISOString()
+        }, {
+          onConflict: 'user_id,lesson_id'
+        });
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      refetchReflection();
+      // Auto-mark as complete when saving reflection
+      if (currentLessonId && !completedLessons.has(currentLessonId)) {
+        markCompleteMutation.mutate(currentLessonId);
+      } else {
+        toast({
+          title: 'Response saved',
+          description: 'Your reflection has been saved.',
+        });
+      }
+    },
+    onError: () => {
+      toast({
+        title: 'Error',
+        description: 'Failed to save your response. Please try again.',
         variant: 'destructive',
       });
     }
@@ -273,14 +349,45 @@ const CourseViewer = () => {
     });
   };
 
+  // Get lesson type icon based on type
   const getLessonIcon = (type: string | null) => {
     switch (type) {
+      case 'content':
+      case 'material':
+        return <FileText className="h-4 w-4 text-blue-500" />;
+      case 'video':
+        return <Video className="h-4 w-4 text-red-500" />;
+      case 'activity':
+        return <Pencil className="h-4 w-4 text-orange-500" />;
+      case 'reflection':
+        return <MessageSquare className="h-4 w-4 text-purple-500" />;
       case 'question':
-        return <HelpCircle className="h-4 w-4" />;
+        return <HelpCircle className="h-4 w-4 text-indigo-500" />;
       case 'quiz':
-        return <ClipboardList className="h-4 w-4" />;
+        return <ClipboardCheck className="h-4 w-4 text-green-500" />;
       default:
-        return <FileText className="h-4 w-4" />;
+        return <FileText className="h-4 w-4 text-muted-foreground" />;
+    }
+  };
+
+  // Get lesson type label for display
+  const getLessonTypeLabel = (type: string | null): string => {
+    switch (type) {
+      case 'content':
+      case 'material':
+        return 'Content';
+      case 'video':
+        return 'Video';
+      case 'activity':
+        return 'Activity';
+      case 'reflection':
+        return 'Reflection';
+      case 'question':
+        return 'Question';
+      case 'quiz':
+        return 'Quiz';
+      default:
+        return 'Lesson';
     }
   };
 
@@ -296,6 +403,79 @@ const CourseViewer = () => {
       return `https://player.vimeo.com/video/${vimeoMatch[1]}`;
     }
     return url;
+  };
+
+  // Render the appropriate lesson component based on type
+  const renderLessonContent = () => {
+    if (!currentLesson) return null;
+
+    const lessonType = currentLesson.lesson_type || 'content';
+
+    switch (lessonType) {
+      case 'video':
+        return (
+          <VideoLesson
+            lesson={currentLesson}
+            getVideoEmbedUrl={getVideoEmbedUrl}
+          />
+        );
+      
+      case 'activity':
+        return (
+          <ActivityLesson
+            lesson={currentLesson}
+            onComplete={handleMarkComplete}
+            isCompleted={completedLessons.has(currentLesson.id)}
+            isPending={markCompleteMutation.isPending}
+          />
+        );
+      
+      case 'reflection':
+        return (
+          <ReflectionLesson
+            lesson={currentLesson}
+            savedResponse={reflectionResponse || null}
+            onSaveResponse={(response) => saveReflectionMutation.mutate({ lessonId: currentLesson.id, response })}
+            isSaving={saveReflectionMutation.isPending}
+            isCompleted={completedLessons.has(currentLesson.id)}
+          />
+        );
+      
+      case 'content':
+      case 'material':
+        return (
+          <ContentLesson
+            lesson={currentLesson}
+            getVideoEmbedUrl={getVideoEmbedUrl}
+          />
+        );
+      
+      case 'question':
+        // Question type uses content rendering with a styled prompt
+        return (
+          <ContentLesson
+            lesson={currentLesson}
+            getVideoEmbedUrl={getVideoEmbedUrl}
+          />
+        );
+      
+      case 'quiz':
+        // Quiz placeholder - can be expanded later
+        return (
+          <ContentLesson
+            lesson={currentLesson}
+            getVideoEmbedUrl={getVideoEmbedUrl}
+          />
+        );
+      
+      default:
+        return (
+          <ContentLesson
+            lesson={currentLesson}
+            getVideoEmbedUrl={getVideoEmbedUrl}
+          />
+        );
+    }
   };
 
   // Loading state
@@ -388,7 +568,7 @@ const CourseViewer = () => {
                         {isCompleted ? (
                           <CheckCircle2 className="h-4 w-4 text-green-500 flex-shrink-0" />
                         ) : (
-                          <div className="h-4 w-4 rounded-full border-2 border-muted-foreground/50 flex-shrink-0" />
+                          getLessonIcon(lesson.lesson_type)
                         )}
                         <span className="line-clamp-2">{lesson.title}</span>
                       </button>
@@ -465,7 +645,7 @@ const CourseViewer = () => {
                     <div className="flex items-center gap-2 mb-2">
                       {getLessonIcon(currentLesson.lesson_type)}
                       <Badge variant="secondary" className="capitalize">
-                        {currentLesson.lesson_type || 'material'}
+                        {getLessonTypeLabel(currentLesson.lesson_type)}
                       </Badge>
                       {completedLessons.has(currentLesson.id) && (
                         <Badge variant="outline" className="text-green-600 border-green-600">
@@ -478,86 +658,67 @@ const CourseViewer = () => {
                   </div>
                 </div>
 
-                {/* Video player */}
-                {currentLesson.video_url && (
-                  <div className="aspect-video rounded-lg overflow-hidden bg-black">
-                    <iframe
-                      src={getVideoEmbedUrl(currentLesson.video_url)}
-                      className="w-full h-full"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                    />
-                  </div>
-                )}
+                {/* Lesson content - rendered based on type */}
+                {renderLessonContent()}
 
-                {/* Lesson content */}
-                {currentLesson.content && (
-                  <div 
-                    className="prose prose-slate dark:prose-invert max-w-none"
-                    dangerouslySetInnerHTML={{ __html: sanitizeHtml(currentLesson.content) }}
-                  />
-                )}
+                {/* Actions - shown for non-reflection lessons (reflection has its own completion logic) */}
+                {currentLesson.lesson_type !== 'reflection' && (
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 pt-6 border-t">
+                    <Button
+                      variant="outline"
+                      onClick={goToPreviousLesson}
+                      disabled={currentLessonIndex <= 0}
+                    >
+                      <ChevronLeft className="h-4 w-4 mr-2" />
+                      Previous
+                    </Button>
 
-                {/* Template download */}
-                {currentLesson.template_url && (
-                  <div className="border rounded-lg p-4 bg-muted/50">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <Download className="h-5 w-5 text-primary" />
-                        <div>
-                          <p className="font-medium">Resource Download</p>
-                          <p className="text-sm text-muted-foreground">
-                            Download the template for this lesson
-                          </p>
-                        </div>
-                      </div>
-                      <Button asChild>
-                        <a 
-                          href={currentLesson.template_url} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
+                    <div className="flex gap-2 justify-center">
+                      {!completedLessons.has(currentLesson.id) && currentLesson.lesson_type !== 'activity' && (
+                        <Button
+                          onClick={handleMarkComplete}
+                          disabled={markCompleteMutation.isPending}
+                          className="bg-green-600 hover:bg-green-700"
                         >
-                          <Download className="h-4 w-4 mr-2" />
-                          Download
-                        </a>
-                      </Button>
+                          <CheckCircle2 className="h-4 w-4 mr-2" />
+                          {markCompleteMutation.isPending ? 'Saving...' : 'Mark Complete'}
+                        </Button>
+                      )}
                     </div>
+
+                    <Button
+                      variant={completedLessons.has(currentLesson.id) ? 'default' : 'outline'}
+                      onClick={goToNextLesson}
+                      disabled={currentLessonIndex >= allLessons.length - 1}
+                    >
+                      Next
+                      <ChevronRight className="h-4 w-4 ml-2" />
+                    </Button>
                   </div>
                 )}
 
-                {/* Actions */}
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 pt-6 border-t">
-                  <Button
-                    variant="outline"
-                    onClick={goToPreviousLesson}
-                    disabled={currentLessonIndex <= 0}
-                  >
-                    <ChevronLeft className="h-4 w-4 mr-2" />
-                    Previous
-                  </Button>
+                {/* Navigation for reflection lessons */}
+                {currentLesson.lesson_type === 'reflection' && (
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 pt-6 border-t">
+                    <Button
+                      variant="outline"
+                      onClick={goToPreviousLesson}
+                      disabled={currentLessonIndex <= 0}
+                    >
+                      <ChevronLeft className="h-4 w-4 mr-2" />
+                      Previous
+                    </Button>
 
-                  <div className="flex gap-2 justify-center">
-                    {!completedLessons.has(currentLesson.id) && (
-                      <Button
-                        onClick={handleMarkComplete}
-                        disabled={markCompleteMutation.isPending}
-                        className="bg-green-600 hover:bg-green-700"
-                      >
-                        <CheckCircle2 className="h-4 w-4 mr-2" />
-                        {markCompleteMutation.isPending ? 'Saving...' : 'Mark Complete'}
-                      </Button>
-                    )}
+                    <Button
+                      variant={completedLessons.has(currentLesson.id) ? 'default' : 'outline'}
+                      onClick={goToNextLesson}
+                      disabled={currentLessonIndex >= allLessons.length - 1}
+                    >
+                      Next
+                      <ChevronRight className="h-4 w-4 ml-2" />
+                    </Button>
                   </div>
-
-                  <Button
-                    variant={completedLessons.has(currentLesson.id) ? 'default' : 'outline'}
-                    onClick={goToNextLesson}
-                    disabled={currentLessonIndex >= allLessons.length - 1}
-                  >
-                    Next
-                    <ChevronRight className="h-4 w-4 ml-2" />
-                  </Button>
-                </div>
+                )}
               </div>
             ) : (
               <div className="text-center py-12">

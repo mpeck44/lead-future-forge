@@ -94,10 +94,13 @@ interface Lesson {
   character_limit?: number | null;
 }
 
+// Export the form values type for use in parent components
+export type LessonFormData = LessonFormValues;
+
 interface LessonFormDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (data: LessonFormValues) => void;
+  onSubmit: (data: LessonFormData) => void;
   lesson?: Lesson | null;
   isLoading?: boolean;
 }

@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Plus, Loader2 } from "lucide-react";
 import ModuleCard from "@/components/admin/ModuleCard";
 import ModuleFormDialog from "@/components/admin/ModuleFormDialog";
-import LessonFormDialog from "@/components/admin/LessonFormDialog";
+import LessonFormDialog, { type LessonFormData } from "@/components/admin/LessonFormDialog";
 import LessonPreviewDialog from "@/components/admin/LessonPreviewDialog";
 import { DeleteConfirmDialog } from "@/components/admin/DeleteConfirmDialog";
 
@@ -225,28 +225,7 @@ const AdminCourseContent = () => {
 
   // Create lesson mutation
   const createLessonMutation = useMutation({
-    mutationFn: async (data: {
-      module_id: string;
-      title: string;
-      lesson_type: string;
-      content?: string;
-      estimated_minutes?: number;
-      video_url?: string;
-      template_url?: string;
-      is_published: boolean;
-      learning_objective?: string;
-      key_takeaways?: string[];
-      resource_type?: string;
-      resource_name?: string;
-      download_button_text?: string;
-      completion_type?: string;
-      is_quick_start?: boolean;
-      is_first_deliverable?: boolean;
-      auto_advance?: boolean;
-      require_completion?: boolean;
-      video_transcript?: string;
-      character_limit?: number;
-    }) => {
+    mutationFn: async (data: LessonFormData & { module_id: string }) => {
       const moduleLessons = modules.find((m) => m.id === data.module_id)?.lessons ?? [];
       const nextOrder = moduleLessons.length > 0
         ? Math.max(...moduleLessons.map((l) => l.sequence_order)) + 1
@@ -295,28 +274,7 @@ const AdminCourseContent = () => {
 
   // Update lesson mutation
   const updateLessonMutation = useMutation({
-    mutationFn: async (data: {
-      id: string;
-      title: string;
-      lesson_type: string;
-      content?: string;
-      estimated_minutes?: number;
-      video_url?: string;
-      template_url?: string;
-      is_published: boolean;
-      learning_objective?: string;
-      key_takeaways?: string[];
-      resource_type?: string;
-      resource_name?: string;
-      download_button_text?: string;
-      completion_type?: string;
-      is_quick_start?: boolean;
-      is_first_deliverable?: boolean;
-      auto_advance?: boolean;
-      require_completion?: boolean;
-      video_transcript?: string;
-      character_limit?: number;
-    }) => {
+    mutationFn: async (data: LessonFormData & { id: string }) => {
       const { error } = await supabase
         .from("lessons")
         .update({
@@ -411,27 +369,7 @@ const AdminCourseContent = () => {
     }
   };
 
-  const handleLessonSubmit = (data: {
-    title: string;
-    lesson_type: string;
-    content?: string;
-    estimated_minutes?: number;
-    video_url?: string;
-    template_url?: string;
-    is_published: boolean;
-    learning_objective?: string;
-    key_takeaways?: string[];
-    resource_type?: string;
-    resource_name?: string;
-    download_button_text?: string;
-    completion_type?: string;
-    is_quick_start?: boolean;
-    is_first_deliverable?: boolean;
-    auto_advance?: boolean;
-    require_completion?: boolean;
-    video_transcript?: string;
-    character_limit?: number;
-  }) => {
+  const handleLessonSubmit = (data: LessonFormData) => {
     if (editingLesson) {
       updateLessonMutation.mutate({ id: editingLesson.id, ...data });
     } else if (activeModuleId) {
