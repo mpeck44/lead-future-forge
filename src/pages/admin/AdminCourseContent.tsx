@@ -23,6 +23,18 @@ interface Lesson {
   is_published: boolean | null;
   sequence_order: number;
   module_id: string;
+  learning_objective?: string | null;
+  key_takeaways?: string[] | null;
+  resource_type?: string | null;
+  resource_name?: string | null;
+  download_button_text?: string | null;
+  completion_type?: string | null;
+  is_quick_start?: boolean | null;
+  is_first_deliverable?: boolean | null;
+  auto_advance?: boolean | null;
+  require_completion?: boolean | null;
+  video_transcript?: string | null;
+  character_limit?: number | null;
 }
 
 interface Module {
@@ -31,6 +43,9 @@ interface Module {
   estimated_minutes: number | null;
   sequence_order: number;
   lessons: Lesson[];
+  description?: string | null;
+  deliverable_name?: string | null;
+  path_type?: string | null;
 }
 
 interface Course {
@@ -219,6 +234,18 @@ const AdminCourseContent = () => {
       video_url?: string;
       template_url?: string;
       is_published: boolean;
+      learning_objective?: string;
+      key_takeaways?: string[];
+      resource_type?: string;
+      resource_name?: string;
+      download_button_text?: string;
+      completion_type?: string;
+      is_quick_start?: boolean;
+      is_first_deliverable?: boolean;
+      auto_advance?: boolean;
+      require_completion?: boolean;
+      video_transcript?: string;
+      character_limit?: number;
     }) => {
       const moduleLessons = modules.find((m) => m.id === data.module_id)?.lessons ?? [];
       const nextOrder = moduleLessons.length > 0
@@ -237,6 +264,18 @@ const AdminCourseContent = () => {
           template_url: data.template_url || null,
           is_published: data.is_published,
           sequence_order: nextOrder,
+          learning_objective: data.learning_objective || null,
+          key_takeaways: data.key_takeaways || null,
+          resource_type: data.resource_type || null,
+          resource_name: data.resource_name || null,
+          download_button_text: data.download_button_text || null,
+          completion_type: data.completion_type || null,
+          is_quick_start: data.is_quick_start ?? false,
+          is_first_deliverable: data.is_first_deliverable ?? false,
+          auto_advance: data.auto_advance ?? false,
+          require_completion: data.require_completion ?? false,
+          video_transcript: data.video_transcript || null,
+          character_limit: data.character_limit ?? null,
         })
         .select()
         .single();
@@ -265,6 +304,18 @@ const AdminCourseContent = () => {
       video_url?: string;
       template_url?: string;
       is_published: boolean;
+      learning_objective?: string;
+      key_takeaways?: string[];
+      resource_type?: string;
+      resource_name?: string;
+      download_button_text?: string;
+      completion_type?: string;
+      is_quick_start?: boolean;
+      is_first_deliverable?: boolean;
+      auto_advance?: boolean;
+      require_completion?: boolean;
+      video_transcript?: string;
+      character_limit?: number;
     }) => {
       const { error } = await supabase
         .from("lessons")
@@ -276,6 +327,18 @@ const AdminCourseContent = () => {
           video_url: data.video_url || null,
           template_url: data.template_url || null,
           is_published: data.is_published,
+          learning_objective: data.learning_objective || null,
+          key_takeaways: data.key_takeaways || null,
+          resource_type: data.resource_type || null,
+          resource_name: data.resource_name || null,
+          download_button_text: data.download_button_text || null,
+          completion_type: data.completion_type || null,
+          is_quick_start: data.is_quick_start ?? false,
+          is_first_deliverable: data.is_first_deliverable ?? false,
+          auto_advance: data.auto_advance ?? false,
+          require_completion: data.require_completion ?? false,
+          video_transcript: data.video_transcript || null,
+          character_limit: data.character_limit ?? null,
         })
         .eq("id", data.id);
 
@@ -350,12 +413,24 @@ const AdminCourseContent = () => {
 
   const handleLessonSubmit = (data: {
     title: string;
-    lesson_type: "material" | "question" | "quiz";
+    lesson_type: string;
     content?: string;
     estimated_minutes?: number;
     video_url?: string;
     template_url?: string;
     is_published: boolean;
+    learning_objective?: string;
+    key_takeaways?: string[];
+    resource_type?: string;
+    resource_name?: string;
+    download_button_text?: string;
+    completion_type?: string;
+    is_quick_start?: boolean;
+    is_first_deliverable?: boolean;
+    auto_advance?: boolean;
+    require_completion?: boolean;
+    video_transcript?: string;
+    character_limit?: number;
   }) => {
     if (editingLesson) {
       updateLessonMutation.mutate({ id: editingLesson.id, ...data });

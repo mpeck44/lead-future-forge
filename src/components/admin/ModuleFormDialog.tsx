@@ -14,7 +14,15 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -24,6 +32,8 @@ const moduleFormSchema = z.object({
   title: z.string().min(1, "Title is required").max(100, "Title must be less than 100 characters"),
   description: z.string().max(500, "Description must be less than 500 characters").optional(),
   estimated_minutes: z.number().min(0, "Must be 0 or greater").optional(),
+  deliverable_name: z.string().max(100, "Must be less than 100 characters").optional(),
+  path_type: z.enum(["foundation", "path_1", "path_2", "path_3"]).optional().nullable(),
 });
 
 type ModuleFormValues = z.infer<typeof moduleFormSchema>;
@@ -32,6 +42,9 @@ interface Module {
   id: string;
   title: string;
   estimated_minutes: number | null;
+  description?: string | null;
+  deliverable_name?: string | null;
+  path_type?: string | null;
 }
 
 interface ModuleFormDialogProps {
@@ -57,6 +70,8 @@ const ModuleFormDialog = ({
       title: "",
       description: "",
       estimated_minutes: undefined,
+      deliverable_name: "",
+      path_type: null,
     },
   });
 
@@ -65,14 +80,18 @@ const ModuleFormDialog = ({
       if (module) {
         form.reset({
           title: module.title,
-          description: "",
+          description: module.description ?? "",
           estimated_minutes: module.estimated_minutes ?? undefined,
+          deliverable_name: module.deliverable_name ?? "",
+          path_type: (module.path_type as ModuleFormValues["path_type"]) ?? null,
         });
       } else {
         form.reset({
           title: "",
           description: "",
           estimated_minutes: undefined,
+          deliverable_name: "",
+          path_type: null,
         });
       }
     }
@@ -91,6 +110,8 @@ const ModuleFormDialog = ({
         title: "",
         description: "",
         estimated_minutes: undefined,
+        deliverable_name: "",
+        path_type: null,
       });
     } else {
       form.trigger();
@@ -99,7 +120,7 @@ const ModuleFormDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[550px]">
         <DialogHeader>
           <DialogTitle>
             {isEditing ? "Edit Module" : "Create Module"}
@@ -130,27 +151,83 @@ const ModuleFormDialog = ({
                   <FormLabel>Description</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Brief description of this module"
+                      placeholder="Brief description of this module (2-3 sentences)"
                       className="min-h-[80px]"
                       {...field}
                     />
                   </FormControl>
+                  <FormDescription>
+                    {(field.value?.length || 0)}/500 characters
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
+
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="deliverable_name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Deliverable</FormLabel>
+                    <FormControl>
+                      <Input 
+                        placeholder="e.g., AI Vision Statement" 
+                        {...field} 
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      What learners will build
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="path_type"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Path Type</FormLabel>
+                    <Select 
+                      onValueChange={(value) => field.onChange(value === "none" ? null : value)} 
+                      value={field.value ?? "none"}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select path" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="none">None</SelectItem>
+                        <SelectItem value="foundation">Foundation</SelectItem>
+                        <SelectItem value="path_1">Path 1</SelectItem>
+                        <SelectItem value="path_2">Path 2</SelectItem>
+                        <SelectItem value="path_3">Path 3</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormDescription>
+                      Learning path category
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
             <FormField
               control={form.control}
               name="estimated_minutes"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Estimated Minutes</FormLabel>
+                  <FormLabel>Estimated Minutes (Override)</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
                       min={0}
-                      placeholder="30"
+                      placeholder="Auto-calculated from lessons"
                       {...field}
                       value={field.value ?? ""}
                       onChange={(e) =>
@@ -160,6 +237,9 @@ const ModuleFormDialog = ({
                       }
                     />
                   </FormControl>
+                  <FormDescription>
+                    Leave empty to auto-calculate from lessons
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}

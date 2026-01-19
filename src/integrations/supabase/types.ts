@@ -106,45 +106,81 @@ export type Database = {
       }
       lessons: {
         Row: {
+          auto_advance: boolean | null
+          character_limit: number | null
+          completion_type: string | null
           content: string | null
           created_at: string | null
+          download_button_text: string | null
           estimated_minutes: number | null
           id: string
+          is_first_deliverable: boolean | null
           is_published: boolean | null
+          is_quick_start: boolean | null
+          key_takeaways: string[] | null
+          learning_objective: string | null
           lesson_type: string | null
           module_id: string
+          require_completion: boolean | null
+          resource_name: string | null
+          resource_type: string | null
           sequence_order: number
           template_url: string | null
           title: string
           updated_at: string | null
+          video_transcript: string | null
           video_url: string | null
         }
         Insert: {
+          auto_advance?: boolean | null
+          character_limit?: number | null
+          completion_type?: string | null
           content?: string | null
           created_at?: string | null
+          download_button_text?: string | null
           estimated_minutes?: number | null
           id?: string
+          is_first_deliverable?: boolean | null
           is_published?: boolean | null
+          is_quick_start?: boolean | null
+          key_takeaways?: string[] | null
+          learning_objective?: string | null
           lesson_type?: string | null
           module_id: string
+          require_completion?: boolean | null
+          resource_name?: string | null
+          resource_type?: string | null
           sequence_order: number
           template_url?: string | null
           title: string
           updated_at?: string | null
+          video_transcript?: string | null
           video_url?: string | null
         }
         Update: {
+          auto_advance?: boolean | null
+          character_limit?: number | null
+          completion_type?: string | null
           content?: string | null
           created_at?: string | null
+          download_button_text?: string | null
           estimated_minutes?: number | null
           id?: string
+          is_first_deliverable?: boolean | null
           is_published?: boolean | null
+          is_quick_start?: boolean | null
+          key_takeaways?: string[] | null
+          learning_objective?: string | null
           lesson_type?: string | null
           module_id?: string
+          require_completion?: boolean | null
+          resource_name?: string | null
+          resource_type?: string | null
           sequence_order?: number
           template_url?: string | null
           title?: string
           updated_at?: string | null
+          video_transcript?: string | null
           video_url?: string | null
         }
         Relationships: [
@@ -161,8 +197,11 @@ export type Database = {
         Row: {
           course_id: string
           created_at: string | null
+          deliverable_name: string | null
+          description: string | null
           estimated_minutes: number | null
           id: string
+          path_type: string | null
           sequence_order: number
           title: string
           updated_at: string | null
@@ -170,8 +209,11 @@ export type Database = {
         Insert: {
           course_id: string
           created_at?: string | null
+          deliverable_name?: string | null
+          description?: string | null
           estimated_minutes?: number | null
           id?: string
+          path_type?: string | null
           sequence_order: number
           title: string
           updated_at?: string | null
@@ -179,8 +221,11 @@ export type Database = {
         Update: {
           course_id?: string
           created_at?: string | null
+          deliverable_name?: string | null
+          description?: string | null
           estimated_minutes?: number | null
           id?: string
+          path_type?: string | null
           sequence_order?: number
           title?: string
           updated_at?: string | null
@@ -294,6 +339,41 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      reflection_responses: {
+        Row: {
+          created_at: string | null
+          id: string
+          lesson_id: string
+          response: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          lesson_id: string
+          response: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          lesson_id?: string
+          response?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reflection_responses_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_progress: {
         Row: {

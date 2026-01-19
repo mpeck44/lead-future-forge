@@ -1,4 +1,18 @@
-import { FileText, HelpCircle, ClipboardCheck, MoreVertical, ArrowUp, ArrowDown, Pencil, Trash2, Eye } from "lucide-react";
+import { 
+  FileText, 
+  Video, 
+  Pencil, 
+  MessageSquare,
+  HelpCircle, 
+  ClipboardCheck, 
+  MoreVertical, 
+  ArrowUp, 
+  ArrowDown, 
+  Trash2, 
+  Eye,
+  Zap,
+  Target
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -21,6 +35,8 @@ interface Lesson {
   is_published: boolean | null;
   sequence_order: number;
   module_id: string;
+  is_quick_start?: boolean | null;
+  is_first_deliverable?: boolean | null;
 }
 
 interface LessonItemProps {
@@ -34,9 +50,13 @@ interface LessonItemProps {
   onPreview: (lesson: Lesson) => void;
 }
 
-const lessonTypeConfig = {
-  material: { icon: FileText, color: "text-blue-500", bgColor: "bg-blue-500/10", label: "Material" },
-  question: { icon: HelpCircle, color: "text-purple-500", bgColor: "bg-purple-500/10", label: "Question" },
+const lessonTypeConfig: Record<string, { icon: typeof FileText; color: string; bgColor: string; label: string }> = {
+  content: { icon: FileText, color: "text-blue-500", bgColor: "bg-blue-500/10", label: "Content" },
+  material: { icon: FileText, color: "text-blue-500", bgColor: "bg-blue-500/10", label: "Content" }, // Backward compatibility
+  video: { icon: Video, color: "text-red-500", bgColor: "bg-red-500/10", label: "Video" },
+  activity: { icon: Pencil, color: "text-orange-500", bgColor: "bg-orange-500/10", label: "Activity" },
+  reflection: { icon: MessageSquare, color: "text-purple-500", bgColor: "bg-purple-500/10", label: "Reflection" },
+  question: { icon: HelpCircle, color: "text-indigo-500", bgColor: "bg-indigo-500/10", label: "Question" },
   quiz: { icon: ClipboardCheck, color: "text-green-500", bgColor: "bg-green-500/10", label: "Quiz" },
 };
 
@@ -50,8 +70,8 @@ const LessonItem = ({
   onMoveDown,
   onPreview,
 }: LessonItemProps) => {
-  const type = (lesson.lesson_type as keyof typeof lessonTypeConfig) ?? "material";
-  const config = lessonTypeConfig[type] || lessonTypeConfig.material;
+  const type = (lesson.lesson_type as keyof typeof lessonTypeConfig) ?? "content";
+  const config = lessonTypeConfig[type] || lessonTypeConfig.content;
   const Icon = config.icon;
 
   return (
@@ -63,11 +83,23 @@ const LessonItem = ({
 
       {/* Content */}
       <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <span className="font-medium truncate">{lesson.title}</span>
           {!lesson.is_published && (
             <Badge variant="outline" className="text-xs">
               Draft
+            </Badge>
+          )}
+          {lesson.is_quick_start && (
+            <Badge variant="secondary" className="text-xs bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">
+              <Zap className="h-3 w-3 mr-1" />
+              Quick Start
+            </Badge>
+          )}
+          {lesson.is_first_deliverable && (
+            <Badge variant="secondary" className="text-xs bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
+              <Target className="h-3 w-3 mr-1" />
+              First Deliverable
             </Badge>
           )}
         </div>
@@ -76,8 +108,11 @@ const LessonItem = ({
           {lesson.estimated_minutes && (
             <span>• {lesson.estimated_minutes} min</span>
           )}
-          {lesson.video_url && (
+          {lesson.video_url && type !== "video" && (
             <span>• Has video</span>
+          )}
+          {lesson.template_url && (
+            <span>• Has resource</span>
           )}
         </div>
       </div>
