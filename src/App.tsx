@@ -13,6 +13,7 @@ import MyCourses from "./pages/MyCourses";
 import Portfolio from "./pages/Portfolio";
 import Courses from "./pages/Courses";
 import Profile from "./pages/Profile";
+import CourseViewer from "./pages/CourseViewer";
 import NotFound from "./pages/NotFound";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminCourses from "./pages/admin/AdminCourses";
@@ -61,6 +62,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <Profile />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/course/:slug"
+              element={
+                <ProtectedRoute>
+                  <CourseViewer />
                 </ProtectedRoute>
               }
             />
