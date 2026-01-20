@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -24,7 +24,8 @@ import {
   MessageSquare,
   HelpCircle,
   ClipboardCheck,
-  BookOpen
+  BookOpen,
+  Clock
 } from 'lucide-react';
 
 // Import lesson type components
@@ -32,6 +33,8 @@ import ContentLesson from '@/components/course/ContentLesson';
 import VideoLesson from '@/components/course/VideoLesson';
 import ActivityLesson from '@/components/course/ActivityLesson';
 import ReflectionLesson from '@/components/course/ReflectionLesson';
+import QuestionLesson from '@/components/course/QuestionLesson';
+import PortfolioTracker from '@/components/course/PortfolioTracker';
 
 interface Lesson {
   id: string;
@@ -42,6 +45,7 @@ interface Lesson {
   video_url: string | null;
   template_url: string | null;
   is_published: boolean | null;
+  estimated_minutes: number | null;
   // Enhanced fields
   learning_objective: string | null;
   key_takeaways: string[] | null;
@@ -57,6 +61,9 @@ interface Module {
   id: string;
   title: string;
   sequence_order: number;
+  estimated_minutes: number | null;
+  description: string | null;
+  deliverable_name: string | null;
   lessons: Lesson[];
 }
 
@@ -93,9 +100,9 @@ const CourseViewer = () => {
         .select(`
           id, title, slug, description,
           modules (
-            id, title, sequence_order,
+            id, title, sequence_order, estimated_minutes, description, deliverable_name,
             lessons (
-              id, title, sequence_order, lesson_type,
+              id, title, sequence_order, lesson_type, estimated_minutes,
               content, video_url, template_url, is_published,
               learning_objective, key_takeaways, video_transcript,
               resource_type, resource_name, download_button_text,
@@ -167,23 +174,72 @@ const CourseViewer = () => {
   });
 
   // Fetch reflection responses for the current lesson
-  const { data: reflectionResponse, refetch: refetchReflection } = useQuery({
+  const { data: reflectionData, refetch: refetchReflection } = useQuery({
     queryKey: ['reflection-response', currentLessonId, user?.id],
     queryFn: async () => {
       if (!currentLessonId || !user?.id) return null;
       
       const { data, error } = await supabase
         .from('reflection_responses')
-        .select('response')
+        .select('response, skipped, updated_at')
         .eq('user_id', user.id)
         .eq('lesson_id', currentLessonId)
         .maybeSingle();
       
       if (error) throw error;
-      return data?.response || null;
+      return data;
     },
     enabled: !!currentLessonId && !!user?.id
   });
+
+  // Fetch question responses for the current lesson
+  const { data: questionData, refetch: refetchQuestion } = useQuery({
+    queryKey: ['question-response', currentLessonId, user?.id],
+    queryFn: async () => {
+      if (!currentLessonId || !user?.id) return null;
+      
+      const { data, error } = await supabase
+        .from('question_responses')
+        .select('response, skipped, updated_at')
+        .eq('user_id', user.id)
+        .eq('lesson_id', currentLessonId)
+        .maybeSingle();
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!currentLessonId && !!user?.id
+  });
+
+  // Fetch portfolio items for the course
+  const { data: portfolioItems } = useQuery({
+    queryKey: ['portfolio-items', course?.id, user?.id],
+    queryFn: async () => {
+      if (!course?.id || !user?.id) return [];
+      
+      const { data, error } = await supabase
+        .from('portfolio_items')
+        .select('id, title, completed_at')
+        .eq('user_id', user.id)
+        .eq('course_id', course.id);
+      
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!course?.id && !!user?.id
+  });
+
+  // Get deliverables from modules
+  const deliverables = useMemo(() => {
+    if (!course) return [];
+    return course.modules
+      .filter(m => m.deliverable_name)
+      .map(m => ({
+        moduleId: m.id,
+        name: m.deliverable_name!,
+        moduleTitle: m.title
+      }));
+  }, [course]);
 
   // Mark lesson complete mutation
   const markCompleteMutation = useMutation({
@@ -222,7 +278,7 @@ const CourseViewer = () => {
 
   // Save reflection response mutation
   const saveReflectionMutation = useMutation({
-    mutationFn: async ({ lessonId, response }: { lessonId: string; response: string }) => {
+    mutationFn: async ({ lessonId, response, skipped = false }: { lessonId: string; response: string; skipped?: boolean }) => {
       if (!user?.id) throw new Error('Not authenticated');
       
       const { error } = await supabase
@@ -231,6 +287,7 @@ const CourseViewer = () => {
           user_id: user.id,
           lesson_id: lessonId,
           response: response,
+          skipped: skipped,
           updated_at: new Date().toISOString()
         }, {
           onConflict: 'user_id,lesson_id'
@@ -238,22 +295,52 @@ const CourseViewer = () => {
       
       if (error) throw error;
     },
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       refetchReflection();
-      // Auto-mark as complete when saving reflection
-      if (currentLessonId && !completedLessons.has(currentLessonId)) {
+      // Auto-mark as complete when saving (not skipping)
+      if (!variables.skipped && currentLessonId && !completedLessons.has(currentLessonId)) {
         markCompleteMutation.mutate(currentLessonId);
-      } else {
-        toast({
-          title: 'Response saved',
-          description: 'Your reflection has been saved.',
-        });
       }
     },
     onError: () => {
       toast({
         title: 'Error',
         description: 'Failed to save your response. Please try again.',
+        variant: 'destructive',
+      });
+    }
+  });
+
+  // Save question response mutation
+  const saveQuestionMutation = useMutation({
+    mutationFn: async ({ lessonId, response, skipped = false }: { lessonId: string; response: string; skipped?: boolean }) => {
+      if (!user?.id) throw new Error('Not authenticated');
+      
+      const { error } = await supabase
+        .from('question_responses')
+        .upsert({
+          user_id: user.id,
+          lesson_id: lessonId,
+          response: response,
+          skipped: skipped,
+          updated_at: new Date().toISOString()
+        }, {
+          onConflict: 'user_id,lesson_id'
+        });
+      
+      if (error) throw error;
+    },
+    onSuccess: (_, variables) => {
+      refetchQuestion();
+      // Auto-mark as complete when saving (not skipping)
+      if (!variables.skipped && currentLessonId && !completedLessons.has(currentLessonId)) {
+        markCompleteMutation.mutate(currentLessonId);
+      }
+    },
+    onError: () => {
+      toast({
+        title: 'Error',
+        description: 'Failed to save your answer. Please try again.',
         variant: 'destructive',
       });
     }
@@ -434,8 +521,17 @@ const CourseViewer = () => {
         return (
           <ReflectionLesson
             lesson={currentLesson}
-            savedResponse={reflectionResponse || null}
+            savedResponse={reflectionData?.response || null}
+            skipped={reflectionData?.skipped || false}
+            lastSavedAt={reflectionData?.updated_at ? new Date(reflectionData.updated_at) : null}
             onSaveResponse={(response) => saveReflectionMutation.mutate({ lessonId: currentLesson.id, response })}
+            onSkip={() => {
+              saveReflectionMutation.mutate({ lessonId: currentLesson.id, response: '', skipped: true });
+              goToNextLesson();
+            }}
+            onSaveAndContinue={() => {
+              goToNextLesson();
+            }}
             isSaving={saveReflectionMutation.isPending}
             isCompleted={completedLessons.has(currentLesson.id)}
           />
@@ -451,11 +547,22 @@ const CourseViewer = () => {
         );
       
       case 'question':
-        // Question type uses content rendering with a styled prompt
         return (
-          <ContentLesson
+          <QuestionLesson
             lesson={currentLesson}
-            getVideoEmbedUrl={getVideoEmbedUrl}
+            savedResponse={questionData?.response || null}
+            skipped={questionData?.skipped || false}
+            lastSavedAt={questionData?.updated_at ? new Date(questionData.updated_at) : null}
+            onSaveResponse={(response) => saveQuestionMutation.mutate({ lessonId: currentLesson.id, response })}
+            onSkip={() => {
+              saveQuestionMutation.mutate({ lessonId: currentLesson.id, response: '', skipped: true });
+              goToNextLesson();
+            }}
+            onSaveAndContinue={() => {
+              goToNextLesson();
+            }}
+            isSaving={saveQuestionMutation.isPending}
+            isCompleted={completedLessons.has(currentLesson.id)}
           />
         );
       
@@ -517,71 +624,104 @@ const CourseViewer = () => {
   }
 
   // Sidebar content (shared between desktop and mobile)
-  const SidebarContent = () => (
-    <div className="h-full flex flex-col">
-      <div className="p-4 border-b">
-        <h2 className="font-semibold text-lg mb-3 line-clamp-2">{course.title}</h2>
-        <div className="space-y-2">
-          <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">Progress</span>
-            <span className="font-medium">{progressPercent}%</span>
+  const SidebarContent = () => {
+    return (
+      <div className="h-full flex flex-col">
+        <div className="p-4 border-b">
+          <h2 className="font-semibold text-lg mb-3 line-clamp-2">{course.title}</h2>
+          <div className="space-y-2">
+            <div className="flex justify-between text-sm">
+              <span className="text-muted-foreground">Progress</span>
+              <span className="font-medium">{progressPercent}%</span>
+            </div>
+            <Progress value={progressPercent} className="h-2" />
+            <p className="text-xs text-muted-foreground">
+              {completedLessons.size} of {allLessons.length} lessons completed
+            </p>
           </div>
-          <Progress value={progressPercent} className="h-2" />
-          <p className="text-xs text-muted-foreground">
-            {completedLessons.size} of {allLessons.length} lessons completed
-          </p>
         </div>
+        
+        <ScrollArea className="flex-1">
+          <div className="p-2">
+            {course.modules.map((module) => {
+              // Calculate total time for the module
+              const moduleTime = module.lessons.reduce(
+                (sum, lesson) => sum + (lesson.estimated_minutes || 0),
+                0
+              );
+              
+              return (
+                <Collapsible
+                  key={module.id}
+                  open={openModules.has(module.id)}
+                  onOpenChange={() => toggleModule(module.id)}
+                >
+                  <CollapsibleTrigger className="flex items-center justify-between w-full p-3 text-left hover:bg-muted rounded-lg transition-colors">
+                    <div className="flex-1 min-w-0">
+                      <span className="font-medium text-sm block">{module.title}</span>
+                      {moduleTime > 0 && (
+                        <span className="text-xs text-muted-foreground">
+                          {moduleTime} min total
+                        </span>
+                      )}
+                    </div>
+                    <ChevronDown 
+                      className={`h-4 w-4 text-muted-foreground transition-transform flex-shrink-0 ${
+                        openModules.has(module.id) ? 'rotate-180' : ''
+                      }`}
+                    />
+                  </CollapsibleTrigger>
+                  <CollapsibleContent>
+                    <div className="ml-2 space-y-1 pb-2">
+                      {module.lessons.map((lesson) => {
+                        const isCompleted = completedLessons.has(lesson.id);
+                        const isCurrent = lesson.id === currentLessonId;
+                        
+                        return (
+                          <button
+                            key={lesson.id}
+                            onClick={() => goToLesson(lesson.id)}
+                            className={`flex items-center gap-3 w-full p-2 rounded-lg text-left text-sm transition-colors ${
+                              isCurrent
+                                ? 'bg-primary/10 text-primary'
+                                : 'hover:bg-muted text-muted-foreground hover:text-foreground'
+                            }`}
+                          >
+                            {isCompleted ? (
+                              <CheckCircle2 className="h-4 w-4 text-green-500 flex-shrink-0" />
+                            ) : (
+                              getLessonIcon(lesson.lesson_type)
+                            )}
+                            <span className="flex-1 line-clamp-2">
+                              {lesson.title}
+                              {lesson.estimated_minutes && (
+                                <span className="text-muted-foreground ml-1">
+                                  ({lesson.estimated_minutes} min)
+                                </span>
+                              )}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </CollapsibleContent>
+                </Collapsible>
+              );
+            })}
+          </div>
+        </ScrollArea>
+
+        {/* Portfolio Tracker */}
+        {deliverables.length > 0 && (
+          <PortfolioTracker
+            deliverables={deliverables}
+            completedItems={portfolioItems || []}
+            courseName={course.title.split(' ')[0]}
+          />
+        )}
       </div>
-      
-      <ScrollArea className="flex-1">
-        <div className="p-2">
-          {course.modules.map((module) => (
-            <Collapsible
-              key={module.id}
-              open={openModules.has(module.id)}
-              onOpenChange={() => toggleModule(module.id)}
-            >
-              <CollapsibleTrigger className="flex items-center justify-between w-full p-3 text-left hover:bg-muted rounded-lg transition-colors">
-                <span className="font-medium text-sm">{module.title}</span>
-                <ChevronDown 
-                  className={`h-4 w-4 text-muted-foreground transition-transform ${
-                    openModules.has(module.id) ? 'rotate-180' : ''
-                  }`}
-                />
-              </CollapsibleTrigger>
-              <CollapsibleContent>
-                <div className="ml-2 space-y-1 pb-2">
-                  {module.lessons.map((lesson) => {
-                    const isCompleted = completedLessons.has(lesson.id);
-                    const isCurrent = lesson.id === currentLessonId;
-                    
-                    return (
-                      <button
-                        key={lesson.id}
-                        onClick={() => goToLesson(lesson.id)}
-                        className={`flex items-center gap-3 w-full p-2 rounded-lg text-left text-sm transition-colors ${
-                          isCurrent
-                            ? 'bg-primary/10 text-primary'
-                            : 'hover:bg-muted text-muted-foreground hover:text-foreground'
-                        }`}
-                      >
-                        {isCompleted ? (
-                          <CheckCircle2 className="h-4 w-4 text-green-500 flex-shrink-0" />
-                        ) : (
-                          getLessonIcon(lesson.lesson_type)
-                        )}
-                        <span className="line-clamp-2">{lesson.title}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </CollapsibleContent>
-            </Collapsible>
-          ))}
-        </div>
-      </ScrollArea>
-    </div>
-  );
+    );
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -642,11 +782,17 @@ const CourseViewer = () => {
                 {/* Lesson header */}
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <div className="flex items-center gap-2 mb-2">
+                    <div className="flex items-center gap-2 mb-2 flex-wrap">
                       {getLessonIcon(currentLesson.lesson_type)}
                       <Badge variant="secondary" className="capitalize">
                         {getLessonTypeLabel(currentLesson.lesson_type)}
                       </Badge>
+                      {currentLesson.estimated_minutes && (
+                        <span className="text-sm text-muted-foreground flex items-center gap-1">
+                          <Clock className="h-4 w-4" />
+                          {currentLesson.estimated_minutes} min
+                        </span>
+                      )}
                       {completedLessons.has(currentLesson.id) && (
                         <Badge variant="outline" className="text-green-600 border-green-600">
                           <CheckCircle2 className="h-3 w-3 mr-1" />
