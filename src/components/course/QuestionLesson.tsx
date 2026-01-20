@@ -1,23 +1,23 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Save, Check, MessageSquare, SkipForward, Clock } from "lucide-react";
+import { Save, Check, HelpCircle, SkipForward, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { sanitizeHtml } from "@/lib/sanitize";
 import { cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
 
-interface ReflectionLessonProps {
+interface QuestionLessonProps {
   lesson: {
     id: string;
     content: string | null;
     character_limit?: number | null;
   };
   savedResponse: string | null;
-  skipped?: boolean;
-  lastSavedAt?: Date | null;
+  skipped: boolean;
+  lastSavedAt: Date | null;
   onSaveResponse: (response: string) => void;
-  onSkip?: () => void;
-  onSaveAndContinue?: () => void;
+  onSkip: () => void;
+  onSaveAndContinue: () => void;
   isSaving: boolean;
   isCompleted: boolean;
 }
@@ -25,28 +25,26 @@ interface ReflectionLessonProps {
 const RECOMMENDED_WORDS = 50;
 const DEBOUNCE_DELAY = 2000; // 2 seconds
 
-const ReflectionLesson = ({ 
+const QuestionLesson = ({ 
   lesson, 
-  savedResponse,
-  skipped = false,
+  savedResponse, 
+  skipped,
   lastSavedAt,
   onSaveResponse, 
   onSkip,
   onSaveAndContinue,
   isSaving,
   isCompleted 
-}: ReflectionLessonProps) => {
+}: QuestionLessonProps) => {
   const [response, setResponse] = useState(savedResponse || "");
   const [hasChanges, setHasChanges] = useState(false);
   const [autoSaveStatus, setAutoSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
-  const lastSavedRef = useRef<Date | null>(lastSavedAt || null);
+  const lastSavedRef = useRef<Date | null>(lastSavedAt);
 
   // Update lastSavedRef when prop changes
   useEffect(() => {
-    if (lastSavedAt) {
-      lastSavedRef.current = lastSavedAt;
-    }
+    lastSavedRef.current = lastSavedAt;
   }, [lastSavedAt]);
 
   // Reset state when lesson changes
@@ -69,7 +67,6 @@ const ReflectionLesson = ({
         setTimeout(() => {
           setAutoSaveStatus('saved');
           lastSavedRef.current = new Date();
-          setHasChanges(false);
         }, 500);
       }, DEBOUNCE_DELAY);
     }
@@ -93,14 +90,14 @@ const ReflectionLesson = ({
     if (response.trim()) {
       onSaveResponse(response);
     }
-    onSaveAndContinue?.();
+    onSaveAndContinue();
   };
 
   const handleSkip = () => {
     if (debounceRef.current) {
       clearTimeout(debounceRef.current);
     }
-    onSkip?.();
+    onSkip();
   };
 
   // Cleanup debounce on unmount
@@ -133,13 +130,13 @@ const ReflectionLesson = ({
     <div className="space-y-6">
       {/* Prompt */}
       {lesson.content && (
-        <div className="bg-primary/5 border border-primary/20 rounded-lg p-6">
+        <div className="bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-200 dark:border-indigo-800 rounded-lg p-6">
           <div className="flex items-start gap-3">
-            <MessageSquare className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+            <HelpCircle className="h-5 w-5 text-indigo-600 dark:text-indigo-400 mt-0.5 flex-shrink-0" />
             <div>
-              <p className="text-sm font-medium text-primary mb-2">Reflection Prompt</p>
+              <p className="text-sm font-medium text-indigo-700 dark:text-indigo-300 mb-2">Question</p>
               <div 
-                className="prose prose-slate dark:prose-invert max-w-none"
+                className="prose prose-slate dark:prose-invert max-w-none prose-p:text-indigo-900 dark:prose-p:text-indigo-100"
                 dangerouslySetInnerHTML={{ __html: sanitizeHtml(lesson.content) }}
               />
             </div>
@@ -151,7 +148,7 @@ const ReflectionLesson = ({
       {skipped && !response && (
         <div className="bg-muted/50 border border-dashed rounded-lg p-4 text-center">
           <p className="text-sm text-muted-foreground">
-            You previously skipped this reflection. You can still provide a response below.
+            You previously skipped this question. You can still provide an answer below.
           </p>
         </div>
       )}
@@ -159,7 +156,7 @@ const ReflectionLesson = ({
       {/* Response Textarea */}
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <label className="text-sm font-medium">Your Reflection (private)</label>
+          <label className="text-sm font-medium">Your Answer (private)</label>
           {autoSaveText && (
             <span className="text-xs text-muted-foreground flex items-center gap-1">
               {(autoSaveStatus === 'saving' || isSaving) ? (
@@ -175,7 +172,7 @@ const ReflectionLesson = ({
         <Textarea
           value={response}
           onChange={(e) => handleChange(e.target.value)}
-          placeholder="Take a moment to reflect and write your thoughts..."
+          placeholder="Take a moment to think and write your answer..."
           className={cn(
             "min-h-[120px] resize-y transition-all",
             "focus:min-h-[180px]",
@@ -205,40 +202,36 @@ const ReflectionLesson = ({
       </div>
 
       {/* Actions */}
-      {(onSaveAndContinue || onSkip) && (
-        <div className="flex items-center justify-between pt-2">
-          <Button
-            onClick={handleSaveAndContinue}
-            disabled={!response.trim() || isSaving}
-          >
-            {isSaving ? (
-              <>Saving...</>
-            ) : (
-              <>
-                <Save className="h-4 w-4 mr-2" />
-                Save & Continue
-              </>
-            )}
-          </Button>
-
-          {onSkip && (
-            <button
-              onClick={handleSkip}
-              className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors"
-            >
-              Skip This Reflection
-              <SkipForward className="h-4 w-4" />
-            </button>
+      <div className="flex items-center justify-between pt-2">
+        <Button
+          onClick={handleSaveAndContinue}
+          disabled={!response.trim() || isSaving}
+        >
+          {isSaving ? (
+            <>Saving...</>
+          ) : (
+            <>
+              <Save className="h-4 w-4 mr-2" />
+              Save & Continue
+            </>
           )}
-        </div>
-      )}
+        </Button>
+
+        <button
+          onClick={handleSkip}
+          className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors"
+        >
+          Skip This Question
+          <SkipForward className="h-4 w-4" />
+        </button>
+      </div>
 
       {/* Privacy Note */}
       <p className="text-xs text-muted-foreground text-center">
-        Your reflection is private and only visible to you and course administrators.
+        Your answer is private and only visible to you and course administrators.
       </p>
     </div>
   );
 };
 
-export default ReflectionLesson;
+export default QuestionLesson;

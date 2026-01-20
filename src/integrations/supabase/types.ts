@@ -340,12 +340,13 @@ export type Database = {
         }
         Relationships: []
       }
-      reflection_responses: {
+      question_responses: {
         Row: {
           created_at: string | null
           id: string
           lesson_id: string
           response: string
+          skipped: boolean | null
           updated_at: string | null
           user_id: string
         }
@@ -353,7 +354,8 @@ export type Database = {
           created_at?: string | null
           id?: string
           lesson_id: string
-          response: string
+          response?: string
+          skipped?: boolean | null
           updated_at?: string | null
           user_id: string
         }
@@ -362,6 +364,45 @@ export type Database = {
           id?: string
           lesson_id?: string
           response?: string
+          skipped?: boolean | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "question_responses_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      reflection_responses: {
+        Row: {
+          created_at: string | null
+          id: string
+          lesson_id: string
+          response: string
+          skipped: boolean | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          lesson_id: string
+          response: string
+          skipped?: boolean | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          lesson_id?: string
+          response?: string
+          skipped?: boolean | null
           updated_at?: string | null
           user_id?: string
         }
