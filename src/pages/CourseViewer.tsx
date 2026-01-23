@@ -643,7 +643,7 @@ const CourseViewer = () => {
         
         <ScrollArea className="flex-1">
           <div className="p-2">
-            {course.modules.map((module) => {
+            {course.modules.map((module, index) => {
               // Calculate total time for the module
               const moduleTime = module.lessons.reduce(
                 (sum, lesson) => sum + (lesson.estimated_minutes || 0),
@@ -655,15 +655,21 @@ const CourseViewer = () => {
                   key={module.id}
                   open={openModules.has(module.id)}
                   onOpenChange={() => toggleModule(module.id)}
+                  className="border-b border-border/50 last:border-b-0"
                 >
-                  <CollapsibleTrigger className="flex items-center justify-between w-full p-3 text-left hover:bg-muted rounded-lg transition-colors">
-                    <div className="flex-1 min-w-0">
-                      <span className="font-medium text-sm block">{module.title}</span>
-                      {moduleTime > 0 && (
-                        <span className="text-xs text-muted-foreground">
-                          {moduleTime} min total
-                        </span>
-                      )}
+                  <CollapsibleTrigger className="flex items-center justify-between w-full p-3 py-4 text-left hover:bg-muted/50 rounded-lg transition-colors">
+                    <div className="flex items-center gap-3 flex-1 min-w-0">
+                      <span className="flex-shrink-0 w-6 h-6 rounded-full bg-muted text-xs font-medium flex items-center justify-center text-muted-foreground">
+                        {index + 1}
+                      </span>
+                      <div className="flex-1 min-w-0">
+                        <span className="font-medium text-sm block">{module.title}</span>
+                        {moduleTime > 0 && (
+                          <span className="text-xs text-muted-foreground">
+                            {moduleTime} min total
+                          </span>
+                        )}
+                      </div>
                     </div>
                     <ChevronDown 
                       className={`h-4 w-4 text-muted-foreground transition-transform flex-shrink-0 ${
@@ -672,7 +678,7 @@ const CourseViewer = () => {
                     />
                   </CollapsibleTrigger>
                   <CollapsibleContent>
-                    <div className="ml-2 space-y-1 pb-2">
+                    <div className="ml-11 space-y-1 pb-2">
                       {module.lessons.map((lesson) => {
                         const isCompleted = completedLessons.has(lesson.id);
                         const isCurrent = lesson.id === currentLessonId;
