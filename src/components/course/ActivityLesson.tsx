@@ -7,6 +7,8 @@ import { cn } from "@/lib/utils";
 
 interface ActivityLessonProps {
   lesson: {
+    id: string;
+    title: string;
     content: string | null;
     template_url?: string | null;
     resource_type?: string | null;
@@ -14,8 +16,10 @@ interface ActivityLessonProps {
     download_button_text?: string | null;
     completion_type?: string | null;
   };
+  courseId?: string;
   isCompleted: boolean;
   onComplete: () => void;
+  onPortfolioCreate?: (lessonId: string, title: string, description: string) => void;
   isPending: boolean;
 }
 
@@ -26,17 +30,25 @@ const resourceTypeConfig: Record<string, { icon: typeof FileText; label: string;
   link: { icon: LinkIcon, label: "External Link", color: "bg-purple-100 text-purple-700" },
 };
 
-const ActivityLesson = ({ lesson, isCompleted, onComplete, isPending }: ActivityLessonProps) => {
+const ActivityLesson = ({ lesson, courseId, isCompleted, onComplete, onPortfolioCreate, isPending }: ActivityLessonProps) => {
   const [manualComplete, setManualComplete] = useState(isCompleted);
   
   const resourceConfig = resourceTypeConfig[lesson.resource_type || "link"] || resourceTypeConfig.link;
   const ResourceIcon = resourceConfig.icon;
   const buttonText = lesson.download_button_text || "Download Template";
 
+  const createPortfolioItem = () => {
+    if (onPortfolioCreate) {
+      const description = `Completed activity: ${lesson.resource_name || lesson.title}`;
+      onPortfolioCreate(lesson.id, lesson.title, description);
+    }
+  };
+
   const handleDownload = () => {
-    // If completion type is on_download, mark as complete
+    // If completion type is on_download, mark as complete and create portfolio item
     if (lesson.completion_type === "on_download" && !isCompleted) {
       onComplete();
+      createPortfolioItem();
     }
   };
 
@@ -44,6 +56,7 @@ const ActivityLesson = ({ lesson, isCompleted, onComplete, isPending }: Activity
     if (!isCompleted && !manualComplete) {
       setManualComplete(true);
       onComplete();
+      createPortfolioItem();
     }
   };
 

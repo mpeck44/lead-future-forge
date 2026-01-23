@@ -294,9 +294,27 @@ const CourseViewer = () => {
         });
       
       if (error) throw error;
+
+      // Auto-create portfolio item when saving (not skipping)
+      if (!skipped && response.trim()) {
+        const lesson = allLessons.find(l => l.id === lessonId);
+        await supabase
+          .from('portfolio_items')
+          .upsert({
+            user_id: user.id,
+            lesson_id: lessonId,
+            course_id: course?.id,
+            title: lesson?.title || 'Reflection',
+            description: response.trim().substring(0, 500),
+            status: 'draft',
+          }, {
+            onConflict: 'user_id,lesson_id'
+          });
+      }
     },
     onSuccess: (_, variables) => {
       refetchReflection();
+      queryClient.invalidateQueries({ queryKey: ['portfolio-items', course?.id, user?.id] });
       // Auto-mark as complete when saving (not skipping)
       if (!variables.skipped && currentLessonId && !completedLessons.has(currentLessonId)) {
         markCompleteMutation.mutate(currentLessonId);
@@ -329,9 +347,27 @@ const CourseViewer = () => {
         });
       
       if (error) throw error;
+
+      // Auto-create portfolio item when saving (not skipping)
+      if (!skipped && response.trim()) {
+        const lesson = allLessons.find(l => l.id === lessonId);
+        await supabase
+          .from('portfolio_items')
+          .upsert({
+            user_id: user.id,
+            lesson_id: lessonId,
+            course_id: course?.id,
+            title: lesson?.title || 'Question Response',
+            description: response.trim().substring(0, 500),
+            status: 'draft',
+          }, {
+            onConflict: 'user_id,lesson_id'
+          });
+      }
     },
     onSuccess: (_, variables) => {
       refetchQuestion();
+      queryClient.invalidateQueries({ queryKey: ['portfolio-items', course?.id, user?.id] });
       // Auto-mark as complete when saving (not skipping)
       if (!variables.skipped && currentLessonId && !completedLessons.has(currentLessonId)) {
         markCompleteMutation.mutate(currentLessonId);
@@ -424,6 +460,26 @@ const CourseViewer = () => {
     }
   };
 
+  // Create portfolio item for activities
+  const handleActivityPortfolioCreate = async (lessonId: string, title: string, description: string) => {
+    if (!user?.id || !course?.id) return;
+    
+    await supabase
+      .from('portfolio_items')
+      .upsert({
+        user_id: user.id,
+        lesson_id: lessonId,
+        course_id: course.id,
+        title: title,
+        description: description,
+        status: 'draft',
+      }, {
+        onConflict: 'user_id,lesson_id'
+      });
+    
+    queryClient.invalidateQueries({ queryKey: ['portfolio-items', course.id, user.id] });
+  };
+
   const toggleModule = (moduleId: string) => {
     setOpenModules(prev => {
       const next = new Set(prev);
@@ -511,7 +567,9 @@ const CourseViewer = () => {
         return (
           <ActivityLesson
             lesson={currentLesson}
+            courseId={course?.id}
             onComplete={handleMarkComplete}
+            onPortfolioCreate={handleActivityPortfolioCreate}
             isCompleted={completedLessons.has(currentLesson.id)}
             isPending={markCompleteMutation.isPending}
           />
