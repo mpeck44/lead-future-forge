@@ -723,9 +723,12 @@ const CourseViewer = () => {
                       <div className="flex-1 min-w-0">
                         <span className="font-medium text-sm block">{module.title}</span>
                         {moduleTime > 0 && (
-                          <span className="text-xs text-muted-foreground">
-                            {moduleTime} min total
-                          </span>
+                          <div className="text-xs text-muted-foreground">
+                            <span>{moduleTime} min total</span>
+                            {moduleTime <= 30 && (
+                              <span className="ml-1">· One sitting</span>
+                            )}
+                          </div>
                         )}
                       </div>
                     </div>
@@ -740,6 +743,20 @@ const CourseViewer = () => {
                       {module.lessons.map((lesson) => {
                         const isCompleted = completedLessons.has(lesson.id);
                         const isCurrent = lesson.id === currentLessonId;
+                        
+                        // Get activity type label
+                        const getActivityLabel = (type: string | null) => {
+                          switch (type) {
+                            case 'video': return 'watch';
+                            case 'activity': return 'you create';
+                            case 'reflection': return 'reflect';
+                            case 'question': return 'respond';
+                            case 'quiz': return 'assess';
+                            case 'content':
+                            case 'material':
+                            default: return 'read';
+                          }
+                        };
                         
                         return (
                           <button
@@ -758,11 +775,11 @@ const CourseViewer = () => {
                             )}
                             <span className="flex-1 line-clamp-2">
                               {lesson.title}
-                              {lesson.estimated_minutes && (
-                                <span className="text-muted-foreground ml-1">
-                                  ({lesson.estimated_minutes} min)
-                                </span>
-                              )}
+                              <span className="text-muted-foreground ml-1 text-xs">
+                                {lesson.estimated_minutes && `(${lesson.estimated_minutes} min)`}
+                                {' - '}
+                                <span className="italic">{getActivityLabel(lesson.lesson_type)}</span>
+                              </span>
                             </span>
                           </button>
                         );

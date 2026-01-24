@@ -253,6 +253,8 @@ export type Database = {
           status: string | null
           title: string
           updated_at: string | null
+          used_at: string | null
+          used_in_district: boolean | null
           user_id: string
         }
         Insert: {
@@ -267,6 +269,8 @@ export type Database = {
           status?: string | null
           title: string
           updated_at?: string | null
+          used_at?: string | null
+          used_in_district?: boolean | null
           user_id: string
         }
         Update: {
@@ -281,6 +285,8 @@ export type Database = {
           status?: string | null
           title?: string
           updated_at?: string | null
+          used_at?: string | null
+          used_in_district?: boolean | null
           user_id?: string
         }
         Relationships: [

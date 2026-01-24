@@ -47,8 +47,11 @@ import {
   BookOpen,
   CheckCircle2,
   Clock,
-  Upload
+  Upload,
+  Rocket,
+  CircleDot
 } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
 
 interface PortfolioItem {
@@ -62,6 +65,8 @@ interface PortfolioItem {
   created_at: string;
   course_id: string | null;
   lesson_id: string | null;
+  used_in_district: boolean | null;
+  used_at: string | null;
   course?: {
     title: string;
   } | null;
@@ -276,10 +281,32 @@ const Portfolio = () => {
     return <FileText className="h-5 w-5" />;
   };
 
+  const handleMarkAsUsed = async (id: string, checked: boolean) => {
+    const { error } = await supabase
+      .from('portfolio_items')
+      .update({
+        used_in_district: checked,
+        used_at: checked ? new Date().toISOString() : null
+      })
+      .eq('id', id);
+
+    if (error) {
+      toast.error('Failed to update item');
+    } else {
+      // Update local state
+      setItems(items.map(item => 
+        item.id === id 
+          ? { ...item, used_in_district: checked, used_at: checked ? new Date().toISOString() : null }
+          : item
+      ));
+    }
+  };
+
   const stats = {
     total: items.length,
     completed: items.filter(i => i.status === 'completed').length,
-    drafts: items.filter(i => i.status === 'draft').length
+    drafts: items.filter(i => i.status === 'draft').length,
+    usedInDistrict: items.filter(i => i.used_in_district).length
   };
 
   return (
@@ -294,7 +321,7 @@ const Portfolio = () => {
                 My Portfolio
               </h1>
               <p className="font-body text-muted-foreground">
-                Manage your deliverables and achievements
+                Work products you can use tomorrow.
               </p>
             </div>
             <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
@@ -369,11 +396,11 @@ const Portfolio = () => {
           </div>
 
           {/* Stats Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-8">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="font-body text-sm font-medium text-muted-foreground">
-                  Total Items
+                  Built
                 </CardTitle>
                 <Folder className="h-4 w-4 text-primary" />
               </CardHeader>
@@ -384,7 +411,7 @@ const Portfolio = () => {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="font-body text-sm font-medium text-muted-foreground">
-                  Completed
+                  Ready to use
                 </CardTitle>
                 <CheckCircle2 className="h-4 w-4 text-green-600" />
               </CardHeader>
@@ -395,12 +422,23 @@ const Portfolio = () => {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="font-body text-sm font-medium text-muted-foreground">
-                  Drafts
+                  Still drafting
                 </CardTitle>
                 <Clock className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="font-display text-2xl font-bold">{stats.drafts}</div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="font-body text-sm font-medium text-muted-foreground">
+                  Used in district
+                </CardTitle>
+                <Rocket className="h-4 w-4 text-accent" />
+              </CardHeader>
+              <CardContent>
+                <div className="font-display text-2xl font-bold">{stats.usedInDistrict}</div>
               </CardContent>
             </Card>
           </div>
@@ -474,6 +512,24 @@ const Portfolio = () => {
                       <div className="flex items-center gap-1 text-xs text-muted-foreground mb-4">
                         <Calendar className="h-3 w-3" />
                         <span className="font-body">Created {formatDate(item.created_at)}</span>
+                      </div>
+                      
+                      {/* Used in District Checkbox */}
+                      <div className="flex items-center gap-2 pb-4 mb-4 border-b">
+                        <Checkbox 
+                          id={`used-${item.id}`}
+                          checked={item.used_in_district || false}
+                          onCheckedChange={(checked) => handleMarkAsUsed(item.id, checked as boolean)}
+                        />
+                        <label 
+                          htmlFor={`used-${item.id}`}
+                          className="text-sm font-body text-muted-foreground cursor-pointer"
+                        >
+                          Used in my district
+                        </label>
+                        {item.used_in_district && (
+                          <Rocket className="h-3 w-3 text-accent ml-auto" />
+                        )}
                       </div>
                       
                       <div className="flex items-center gap-2">

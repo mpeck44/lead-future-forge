@@ -9,10 +9,10 @@ const FeaturedCourse = () => {
         {/* Section Header */}
         <div className="text-center mb-16">
           <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-4">
-            Featured Course
+            What You'll Build
           </h2>
           <p className="font-body text-lg text-muted-foreground max-w-2xl mx-auto">
-            Our flagship program designed to transform how educational leaders approach AI
+            Real tools and frameworks you can use in your district—not just theory
           </p>
         </div>
 
@@ -47,9 +47,8 @@ const FeaturedCourse = () => {
                 AI Leadership Accelerator
               </h3>
               <p className="font-body text-muted-foreground mb-8 leading-relaxed max-w-2xl">
-                A comprehensive course designed to equip K-12 educational leaders with the 
-                strategic frameworks, practical tools, and confidence needed to lead their 
-                schools and districts through the AI transformation.
+                In 4-6 hours, you'll build a complete AI toolkit for your district: governance policies, 
+                communication templates, and implementation roadmaps you can use immediately.
               </p>
 
               {/* Course Meta */}
