@@ -130,7 +130,7 @@ const Courses = () => {
                 Course Catalog
               </h1>
               <p className="font-body text-lg text-muted-foreground mb-8">
-                Explore our courses designed specifically for K-12 educational leaders navigating the AI transformation.
+                Tools and frameworks you can use tomorrow. Built by practitioners, for practitioners.
               </p>
               
               {/* Search Bar */}
@@ -224,11 +224,30 @@ const Courses = () => {
                           </CardTitle>
                         </CardHeader>
                         <CardContent className="flex-1 flex flex-col">
-                          {course.description && (
-                            <p className="font-body text-sm text-muted-foreground mb-4 line-clamp-3">
-                              {course.description}
+                          {/* Structured course info in practitioner voice */}
+                          <div className="space-y-2 mb-4 text-sm">
+                            {course.description && (
+                              <p className="font-body text-muted-foreground line-clamp-2">
+                                {course.description}
+                              </p>
+                            )}
+                            <div className="space-y-1 pt-2 border-t border-border/50">
+                              <p className="font-body text-foreground">
+                                <span className="font-medium">What you'll build:</span> Documents and tools you can use next week
+                              </p>
+                              {course.estimated_hours && (
+                                <p className="font-body text-muted-foreground">
+                                  <span className="font-medium text-foreground">Time investment:</span> {course.estimated_hours} hours of focused work
+                                </p>
+                              )}
+                              <p className="font-body text-muted-foreground">
+                                <span className="font-medium text-foreground">Who this is for:</span> Leaders who need practical tools, not theory
+                              </p>
+                            </div>
+                            <p className="font-body text-xs text-primary italic pt-2">
+                              This isn't comprehensive. It's practical.
                             </p>
-                          )}
+                          </div>
                           
                           {/* Course Meta */}
                           <div className="flex flex-wrap gap-4 text-xs text-muted-foreground mb-6">
@@ -295,10 +314,10 @@ const Courses = () => {
               <Card className="bg-primary text-primary-foreground p-8 lg:p-12">
                 <div className="max-w-2xl mx-auto text-center">
                   <h2 className="font-display text-2xl lg:text-3xl font-bold mb-4">
-                    Ready to Lead the AI Transformation?
+                    Ready to build something you can use tomorrow?
                   </h2>
                   <p className="font-body text-primary-foreground/80 mb-6">
-                    Join educational leaders across the country who are building the skills to guide their schools and districts through the AI revolution.
+                    Stop reading about AI. Start building tools you can actually use in your district.
                   </p>
                   {!user && (
                     <Button 
@@ -308,7 +327,7 @@ const Courses = () => {
                       className="font-body"
                     >
                       <Link to="/auth">
-                        Create Free Account
+                        Get Started Free
                         <ArrowRight className="ml-2 h-4 w-4" />
                       </Link>
                     </Button>

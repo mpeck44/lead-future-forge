@@ -24,16 +24,16 @@ const Hero = () => {
           <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold text-white mb-6 animate-fade-in" style={{
           animationDelay: "0.1s"
         }}>
-            Lead with Confidence{" "}
-            <span className="text-gold">in the AI Era</span>
+            Build AI Tools{" "}
+            <span className="text-gold">You Can Use Tomorrow</span>
           </h1>
 
           {/* Subheadline */}
           <p className="font-body text-lg sm:text-xl text-white/90 max-w-2xl mx-auto mb-10 leading-relaxed animate-fade-in" style={{
           animationDelay: "0.2s"
         }}>
-            Empowering school administrators and educational leaders with the knowledge 
-            and skills to navigate AI integration thoughtfully and strategically.
+            Stop reading about AI. Start building practical tools and frameworks 
+            you can use in your district next week. Built by practitioners, for practitioners.
           </p>
 
           {/* CTA Buttons */}
@@ -41,11 +41,11 @@ const Hero = () => {
           animationDelay: "0.3s"
         }}>
             <Button size="lg" className="font-body font-semibold bg-gold hover:bg-gold/90 text-navy px-8 py-6 text-base group">
-              Explore Courses
+              Start Building
               <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Button>
             <Button size="lg" variant="outline" className="font-body font-semibold border-white/60 text-black hover:bg-white/10 hover:border-white px-8 py-6 text-base">
-              Learn More
+              See What You'll Build
             </Button>
           </div>
 
@@ -54,7 +54,7 @@ const Hero = () => {
           animationDelay: "0.4s"
         }}>
             <p className="font-body text-sm text-white/80">
-              Designed specifically for principals, superintendents, and district leaders
+              Practical tools. Real results. Built by a superintendent who's done it.
             </p>
           </div>
         </div>

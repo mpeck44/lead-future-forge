@@ -165,7 +165,7 @@ const MyCourses = () => {
               My Courses
             </h1>
             <p className="font-body text-muted-foreground">
-              Track your progress and continue learning
+              Pick up where you left off. Keep building.
             </p>
           </div>
 
@@ -194,10 +194,10 @@ const MyCourses = () => {
               <CardContent>
                 <BookOpen className="h-16 w-16 text-muted-foreground mx-auto mb-6" />
                 <h2 className="font-display text-2xl font-semibold mb-3">
-                  No courses yet
+                  Ready to start building?
                 </h2>
                 <p className="font-body text-muted-foreground mb-6 max-w-md mx-auto">
-                  You haven't enrolled in any courses. Browse our catalog to find the perfect course for your leadership journey.
+                  Pick your first course and start creating tools you can use in your district next week.
                 </p>
                 <Button asChild size="lg">
                   <Link to="/#courses" className="font-body">
