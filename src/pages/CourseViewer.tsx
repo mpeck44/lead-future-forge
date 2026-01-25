@@ -684,7 +684,7 @@ const CourseViewer = () => {
   // Sidebar content (shared between desktop and mobile)
   const SidebarContent = () => {
     return (
-      <div className="h-full flex flex-col">
+      <div className="h-full flex flex-col overflow-hidden">
         <div className="p-4 border-b">
           <h2 className="font-semibold text-lg mb-3 line-clamp-2">{course.title}</h2>
           <div className="space-y-2">
