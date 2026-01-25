@@ -699,7 +699,7 @@ const CourseViewer = () => {
           </div>
         </div>
         
-        <ScrollArea className="flex-1">
+        <ScrollArea className="flex-1 min-h-0">
           <div className="p-2">
             {course.modules.map((module, index) => {
               // Calculate total time for the module
