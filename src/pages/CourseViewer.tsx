@@ -684,7 +684,7 @@ const CourseViewer = () => {
   // Sidebar content (shared between desktop and mobile)
   const SidebarContent = () => {
     return (
-      <div className="h-full flex flex-col overflow-hidden">
+      <div className="h-full flex flex-col overflow-hidden min-h-0">
         <div className="p-4 border-b">
           <h2 className="font-semibold text-lg mb-3 line-clamp-2">{course.title}</h2>
           <div className="space-y-2">
@@ -699,7 +699,7 @@ const CourseViewer = () => {
           </div>
         </div>
         
-        <ScrollArea className="flex-1 min-h-0">
+        <ScrollArea className="flex-1 min-h-0" type="always">
           <div className="p-2">
             {course.modules.map((module, index) => {
               // Calculate total time for the module
@@ -851,7 +851,7 @@ const CourseViewer = () => {
         <div className="grid lg:grid-cols-[300px_1fr] gap-6">
           {/* Desktop sidebar */}
           <aside className="hidden lg:block">
-            <div className="sticky top-20 border rounded-lg bg-card overflow-hidden max-h-[calc(100vh-6rem)]">
+            <div className="sticky top-20 border rounded-lg bg-card overflow-hidden h-[calc(100vh-6rem)]">
               <SidebarContent />
             </div>
           </aside>
