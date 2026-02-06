@@ -141,7 +141,7 @@ export function CourseFormDialog({
                 <FormItem>
                   <FormLabel>Title *</FormLabel>
                   <FormControl>
-                    <Input placeholder="AI Leadership Accelerator" {...field} />
+                    <Input placeholder="The Leadership Forge" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
