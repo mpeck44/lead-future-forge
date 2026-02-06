@@ -11,15 +11,14 @@ const Footer = () => {
           <div className="lg:col-span-2">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
-                <span className="text-primary-foreground font-display font-bold text-lg">AI</span>
+                <span className="text-primary-foreground font-display font-bold text-lg">LF</span>
               </div>
               <span className="font-display font-semibold text-lg">
-                AI Leadership Accelerator
+                The Leadership Forge
               </span>
             </div>
             <p className="font-body text-light-teal/80 max-w-md leading-relaxed">
-              Empowering K-12 educational leaders with the knowledge and confidence 
-              to navigate AI integration in their schools and districts.
+              Professional development for K-12 leaders navigating AI transformation.
             </p>
           </div>
 
@@ -60,7 +59,7 @@ const Footer = () => {
             <ul className="space-y-3">
               <li>
                 <a 
-                  href="mailto:hello@aileadershipaccelerator.com"
+                  href="mailto:hello@theleadershipforge.com"
                   className="font-body text-light-teal/80 hover:text-gold transition-colors flex items-center gap-2"
                 >
                   <Mail className="w-4 h-4" />
@@ -92,7 +91,7 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="mt-12 pt-8 border-t border-white/10 flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="font-body text-sm text-light-teal/60">
-            © {currentYear} AI Leadership Accelerator. All rights reserved.
+            © {currentYear} The Leadership Forge. All rights reserved.
           </p>
           <div className="flex gap-6">
             <a 

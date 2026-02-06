@@ -52,9 +52,9 @@ interface CourseFormDialogProps {
 }
 
 const pathTypeOptions = [
-  { value: 'accelerator_path_1', label: 'Accelerator Path 1' },
-  { value: 'accelerator_path_2', label: 'Accelerator Path 2' },
-  { value: 'accelerator_path_3', label: 'Accelerator Path 3' },
+  { value: 'accelerator_path_1', label: 'Leadership Path 1' },
+  { value: 'accelerator_path_2', label: 'Leadership Path 2' },
+  { value: 'accelerator_path_3', label: 'Leadership Path 3' },
   { value: 'standalone', label: 'Standalone' },
   { value: 'bundle', label: 'Bundle' },
 ];
@@ -141,7 +141,7 @@ export function CourseFormDialog({
                 <FormItem>
                   <FormLabel>Title *</FormLabel>
                   <FormControl>
-                    <Input placeholder="AI Leadership Accelerator" {...field} />
+                    <Input placeholder="The Leadership Forge" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -155,7 +155,7 @@ export function CourseFormDialog({
                 <FormItem>
                   <FormLabel>Slug *</FormLabel>
                   <FormControl>
-                    <Input placeholder="ai-leadership-accelerator" {...field} />
+                    <Input placeholder="the-leadership-forge" {...field} />
                   </FormControl>
                   <FormDescription>
                     URL: /courses/{slugValue || 'your-slug'}
