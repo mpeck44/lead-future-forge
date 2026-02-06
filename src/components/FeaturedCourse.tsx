@@ -217,7 +217,7 @@ const FeaturedCourse = () => {
 
                       {/* CTA */}
                       <Button
-                        onClick={() => openWaitlist(course.slug)}
+                        onClick={() => openWaitlist(course.slug, course.title)}
                         variant="outline"
                         className="w-full font-body font-semibold gap-2"
                       >
