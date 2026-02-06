@@ -1,77 +1,76 @@
 
 
-## Fix: Multi-Line Content Support in Bulk Import Parser
+## Update Hero Section + Add Waitlist Modal
 
-### The Problem
-The parser treats each line independently and only recognizes `key: value` pairs. But real course content has:
-- Multi-paragraph text (continuing after the `content:` line)
-- Category headings like `CATEGORY 1: Narrow AI - The Automation Tools...`
-- Bullet lists like `- Spam filters in school email`
-- Instructional prompts like `[Your turn: List 1-2 tools...]`
+### What Changes
 
-All of these are part of the lesson content, but the parser flags them as errors because they don't match the `key: value` format.
+The hero section will be replaced with the exact copy you specified, and a new waitlist email capture modal will be created for the "Join the Waitlist" button.
 
-### The Solution
-Make the parser "multi-line aware" so that after a text field is set (like `content:`), all subsequent lines are appended to that field until the parser hits a new recognized marker (module, lesson, or another known field).
+### Updated Hero Content
 
-### How It Will Work
+**Badge:** "FOR K-12 SUPERINTENDENTS, PRINCIPALS, AND DISTRICT LEADERS"
+- Small, uppercase, with a subtle teal background pill
 
-1. **Track a "continuation field"** -- When `content:`, `transcript:`, or `objective:` is set, the parser remembers which field is "active"
-2. **Unrecognized lines become continuation text** -- Instead of warning, they get appended to the active field with a newline separator
-3. **Blank lines preserve paragraph breaks** -- A blank line inside content adds `\n\n` to maintain paragraph structure
-4. **Known fields reset continuation** -- When the parser hits a new `key: value` pair (like `takeaways:` or `estimated_minutes:`), a new lesson marker, or a new module marker, it stops appending
-5. **Only match known field keys** -- Add a whitelist check so that lines like `CATEGORY 1: Narrow AI...` don't accidentally match as a field (even though they contain a colon)
+**Headline:** "Stop Reacting to AI. Start Leading Through It."
+- 48px mobile, scaling to 56px on desktop
+- White text with "Leading Through It." highlighted in gold
 
-### Example of How Your File Will Parse
+**Subheadline:** "The Leadership Forge is the only professional development system that takes school leaders from AI-curious to AI-strategic -- with real deliverables you'll use this week."
+- 18-20px, slightly muted (white at 85% opacity)
 
-Before (current behavior):
-```
-content: A superintendent once asked me...
-                                              --> sets content (1 line only)
-CATEGORY 1: Narrow AI...                      --> WARNING: Could not parse
-- Spam filters in school email                --> WARNING: Could not parse  
-- Adaptive learning platforms (Lexia, IXL)    --> WARNING: Could not parse
-```
+**CTAs (side-by-side on desktop, stacked on mobile):**
+- "See the Pathways" -- solid gold button, scrolls to `#courses` section
+- "Join the Waitlist" -- outline/ghost button, opens a waitlist modal
 
-After (new behavior):
-```
-content: A superintendent once asked me...
-                                              --> sets content AND starts continuation
-CATEGORY 1: Narrow AI...                      --> appended to content
-- Spam filters in school email                --> appended to content
-- Adaptive learning platforms (Lexia, IXL)    --> appended to content
-takeaways: AI is a tool | Start small         --> STOPS continuation, sets takeaways field
-```
+**Social Proof Bar:**
+"50+ leaders trained  |  COSN/ISTE aligned  |  Built by a practicing K-12 Director of Technology"
+- Subtle dot separators between items
+- Slightly muted text color
 
-The result: `content` will contain the full multi-paragraph text with line breaks preserved, exactly as you wrote it.
+### Waitlist Modal
+
+Since no waitlist form exists yet, a simple modal will be created:
+- Email input field with validation
+- "Join the Waitlist" submit button
+- Saves the email to a new `waitlist_leads` database table
+- Shows a success message after submission
+- Clean, on-brand styling matching the rest of the app
 
 ### Technical Details
 
-**File: `src/lib/parseCourseContent.ts`**
+**Files to create:**
 
-Changes:
-- Add a `KNOWN_LESSON_FIELDS` set containing all recognized field keys (type, objective, estimated_minutes, content, takeaways, video_url, etc.)
-- Add a `KNOWN_MODULE_FIELDS` set (description, deliverable, path_type)
-- Change the field-matching logic: after matching `FIELD_REGEX`, also verify the key is in the known fields set. If not, treat it as continuation text
-- Add a `continuationField` variable that tracks which field is currently "active" for multi-line appending (set when `content`, `transcript`, or `objective` fields are assigned)
-- When a line doesn't match any pattern, instead of warning, append it to the active continuation field
-- When a blank line is encountered inside a lesson (with an active continuation field), append `\n\n` to preserve paragraph breaks
-- Reset `continuationField` when a new field, lesson, or module marker is hit
+| File | Purpose |
+|------|---------|
+| `src/components/WaitlistModal.tsx` | Dialog with email input form, saves to database |
 
-**File: `src/lib/parseCourseContent.test.ts`**
-
-Add new tests:
-- Multi-line content: verify paragraphs after `content:` are joined into one field
-- Bullet lists: verify lines starting with `-` are included in content
-- Content with colons: verify lines like `CATEGORY 1: text` don't break the parser
-- Blank lines between paragraphs: verify `\n\n` separators are preserved
-- Continuation stops at next field: verify `takeaways:` after content paragraphs correctly starts a new field
-
-### Files to Change
+**Files to modify:**
 
 | File | Change |
 |------|--------|
-| `src/lib/parseCourseContent.ts` | Add multi-line continuation logic, known-field whitelisting |
-| `src/lib/parseCourseContent.test.ts` | Add tests for multi-line content, bullet lists, paragraph breaks |
+| `src/components/Hero.tsx` | Replace all content (badge, headline, subheadline, CTAs, social proof bar) with the new copy. Wire "See the Pathways" to scroll to `#courses`. Wire "Join the Waitlist" to open the modal. |
 
-No other files need to change -- the `BulkImportDialog` and database insertion logic remain the same since they already handle the `content` field as a string.
+**Database change:**
+
+A new `waitlist_leads` table will be created:
+
+```text
+waitlist_leads
+--------------
+id            uuid (PK, default gen_random_uuid())
+email         text (not null, unique)
+source        text (default 'hero')
+created_at    timestamptz (default now())
+```
+
+- RLS enabled with a permissive INSERT policy for anonymous users (so visitors can submit without logging in)
+- No SELECT/UPDATE/DELETE policies for anon (protects the data)
+
+**Design implementation details:**
+- Badge: `uppercase tracking-widest text-xs` with `bg-teal/20 border border-teal/30` pill
+- Headline: `text-[2.75rem] sm:text-[3rem] lg:text-[3.5rem]` (44px to 56px), with "Leading Through It." in gold
+- Subheadline: `text-lg sm:text-xl text-white/85` with `max-w-2xl`
+- Primary CTA: solid `bg-gold text-navy` with hover state
+- Secondary CTA: `border-white/60` outline style
+- Social proof: `text-sm text-white/70` with dot separator spans
+
