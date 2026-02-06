@@ -469,10 +469,16 @@ const AdminCourseContent = () => {
               </p>
             </div>
           </div>
-          <Button onClick={() => setModuleDialogOpen(true)}>
-            <Plus className="mr-2 h-4 w-4" />
-            Add Module
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" onClick={() => setBulkImportOpen(true)}>
+              <Upload className="mr-2 h-4 w-4" />
+              Import Content
+            </Button>
+            <Button onClick={() => setModuleDialogOpen(true)}>
+              <Plus className="mr-2 h-4 w-4" />
+              Add Module
+            </Button>
+          </div>
         </div>
 
         {/* Content */}
