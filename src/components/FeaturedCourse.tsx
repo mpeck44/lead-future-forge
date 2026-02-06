@@ -44,7 +44,7 @@ const FeaturedCourse = () => {
             {/* Course Content */}
             <div className="p-8 sm:p-10">
               <h3 className="font-display text-2xl sm:text-3xl font-bold text-foreground mb-4">
-                AI Leadership Accelerator
+                The Leadership Forge
               </h3>
               <p className="font-body text-muted-foreground mb-8 leading-relaxed max-w-2xl">
                 In 4-6 hours, you'll build a complete AI toolkit for your district: governance policies, 

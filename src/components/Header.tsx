@@ -66,10 +66,10 @@ const Header = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
-              <span className="text-primary-foreground font-display font-bold text-lg">AI</span>
+              <span className="text-primary-foreground font-display font-bold text-lg">LF</span>
             </div>
             <span className="font-display font-semibold text-lg text-foreground hidden sm:block">
-              AI Leadership Accelerator
+              The Leadership Forge
             </span>
           </Link>
 

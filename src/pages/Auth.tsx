@@ -252,10 +252,10 @@ const Auth = () => {
         <div className="text-center mb-8">
           <a href="/" className="inline-flex items-center gap-3 mb-4">
             <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
-              <span className="text-primary-foreground font-display font-bold text-lg">AI</span>
+              <span className="text-primary-foreground font-display font-bold text-lg">LF</span>
             </div>
             <span className="font-display font-semibold text-lg text-foreground">
-              AI Leadership Accelerator
+              The Leadership Forge
             </span>
           </a>
         </div>

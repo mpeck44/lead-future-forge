@@ -155,7 +155,7 @@ export function CourseFormDialog({
                 <FormItem>
                   <FormLabel>Slug *</FormLabel>
                   <FormControl>
-                    <Input placeholder="ai-leadership-accelerator" {...field} />
+                    <Input placeholder="the-leadership-forge" {...field} />
                   </FormControl>
                   <FormDescription>
                     URL: /courses/{slugValue || 'your-slug'}
