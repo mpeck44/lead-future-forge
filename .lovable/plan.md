@@ -1,101 +1,105 @@
 
 
-## Dynamic Featured Courses Grid on Landing Page
+## Enhanced Waitlist System: Capture, Track, and Manage Leads
 
 ### What Changes
 
-The current static single-card `FeaturedCourse` component will be replaced with a dynamic section that fetches your 4 featured courses from the database and displays them in a responsive grid.
+Three connected improvements to the waitlist system:
 
-### Layout
+1. **Enhanced waitlist form** -- adds name and role fields to the modal (low friction)
+2. **Better tracking** -- captures course interest, UTM source, and timestamp data
+3. **Admin Waitlist page** -- a new page in the admin console to view, filter, and manage all waitlist leads
 
-- **Desktop**: 2x2 grid of course cards
-- **Tablet**: 2 columns
-- **Mobile**: Single column, stacked
+---
 
-### Card Design
+### 1. Enhanced Waitlist Modal
 
-Each card will include:
+The current modal only captures email. The updated form will add two fields while keeping it quick (3 fields total):
 
-1. **Gradient header bar** at the top -- each course gets a unique color scheme for visual distinction:
-   - Foundations: navy-to-teal gradient
-   - Fluency: teal-to-dark-teal gradient
-   - Strategy: navy-to-gold gradient  
-   - Action: dark-teal-to-green gradient
+**Fields:**
+- **Full Name** (text input, required) -- with a person icon
+- **Email** (text input, required) -- keeps the existing email field
+- **Role** (dropdown, required) -- matching your K-12 role options:
+  - Superintendent
+  - Principal
+  - Assistant Principal
+  - Curriculum Director
+  - Technology Director
+  - Teacher Leader
+  - Other
 
-2. **Course title** (large, display font)
+**Additional data captured automatically (no extra user input):**
+- `source` -- already tracks "hero" vs "featured-foundations", "featured-strategy", etc.
+- `interested_courses` -- when triggered from a specific course card, stores the course slug(s) they clicked on
+- `created_at` -- timestamp of signup
 
-3. **Short description** -- first paragraph only (before the line break), keeping cards compact
+The modal title will contextually update: if triggered from a specific course card, it will say "Join the Waitlist for [Course Name]" instead of the generic title.
 
-4. **Meta bar** with visual separation:
-   - Clock icon + estimated hours (e.g., "~4 hours" or "Coming Soon" if not set)
-   - Users icon + "Best for" audience label (e.g., "For Administrators")
+---
 
-5. **Deliverables list** with checkmark icons -- pulled from the module `deliverable_name` values. For courses without deliverables yet, a placeholder like "Deliverables coming soon" will show
+### 2. Database Changes
 
-6. **"Coming Soon" button** at the bottom (since courses are pre-launch). This will open the waitlist modal with a source tag identifying which course triggered it
+The `waitlist_leads` table will be expanded with new columns:
 
-### Data Flow
+| Column | Type | Notes |
+|--------|------|-------|
+| `full_name` | text, nullable | Name of the lead |
+| `role` | text, nullable | K-12 role from dropdown |
+| `interested_courses` | text[], nullable | Array of course slugs they expressed interest in |
+| `notes` | text, nullable | For admin use -- add notes about a lead |
 
-The component will query the database at render time using React Query:
-- Fetch all courses where `featured = true`
-- For each course, fetch associated module deliverable names
-- Display a loading skeleton while data loads
+The unique constraint stays on `email`. If someone signs up again from a different course, we update the existing row to append the new course to `interested_courses` (upsert behavior) rather than rejecting them.
+
+**RLS policies** remain the same -- anonymous INSERT is already allowed, and admin has full access.
+
+---
+
+### 3. Admin Waitlist Page
+
+A new page at `/admin/waitlist` that follows the same design patterns as your existing Admin Users page:
+
+**Features:**
+- **Summary stats** at the top: total leads, leads this week, most popular course interest
+- **Searchable table** with columns: Name, Email, Role, Interested Courses (as badges), Source, Signed Up date
+- **Filters**: by role dropdown, by course interest, by date range
+- **Click to expand** a lead row to see full details and add admin notes
+- **Export** -- a button to download leads as CSV for use in email marketing tools
+- **Pagination** matching the existing admin table pattern (10 per page)
+
+**Navigation:** A new "Waitlist" item will be added to the admin sidebar between "Courses" and "Users", using a clipboard/list icon.
+
+---
 
 ### Technical Details
 
-**File to modify:**
-
-| File | Change |
-|------|---------|
-| `src/components/FeaturedCourse.tsx` | Complete rewrite: replace static card with dynamic grid fetching featured courses from the database |
-
-**No new files needed** -- the WaitlistModal already accepts a `source` prop and can be reused.
-
-**Query logic:**
-- Primary query: `supabase.from('courses').select('*').eq('featured', true).order('created_at')`
-- Secondary query per course: `supabase.from('modules').select('deliverable_name').eq('course_id', courseId).not('deliverable_name', 'is', null).order('sequence_order')`
-- Both wrapped in a single `useQuery` hook for clean loading/error states
-
-**Card structure (per card):**
+**Database migration:**
 
 ```text
-+---------------------------------------+
-|  [gradient header - unique per card]  |
-|  Course Title (Playfair Display)      |
-+---------------------------------------+
-|  Short description paragraph          |
-|                                       |
-|  +---------+  +------------------+    |
-|  | ~4 hrs  |  | For Administrators|   |
-|  +---------+  +------------------+    |
-|                                       |
-|  What You'll Build:                   |
-|  [check] AI Types Cheat Sheet         |
-|  [check] Portfolio Progress Tracker   |
-|  [check] AI Equity Audit Checklist    |
-|                                       |
-|  [ Coming Soon ]  (button)            |
-+---------------------------------------+
+ALTER TABLE waitlist_leads
+  ADD COLUMN full_name text,
+  ADD COLUMN role text,
+  ADD COLUMN interested_courses text[] DEFAULT '{}',
+  ADD COLUMN notes text;
 ```
 
-**Color mapping for visual distinction:**
-Each course slug maps to a unique gradient and accent. This is hardcoded since there are only 4 courses, keeping it simple and visually intentional:
-- `foundations` -- navy/teal gradient, teal accent
-- `fluency` -- teal/dark-teal gradient, gold accent  
-- `strategy` -- navy/gold gradient, gold accent
-- `action` -- dark-teal/green gradient, green accent
+**Files to create:**
 
-**Audience mapping:**
-Since there is no "audience" field in the database, a simple map based on slug will provide the "Best for" label:
-- `foundations` -- "All K-12 Leaders"
-- `fluency` -- "Practitioners"
-- `strategy` -- "Superintendents and Cabinet"
-- `action` -- "Implementation Teams"
+| File | Purpose |
+|------|---------|
+| `src/pages/admin/AdminWaitlist.tsx` | Full waitlist management page with table, filters, search, stats, CSV export |
 
-**Responsive behavior:**
-- `grid-cols-1 md:grid-cols-2` for the 2x2 / stacked layout
-- Cards have equal height via CSS grid
-- Deliverables list scrolls gracefully if a course has many items
+**Files to modify:**
 
-**Section header** stays the same: "What You'll Build" with subtitle "Real tools and frameworks you can use in your district -- not just theory"
+| File | Change |
+|------|--------|
+| `src/components/WaitlistModal.tsx` | Add name input, role dropdown, pass course slug to `interested_courses`. Implement upsert logic for returning visitors. Contextual title based on source. |
+| `src/components/admin/AdminSidebar.tsx` | Add "Waitlist" nav item with `ClipboardList` icon |
+| `src/App.tsx` | Add route for `/admin/waitlist` wrapped in `AdminProtectedRoute` |
+| `src/components/FeaturedCourse.tsx` | Pass course title alongside slug to WaitlistModal so the modal can show "Join the Waitlist for Foundations" |
+
+**Upsert logic in WaitlistModal:**
+When a user submits and gets the duplicate email error (23505), instead of just showing "already on the list", the modal will attempt an update to append the new course slug to `interested_courses` and then show the success state. This way returning visitors can express interest in additional courses without friction.
+
+**CSV export in admin page:**
+A client-side CSV generation that downloads all filtered leads as a `.csv` file with columns: Name, Email, Role, Interested Courses, Source, Date. No external library needed -- built with native browser APIs.
 
