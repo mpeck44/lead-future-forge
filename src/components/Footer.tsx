@@ -11,15 +11,14 @@ const Footer = () => {
           <div className="lg:col-span-2">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
-                <span className="text-primary-foreground font-display font-bold text-lg">AI</span>
+                <span className="text-primary-foreground font-display font-bold text-lg">LF</span>
               </div>
               <span className="font-display font-semibold text-lg">
-                AI Leadership Accelerator
+                The Leadership Forge
               </span>
             </div>
             <p className="font-body text-light-teal/80 max-w-md leading-relaxed">
-              Empowering K-12 educational leaders with the knowledge and confidence 
-              to navigate AI integration in their schools and districts.
+              Professional development for K-12 leaders navigating AI transformation.
             </p>
           </div>
 
