@@ -1,0 +1,155 @@
+=== MODULE: Understanding the AI Landscape ===
+description: Cut through AI jargon to explain AI types in plain language, with focus on digital citizenship responsibilities
+deliverable: AI Types Cheat Sheet
+path_type: foundation
+
+--- LESSON: The AI Categories That Matter ---
+type: video
+objective: Understand the three AI categories relevant to K-12 leadership decisions
+estimated_minutes: 6
+video_url: [TO BE RECORDED]
+content: A superintendent once asked me, "What's the difference between AI and machine learning?" I said, "In your job? Functionally, nothing you need to worry about." She looked relieved. The AI industry benefits from complexity. The more confused you are, the more "expert consultants" you think you need. Let me simplify this right now with three categories that actually matter for school leaders.
+
+CATEGORY 1: Narrow AI - The Automation Tools. This is AI that does one specific task really well. It's been in schools for years, you just didn't call it "AI." Think about spam filters in your email, autocorrect on your phone, Google search results, plagiarism detection in Turnitin. When your student information system flags attendance issues automatically, when adaptive learning platforms like Lexia adjust reading exercises based on student responses. None of this is "thinking." It's pattern recognition and automation. Here's what I've learned: When parents panic about "AI in schools," they're usually not worried about your automated attendance alerts. They're worried about Category 2.
+
+CATEGORY 2: Generative AI - The Creation Tools. This is the AI that creates new content: text, images, code, music. ChatGPT, Google Gemini, MagicSchool AI, DALL-E for images. Generative AI doesn't just automate existing work—it produces original outputs based on prompts. Ask it to write a lesson plan, it generates one. Ask for student feedback, it creates personalized comments. Ask for quiz questions, you get them. This is where the real questions live. If a student uses ChatGPT to write an essay, is that learning or outsourcing? If a teacher uses it to draft feedback, is that efficient or impersonal? Here's how I use it: I brainstorm with AI weekly. Planning a professional development session? I'll ask AI to help me outline content or generate discussion questions. But I would never let AI write a personalized email to a struggling teacher—that requires human judgment and relationship.
+
+CATEGORY 3: AGI (Artificial General Intelligence) - The Future Speculation. AGI means AI that thinks like a human—learns anything, transfers knowledge across domains, reasons independently like you or me. We don't have this. We might never have it. Every AI tool you're currently evaluating is narrow or generative, not AGI. So why mention it? Because vendors love to imply their tools are "almost AGI" to justify high prices. When someone says, "Our AI uses advanced neural networks to replicate human cognition"—they're selling generative AI with fancy marketing.
+
+What you actually need to know: All the tools you're evaluating fall into Categories 1 or 2. When evaluating a vendor pitch, ask: "Is this automating a specific task, or is it generating content?" That's the only distinction that matters for your purchasing decisions.
+takeaways: Narrow AI automates specific tasks and has been in schools for years | Generative AI creates new content and raises pedagogical questions | AGI doesn't exist yet—ignore vendor hype about human-level AI | Ask vendors: Does this automate or generate? That's the only distinction that matters
+resource_url: https://docs.google.com/document/AI-Glossary-for-Leaders
+resource_name: AI Glossary for Educational Leaders
+
+--- LESSON: Create Your AI Types Cheat Sheet ---
+type: activity
+objective: Build a reference document explaining AI types with examples from your school context
+estimated_minutes: 4
+content: You're creating a one-page reference document you can keep on your desk or share with colleagues who ask, "What even is AI?"
+
+The definitions are provided. Your job: Add 1-2 examples from your school/district context for each category.
+
+CATEGORY 1: NARROW AI (Automation AI)
+What it is: AI designed to do one specific task efficiently. Recognizes patterns, automates decisions, handles repetitive work.
+What it does NOT do: Create original content, learn outside its training, "think" flexibly across different domains
+
+K-12 Examples (General):
+- Spam filters in school email
+- Adaptive learning platforms (Lexia, IXL, DreamBox)
+- Plagiarism detection (Turnitin, Grammarly)
+- Automated grading for multiple choice assessments
+- Student information systems that flag attendance issues
+- Recommendation engines in library systems
+
+Examples from MY school/district:
+[Your turn: List 1-2 tools you currently use that fit this category]
+
+CATEGORY 2: GENERATIVE AI (Creation AI)
+What it is: AI that creates new text, images, code, or media based on prompts. Produces original outputs by predicting patterns from massive training datasets.
+What it does NOT do: "Understand" content like humans do, fact-check itself reliably, know when it's confidently wrong
+
+K-12 Examples (General):
+- ChatGPT (OpenAI), Google Gemini, Microsoft Copilot
+- MagicSchool AI, SchoolAI (education-focused)
+- DALL-E (image generation)
+- Claude (Anthropic)
+
+Examples from MY school/district:
+[Your turn: List 1-2 tools you're exploring or staff are using]
+
+Common vendor promises to watch for:
+- "Reduce teacher workload by 50%"
+- "Personalized feedback at scale"
+- "AI-powered lesson planning"
+- "Instant grading and assessment"
+
+Reality check: These tools can be helpful, but outputs require human review for accuracy, bias, and appropriateness.
+
+CATEGORY 3: AGI (Artificial General Intelligence)
+What it is: Theoretical AI that could learn and reason across any domain like a human. Does not currently exist.
+
+Why it matters for school leaders: Helps you identify vendor hype. If someone claims their tool "thinks like a human" or "has general intelligence," they're overselling.
+
+What to say when asked: "All AI tools we're evaluating are narrow or generative AI. AGI is science fiction right now, not something we're purchasing or planning around."
+
+Warning signs of AGI hype in vendor pitches:
+- "Our AI adapts to any subject area autonomously"
+- "Human-level intelligence"
+- "Learns like a teacher would"
+- "Fully autonomous decision-making"
+
+Translation: It's generative AI with good marketing.
+
+HOW TO USE THIS CHEAT SHEET
+
+When evaluating a new tool, ask: "Is this narrow AI (automates one task) or generative AI (creates content)?"
+→ Narrow AI = efficiency question. Does it save time reliably?
+→ Generative AI = pedagogy question. Does it enhance learning or bypass it?
+
+When talking to worried parents: "Most AI in our school is narrow AI—like autocorrect or adaptive math programs. It's been here for years. The new tools like ChatGPT are generative AI, and here's how we're approaching them responsibly..."
+
+When reviewing vendor contracts:
+→ Ask: "What type of AI is this?" If they can't answer clearly or use vague terms like "advanced AI," ask for specifics.
+→ Red flag: "Our AI uses machine learning to optimize outcomes." (Too vague—what does it actually do?)
+→ Green flag: "Our tool uses narrow AI to flag students below grade-level benchmarks based on assessment patterns." (Specific, testable claim)
+
+SAVE THIS DOCUMENT - You'll reference it throughout this course and in real tool evaluations.
+takeaways: Add your school's specific AI examples to make this actionable | Use when evaluating vendors or answering parent questions | Narrow AI = efficiency, Generative AI = pedagogy decision | Save and reference throughout the course
+resource_url: https://docs.google.com/document/AI-Types-Cheat-Sheet-Template
+resource_name: AI Types Cheat Sheet Template
+
+--- LESSON: Your Role as Digital Citizenship Advocate ---
+type: content
+objective: Understand your responsibility to model safe, ethical, and legal AI use (ISTE Standard 3.1.d)
+estimated_minutes: 3
+content: Now that you understand AI categories, let's be clear about your role as a leader: You're not just evaluating tools—you're modeling digital citizenship.
+
+ISTE Standard 3.1.d requires leaders to "model the safe, ethical, and legal use of technology and the critical examination of digital content." Here's what that means for AI:
+
+SAFE USE: Protecting student privacy and data security
+- Don't paste student names or identifiable information into public AI tools
+- Check vendor contracts for data protection policies (FERPA, COPPA compliance)
+- Model caution: "I use AI for brainstorming, but I verify any facts before sharing"
+
+ETHICAL USE: Critical examination and bias awareness
+- AI outputs can contain bias from training data (racial, gender, cultural)
+- Model questioning: "This AI suggestion sounds good, but let me check if it reflects diverse perspectives"
+- Disclose when AI was used: "I used ChatGPT to draft this agenda, then customized it for our needs"
+
+LEGAL USE: Copyright and intellectual property
+- AI-generated content may incorporate copyrighted material from training data
+- Model attribution: "This lesson plan was AI-assisted—I'm responsible for final content"
+- Understand fair use limitations
+
+WHY MODELING MATTERS:
+Your staff and students watch how YOU use AI. If you treat AI outputs as infallible, they will too. If you critically evaluate and verify, they learn to do the same.
+
+One principal I trained put this in her email signature: "Some emails AI-assisted, all final decisions human-made." Simple transparency that modeled responsible use.
+
+CRITICAL QUESTION FOR VENDORS:
+When evaluating AI tools, ask: "How does your tool help educators model ethical AI use for students?" If the vendor hasn't thought about digital citizenship, that's a red flag.
+
+You'll practice modeling ethical AI use starting in Module 1.1 when you begin hands-on work with AI tools. The cheat sheet you just created? That's digital citizenship advocacy—helping others understand AI clearly and critically.
+takeaways: Leaders must model safe, ethical, and legal AI use (ISTE 3.1.d) | Disclose AI use, protect student data, critically examine outputs | Your staff watches how you use AI—model the behavior you want to see | Ask vendors how their tool supports digital citizenship education
+resource_url: https://docs.google.com/document/Digital-Citizenship-for-AI-Leaders
+resource_name: Digital Citizenship Framework for AI
+
+--- LESSON: Reflection: Digital Citizenship in Your Context ---
+type: reflection
+estimated_minutes: 2
+content: Think about your current use of AI tools (if any):
+
+Have you been modeling ethical AI use? 
+- Do you disclose when you've used AI to create something?
+- Do you protect student/staff privacy when using AI tools?
+- Do you critically examine AI outputs for bias or errors?
+
+What's one change you could make this week to model better digital citizenship with AI?
+
+Examples:
+- "I'll start disclosing in emails when I've used AI assistance"
+- "I'll stop pasting student names into ChatGPT when drafting feedback"
+- "I'll fact-check AI-generated information before sharing with staff"
+
+This isn't about being perfect—it's about being intentional and transparent as you learn.
+takeaways: Reflect honestly on current AI use habits | Identify one concrete improvement to model ethical AI use | Digital citizenship is about transparency and critical thinking, not perfection
