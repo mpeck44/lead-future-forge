@@ -609,6 +609,13 @@ const AdminCourseContent = () => {
         description={`Are you sure you want to delete "${deletingLesson?.title}"? This action cannot be undone.`}
         isLoading={deleteLessonMutation.isPending}
       />
+
+      <BulkImportDialog
+        open={bulkImportOpen}
+        onOpenChange={setBulkImportOpen}
+        courseId={courseId!}
+        existingModuleCount={modules.length}
+      />
     </AdminLayout>
   );
 };
