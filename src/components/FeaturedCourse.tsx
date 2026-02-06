@@ -95,8 +95,10 @@ const FeaturedCourse = () => {
     },
   });
 
-  const openWaitlist = (slug: string) => {
+  const openWaitlist = (slug: string, title: string) => {
     setWaitlistSource(`featured-${slug}`);
+    setWaitlistSlug(slug);
+    setWaitlistTitle(title);
     setWaitlistOpen(true);
   };
 
