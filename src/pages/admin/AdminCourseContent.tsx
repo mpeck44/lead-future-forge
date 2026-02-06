@@ -11,6 +11,7 @@ import ModuleFormDialog from "@/components/admin/ModuleFormDialog";
 import LessonFormDialog, { type LessonFormData } from "@/components/admin/LessonFormDialog";
 import LessonPreviewDialog from "@/components/admin/LessonPreviewDialog";
 import { DeleteConfirmDialog } from "@/components/admin/DeleteConfirmDialog";
+import { BulkImportDialog } from "@/components/admin/BulkImportDialog";
 
 interface Lesson {
   id: string;
