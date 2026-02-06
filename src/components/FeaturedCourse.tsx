@@ -32,7 +32,7 @@ const FeaturedCourse = () => {
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="text-center text-white">
                   <div className="w-20 h-20 rounded-2xl bg-white/10 backdrop-blur-sm flex items-center justify-center mx-auto mb-4 border border-white/20">
-                    <span className="font-display font-bold text-3xl text-gold">AI</span>
+                    <span className="font-display font-bold text-3xl text-gold">LF</span>
                   </div>
                   <p className="font-body text-sm text-light-teal/80">Course Preview</p>
                 </div>
