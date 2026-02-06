@@ -1,76 +1,101 @@
 
 
-## Update Hero Section + Add Waitlist Modal
+## Dynamic Featured Courses Grid on Landing Page
 
 ### What Changes
 
-The hero section will be replaced with the exact copy you specified, and a new waitlist email capture modal will be created for the "Join the Waitlist" button.
+The current static single-card `FeaturedCourse` component will be replaced with a dynamic section that fetches your 4 featured courses from the database and displays them in a responsive grid.
 
-### Updated Hero Content
+### Layout
 
-**Badge:** "FOR K-12 SUPERINTENDENTS, PRINCIPALS, AND DISTRICT LEADERS"
-- Small, uppercase, with a subtle teal background pill
+- **Desktop**: 2x2 grid of course cards
+- **Tablet**: 2 columns
+- **Mobile**: Single column, stacked
 
-**Headline:** "Stop Reacting to AI. Start Leading Through It."
-- 48px mobile, scaling to 56px on desktop
-- White text with "Leading Through It." highlighted in gold
+### Card Design
 
-**Subheadline:** "The Leadership Forge is the only professional development system that takes school leaders from AI-curious to AI-strategic -- with real deliverables you'll use this week."
-- 18-20px, slightly muted (white at 85% opacity)
+Each card will include:
 
-**CTAs (side-by-side on desktop, stacked on mobile):**
-- "See the Pathways" -- solid gold button, scrolls to `#courses` section
-- "Join the Waitlist" -- outline/ghost button, opens a waitlist modal
+1. **Gradient header bar** at the top -- each course gets a unique color scheme for visual distinction:
+   - Foundations: navy-to-teal gradient
+   - Fluency: teal-to-dark-teal gradient
+   - Strategy: navy-to-gold gradient  
+   - Action: dark-teal-to-green gradient
 
-**Social Proof Bar:**
-"50+ leaders trained  |  COSN/ISTE aligned  |  Built by a practicing K-12 Director of Technology"
-- Subtle dot separators between items
-- Slightly muted text color
+2. **Course title** (large, display font)
 
-### Waitlist Modal
+3. **Short description** -- first paragraph only (before the line break), keeping cards compact
 
-Since no waitlist form exists yet, a simple modal will be created:
-- Email input field with validation
-- "Join the Waitlist" submit button
-- Saves the email to a new `waitlist_leads` database table
-- Shows a success message after submission
-- Clean, on-brand styling matching the rest of the app
+4. **Meta bar** with visual separation:
+   - Clock icon + estimated hours (e.g., "~4 hours" or "Coming Soon" if not set)
+   - Users icon + "Best for" audience label (e.g., "For Administrators")
+
+5. **Deliverables list** with checkmark icons -- pulled from the module `deliverable_name` values. For courses without deliverables yet, a placeholder like "Deliverables coming soon" will show
+
+6. **"Coming Soon" button** at the bottom (since courses are pre-launch). This will open the waitlist modal with a source tag identifying which course triggered it
+
+### Data Flow
+
+The component will query the database at render time using React Query:
+- Fetch all courses where `featured = true`
+- For each course, fetch associated module deliverable names
+- Display a loading skeleton while data loads
 
 ### Technical Details
 
-**Files to create:**
-
-| File | Purpose |
-|------|---------|
-| `src/components/WaitlistModal.tsx` | Dialog with email input form, saves to database |
-
-**Files to modify:**
+**File to modify:**
 
 | File | Change |
-|------|--------|
-| `src/components/Hero.tsx` | Replace all content (badge, headline, subheadline, CTAs, social proof bar) with the new copy. Wire "See the Pathways" to scroll to `#courses`. Wire "Join the Waitlist" to open the modal. |
+|------|---------|
+| `src/components/FeaturedCourse.tsx` | Complete rewrite: replace static card with dynamic grid fetching featured courses from the database |
 
-**Database change:**
+**No new files needed** -- the WaitlistModal already accepts a `source` prop and can be reused.
 
-A new `waitlist_leads` table will be created:
+**Query logic:**
+- Primary query: `supabase.from('courses').select('*').eq('featured', true).order('created_at')`
+- Secondary query per course: `supabase.from('modules').select('deliverable_name').eq('course_id', courseId).not('deliverable_name', 'is', null).order('sequence_order')`
+- Both wrapped in a single `useQuery` hook for clean loading/error states
+
+**Card structure (per card):**
 
 ```text
-waitlist_leads
---------------
-id            uuid (PK, default gen_random_uuid())
-email         text (not null, unique)
-source        text (default 'hero')
-created_at    timestamptz (default now())
++---------------------------------------+
+|  [gradient header - unique per card]  |
+|  Course Title (Playfair Display)      |
++---------------------------------------+
+|  Short description paragraph          |
+|                                       |
+|  +---------+  +------------------+    |
+|  | ~4 hrs  |  | For Administrators|   |
+|  +---------+  +------------------+    |
+|                                       |
+|  What You'll Build:                   |
+|  [check] AI Types Cheat Sheet         |
+|  [check] Portfolio Progress Tracker   |
+|  [check] AI Equity Audit Checklist    |
+|                                       |
+|  [ Coming Soon ]  (button)            |
++---------------------------------------+
 ```
 
-- RLS enabled with a permissive INSERT policy for anonymous users (so visitors can submit without logging in)
-- No SELECT/UPDATE/DELETE policies for anon (protects the data)
+**Color mapping for visual distinction:**
+Each course slug maps to a unique gradient and accent. This is hardcoded since there are only 4 courses, keeping it simple and visually intentional:
+- `foundations` -- navy/teal gradient, teal accent
+- `fluency` -- teal/dark-teal gradient, gold accent  
+- `strategy` -- navy/gold gradient, gold accent
+- `action` -- dark-teal/green gradient, green accent
 
-**Design implementation details:**
-- Badge: `uppercase tracking-widest text-xs` with `bg-teal/20 border border-teal/30` pill
-- Headline: `text-[2.75rem] sm:text-[3rem] lg:text-[3.5rem]` (44px to 56px), with "Leading Through It." in gold
-- Subheadline: `text-lg sm:text-xl text-white/85` with `max-w-2xl`
-- Primary CTA: solid `bg-gold text-navy` with hover state
-- Secondary CTA: `border-white/60` outline style
-- Social proof: `text-sm text-white/70` with dot separator spans
+**Audience mapping:**
+Since there is no "audience" field in the database, a simple map based on slug will provide the "Best for" label:
+- `foundations` -- "All K-12 Leaders"
+- `fluency` -- "Practitioners"
+- `strategy` -- "Superintendents and Cabinet"
+- `action` -- "Implementation Teams"
+
+**Responsive behavior:**
+- `grid-cols-1 md:grid-cols-2` for the 2x2 / stacked layout
+- Cards have equal height via CSS grid
+- Deliverables list scrolls gracefully if a course has many items
+
+**Section header** stays the same: "What You'll Build" with subtitle "Real tools and frameworks you can use in your district -- not just theory"
 
