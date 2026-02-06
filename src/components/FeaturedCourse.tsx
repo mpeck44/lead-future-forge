@@ -241,6 +241,8 @@ const FeaturedCourse = () => {
         open={waitlistOpen}
         onOpenChange={setWaitlistOpen}
         source={waitlistSource}
+        courseSlug={waitlistSlug}
+        courseTitle={waitlistTitle}
       />
     </>
   );
