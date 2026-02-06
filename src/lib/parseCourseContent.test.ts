@@ -173,4 +173,203 @@ minutes: 12`;
     expect(lesson.video_transcript).toBe("Some transcript");
     expect(lesson.estimated_minutes).toBe(12);
   });
+
+  // ===== Multi-line content tests =====
+
+  it("supports multi-line content with paragraphs", () => {
+    const text = `=== MODULE: Test ===
+
+--- LESSON: Multi-line ---
+type: content
+estimated_minutes: 10
+content: First paragraph of content.
+
+Second paragraph after a blank line.
+
+Third paragraph here.
+takeaways: Point A | Point B`;
+
+    const result = parseCourseContent(text);
+    expect(result.warnings).toHaveLength(0);
+    const lesson = result.modules[0].lessons[0];
+    expect(lesson.content).toContain("First paragraph of content.");
+    expect(lesson.content).toContain("Second paragraph after a blank line.");
+    expect(lesson.content).toContain("Third paragraph here.");
+    // Paragraph breaks should be preserved
+    expect(lesson.content).toContain("\n\n");
+    // Takeaways should be parsed correctly, not appended to content
+    expect(lesson.key_takeaways).toEqual(["Point A", "Point B"]);
+    expect(lesson.content).not.toContain("Point A");
+  });
+
+  it("supports bullet lists in content", () => {
+    const text = `=== MODULE: Test ===
+
+--- LESSON: Bullets ---
+type: content
+content: Here are some examples:
+- First bullet item
+- Second bullet item
+- Third bullet item
+takeaways: Summary point`;
+
+    const result = parseCourseContent(text);
+    expect(result.warnings).toHaveLength(0);
+    const lesson = result.modules[0].lessons[0];
+    expect(lesson.content).toContain("- First bullet item");
+    expect(lesson.content).toContain("- Second bullet item");
+    expect(lesson.content).toContain("- Third bullet item");
+    expect(lesson.key_takeaways).toEqual(["Summary point"]);
+  });
+
+  it("handles lines with colons that are not known fields", () => {
+    const text = `=== MODULE: Test ===
+
+--- LESSON: Colons ---
+type: content
+content: Introduction text
+CATEGORY 1: Narrow AI - The Automation Tools
+This is more content about narrow AI.
+CATEGORY 2: Generative AI - The Creation Tools
+More content about generative AI.
+takeaways: AI has categories`;
+
+    const result = parseCourseContent(text);
+    expect(result.warnings).toHaveLength(0);
+    const lesson = result.modules[0].lessons[0];
+    expect(lesson.content).toContain("CATEGORY 1: Narrow AI");
+    expect(lesson.content).toContain("CATEGORY 2: Generative AI");
+    expect(lesson.key_takeaways).toEqual(["AI has categories"]);
+  });
+
+  it("stops continuation when a new lesson marker is hit", () => {
+    const text = `=== MODULE: Test ===
+
+--- LESSON: First ---
+type: content
+content: Content for first lesson
+This continues on the next line.
+
+--- LESSON: Second ---
+type: video
+video_url: https://youtube.com/watch?v=123`;
+
+    const result = parseCourseContent(text);
+    expect(result.modules[0].lessons).toHaveLength(2);
+    expect(result.modules[0].lessons[0].content).toContain("Content for first lesson");
+    expect(result.modules[0].lessons[0].content).toContain("This continues on the next line.");
+    expect(result.modules[0].lessons[1].title).toBe("Second");
+    expect(result.modules[0].lessons[1].lesson_type).toBe("video");
+  });
+
+  it("stops continuation when a new module marker is hit", () => {
+    const text = `=== MODULE: First Module ===
+
+--- LESSON: Lesson ---
+type: content
+content: Some content
+More content here
+
+=== MODULE: Second Module ===
+description: New module`;
+
+    const result = parseCourseContent(text);
+    expect(result.modules).toHaveLength(2);
+    expect(result.modules[0].lessons[0].content).toContain("More content here");
+    expect(result.modules[1].title).toBe("Second Module");
+  });
+
+  it("supports multi-line transcript for video lessons", () => {
+    const text = `=== MODULE: Test ===
+
+--- LESSON: Video ---
+type: video
+video_url: https://youtube.com/watch?v=abc
+transcript: Hello and welcome.
+Today we'll discuss AI in education.
+Let's get started.
+takeaways: AI is useful`;
+
+    const result = parseCourseContent(text);
+    expect(result.warnings).toHaveLength(0);
+    const lesson = result.modules[0].lessons[0];
+    expect(lesson.video_transcript).toContain("Hello and welcome.");
+    expect(lesson.video_transcript).toContain("Today we'll discuss AI in education.");
+    expect(lesson.video_transcript).toContain("Let's get started.");
+    expect(lesson.key_takeaways).toEqual(["AI is useful"]);
+  });
+
+  it("handles square brackets and special characters in content", () => {
+    const text = `=== MODULE: Test ===
+
+--- LESSON: Special Chars ---
+type: activity
+content: Fill in below:
+[Your turn: List 1-2 tools you currently use]
+→ Narrow AI = efficiency question
+takeaways: Practice makes perfect`;
+
+    const result = parseCourseContent(text);
+    expect(result.warnings).toHaveLength(0);
+    const lesson = result.modules[0].lessons[0];
+    expect(lesson.content).toContain("[Your turn: List 1-2 tools you currently use]");
+    expect(lesson.content).toContain("→ Narrow AI = efficiency question");
+  });
+
+  it("parses real-world content file without excessive warnings", () => {
+    const text = `=== MODULE: Understanding the AI Landscape ===
+description: Cut through AI jargon
+deliverable: AI Types Cheat Sheet
+path_type: foundation
+
+--- LESSON: The AI Categories That Matter ---
+type: video
+objective: Understand the three AI categories
+estimated_minutes: 6
+video_url: https://example.com/video
+content: A superintendent once asked me a question.
+
+CATEGORY 1: Narrow AI - The Automation Tools.
+This is AI that does one specific task really well.
+- Spam filters in your email
+- Autocorrect on your phone
+
+CATEGORY 2: Generative AI - The Creation Tools.
+This is the AI that creates new content.
+takeaways: Narrow AI automates | Generative AI creates | AGI doesn't exist yet
+
+--- LESSON: Create Your AI Types Cheat Sheet ---
+type: activity
+objective: Build a reference document
+estimated_minutes: 4
+content: You're creating a one-page reference document.
+
+CATEGORY 1: NARROW AI (Automation AI)
+What it is: AI designed to do one specific task efficiently.
+
+K-12 Examples (General):
+- Spam filters in school email
+- Adaptive learning platforms (Lexia, IXL, DreamBox)
+
+Examples from MY school/district:
+[Your turn: List 1-2 tools you currently use]
+takeaways: Add your school's specific AI examples | Use when evaluating vendors
+resource_url: https://docs.google.com/document/template
+resource_name: AI Types Cheat Sheet Template`;
+
+    const result = parseCourseContent(text);
+    // Should produce no warnings — all content lines are continuation
+    expect(result.warnings).toHaveLength(0);
+    expect(result.modules).toHaveLength(1);
+    expect(result.modules[0].lessons).toHaveLength(2);
+
+    const lesson1 = result.modules[0].lessons[0];
+    expect(lesson1.content).toContain("CATEGORY 1: Narrow AI");
+    expect(lesson1.content).toContain("- Spam filters in your email");
+    expect(lesson1.key_takeaways).toHaveLength(3);
+
+    const lesson2 = result.modules[0].lessons[1];
+    expect(lesson2.content).toContain("[Your turn: List 1-2 tools you currently use]");
+    expect(lesson2.resource_name).toBe("AI Types Cheat Sheet Template");
+  });
 });
