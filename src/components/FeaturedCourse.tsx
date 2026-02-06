@@ -50,6 +50,8 @@ const DEFAULT_THEME = {
 const FeaturedCourse = () => {
   const [waitlistOpen, setWaitlistOpen] = useState(false);
   const [waitlistSource, setWaitlistSource] = useState("featured");
+  const [waitlistSlug, setWaitlistSlug] = useState<string | undefined>();
+  const [waitlistTitle, setWaitlistTitle] = useState<string | undefined>();
 
   const { data: courses, isLoading } = useQuery({
     queryKey: ["featured-courses"],
