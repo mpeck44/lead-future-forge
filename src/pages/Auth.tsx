@@ -157,7 +157,7 @@ const Auth = () => {
     } else {
       toast({
         title: 'Account Created!',
-        description: 'Welcome to AI Leadership Accelerator!',
+        description: 'Welcome to The Leadership Forge!',
       });
     }
     
