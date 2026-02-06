@@ -501,19 +501,31 @@ export type Database = {
         Row: {
           created_at: string
           email: string
+          full_name: string | null
           id: string
+          interested_courses: string[] | null
+          notes: string | null
+          role: string | null
           source: string | null
         }
         Insert: {
           created_at?: string
           email: string
+          full_name?: string | null
           id?: string
+          interested_courses?: string[] | null
+          notes?: string | null
+          role?: string | null
           source?: string | null
         }
         Update: {
           created_at?: string
           email?: string
+          full_name?: string | null
           id?: string
+          interested_courses?: string[] | null
+          notes?: string | null
+          role?: string | null
           source?: string | null
         }
         Relationships: []
@@ -529,6 +541,16 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      upsert_waitlist_lead: {
+        Args: {
+          _course_slug?: string
+          _email: string
+          _full_name?: string
+          _role?: string
+          _source?: string
+        }
+        Returns: Json
       }
     }
     Enums: {

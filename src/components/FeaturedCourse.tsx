@@ -50,6 +50,8 @@ const DEFAULT_THEME = {
 const FeaturedCourse = () => {
   const [waitlistOpen, setWaitlistOpen] = useState(false);
   const [waitlistSource, setWaitlistSource] = useState("featured");
+  const [waitlistSlug, setWaitlistSlug] = useState<string | undefined>();
+  const [waitlistTitle, setWaitlistTitle] = useState<string | undefined>();
 
   const { data: courses, isLoading } = useQuery({
     queryKey: ["featured-courses"],
@@ -93,8 +95,10 @@ const FeaturedCourse = () => {
     },
   });
 
-  const openWaitlist = (slug: string) => {
+  const openWaitlist = (slug: string, title: string) => {
     setWaitlistSource(`featured-${slug}`);
+    setWaitlistSlug(slug);
+    setWaitlistTitle(title);
     setWaitlistOpen(true);
   };
 
@@ -213,7 +217,7 @@ const FeaturedCourse = () => {
 
                       {/* CTA */}
                       <Button
-                        onClick={() => openWaitlist(course.slug)}
+                        onClick={() => openWaitlist(course.slug, course.title)}
                         variant="outline"
                         className="w-full font-body font-semibold gap-2"
                       >
@@ -237,6 +241,8 @@ const FeaturedCourse = () => {
         open={waitlistOpen}
         onOpenChange={setWaitlistOpen}
         source={waitlistSource}
+        courseSlug={waitlistSlug}
+        courseTitle={waitlistTitle}
       />
     </>
   );
