@@ -5,12 +5,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Plus, Loader2 } from "lucide-react";
+import { ArrowLeft, Plus, Loader2, Upload } from "lucide-react";
 import ModuleCard from "@/components/admin/ModuleCard";
 import ModuleFormDialog from "@/components/admin/ModuleFormDialog";
 import LessonFormDialog, { type LessonFormData } from "@/components/admin/LessonFormDialog";
 import LessonPreviewDialog from "@/components/admin/LessonPreviewDialog";
 import { DeleteConfirmDialog } from "@/components/admin/DeleteConfirmDialog";
+import { BulkImportDialog } from "@/components/admin/BulkImportDialog";
 
 interface Lesson {
   id: string;
@@ -65,6 +66,7 @@ const AdminCourseContent = () => {
   const [lessonPreviewDialogOpen, setLessonPreviewDialogOpen] = useState(false);
   const [deleteModuleDialogOpen, setDeleteModuleDialogOpen] = useState(false);
   const [deleteLessonDialogOpen, setDeleteLessonDialogOpen] = useState(false);
+  const [bulkImportOpen, setBulkImportOpen] = useState(false);
 
   // Editing states
   const [editingModule, setEditingModule] = useState<Module | null>(null);
@@ -467,10 +469,16 @@ const AdminCourseContent = () => {
               </p>
             </div>
           </div>
-          <Button onClick={() => setModuleDialogOpen(true)}>
-            <Plus className="mr-2 h-4 w-4" />
-            Add Module
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" onClick={() => setBulkImportOpen(true)}>
+              <Upload className="mr-2 h-4 w-4" />
+              Import Content
+            </Button>
+            <Button onClick={() => setModuleDialogOpen(true)}>
+              <Plus className="mr-2 h-4 w-4" />
+              Add Module
+            </Button>
+          </div>
         </div>
 
         {/* Content */}
@@ -600,6 +608,13 @@ const AdminCourseContent = () => {
         title="Delete Lesson"
         description={`Are you sure you want to delete "${deletingLesson?.title}"? This action cannot be undone.`}
         isLoading={deleteLessonMutation.isPending}
+      />
+
+      <BulkImportDialog
+        open={bulkImportOpen}
+        onOpenChange={setBulkImportOpen}
+        courseId={courseId!}
+        existingModuleCount={modules.length}
       />
     </AdminLayout>
   );
