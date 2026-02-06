@@ -66,6 +66,7 @@ const AdminCourseContent = () => {
   const [lessonPreviewDialogOpen, setLessonPreviewDialogOpen] = useState(false);
   const [deleteModuleDialogOpen, setDeleteModuleDialogOpen] = useState(false);
   const [deleteLessonDialogOpen, setDeleteLessonDialogOpen] = useState(false);
+  const [bulkImportOpen, setBulkImportOpen] = useState(false);
 
   // Editing states
   const [editingModule, setEditingModule] = useState<Module | null>(null);
