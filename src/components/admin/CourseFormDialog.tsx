@@ -52,9 +52,9 @@ interface CourseFormDialogProps {
 }
 
 const pathTypeOptions = [
-  { value: 'accelerator_path_1', label: 'Accelerator Path 1' },
-  { value: 'accelerator_path_2', label: 'Accelerator Path 2' },
-  { value: 'accelerator_path_3', label: 'Accelerator Path 3' },
+  { value: 'accelerator_path_1', label: 'Leadership Path 1' },
+  { value: 'accelerator_path_2', label: 'Leadership Path 2' },
+  { value: 'accelerator_path_3', label: 'Leadership Path 3' },
   { value: 'standalone', label: 'Standalone' },
   { value: 'bundle', label: 'Bundle' },
 ];
