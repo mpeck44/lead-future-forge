@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Users, ShieldCheck, Wrench } from "lucide-react";
 import WaitlistModal from "./WaitlistModal";
 
 const Hero = () => {
@@ -16,12 +16,17 @@ const Hero = () => {
   return (
     <>
       <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden pt-20">
-        {/* Background Gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-navy via-dark-teal to-navy opacity-95" />
+        {/* Background Gradient — deeper navy-dominant */}
+        <div className="absolute inset-0 bg-gradient-to-br from-navy via-[hsl(200,30%,12%)] to-navy" />
 
-        {/* Decorative Elements */}
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-teal/20 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-gold/10 rounded-full blur-3xl" />
+        {/* Dot grid overlay */}
+        <div className="absolute inset-0 hero-dot-grid opacity-40" />
+
+        {/* Floating decorative elements */}
+        <div className="absolute top-[15%] left-[10%] w-72 h-72 rounded-full bg-teal/15 blur-3xl animate-float-slow" />
+        <div className="absolute bottom-[20%] right-[8%] w-56 h-56 rounded-full bg-gold/10 blur-3xl animate-float-slower" />
+        <div className="absolute top-[55%] right-[25%] w-40 h-40 rounded-full border border-teal/20 animate-float-slow" style={{ animationDelay: "5s" }} />
+        <div className="absolute top-[30%] left-[60%] w-24 h-24 rounded-full border border-gold/15 animate-float-slower" style={{ animationDelay: "8s" }} />
 
         {/* Content */}
         <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -35,12 +40,18 @@ const Hero = () => {
 
             {/* Headline */}
             <h1
-              className="font-display text-[2.75rem] sm:text-[3rem] lg:text-[3.5rem] font-bold text-white leading-tight mb-6 animate-fade-in"
+              className="font-display text-[2.75rem] sm:text-[3rem] lg:text-[3.5rem] font-bold text-white leading-tight mb-4 animate-fade-in"
               style={{ animationDelay: "0.1s" }}
             >
               Stop Reacting to AI.{" "}
               <span className="text-gold">Start Leading Through It.</span>
             </h1>
+
+            {/* Accent line */}
+            <div
+              className="mx-auto mb-6 h-1 w-28 rounded-full bg-gradient-to-r from-teal to-gold animate-fade-in"
+              style={{ animationDelay: "0.15s" }}
+            />
 
             {/* Subheadline */}
             <p
@@ -69,7 +80,7 @@ const Hero = () => {
                 size="lg"
                 variant="outline"
                 onClick={() => setWaitlistOpen(true)}
-                className="font-body font-semibold border-white/60 text-white hover:bg-white/10 hover:border-white px-8 py-6 text-base"
+                className="font-body font-semibold bg-white text-navy hover:bg-white/90 border-white px-8 py-6 text-base"
               >
                 Join the Waitlist
               </Button>
@@ -80,12 +91,19 @@ const Hero = () => {
               className="mt-16 animate-fade-in"
               style={{ animationDelay: "0.4s" }}
             >
-              <div className="inline-flex flex-wrap items-center justify-center gap-x-3 gap-y-1 font-body text-sm text-white/70">
-                <span>50+ leaders trained</span>
-                <span className="text-white/30">|</span>
-                <span>COSN/ISTE aligned</span>
-                <span className="text-white/30">|</span>
-                <span>Built by a practicing K-12 Director of Technology</span>
+              <div className="inline-flex flex-wrap items-center justify-center gap-3">
+                <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/10">
+                  <Users className="h-3.5 w-3.5 text-light-teal" />
+                  <span className="font-body text-sm text-white/80">50+ leaders trained</span>
+                </div>
+                <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/10">
+                  <ShieldCheck className="h-3.5 w-3.5 text-light-teal" />
+                  <span className="font-body text-sm text-white/80">COSN/ISTE aligned</span>
+                </div>
+                <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/10">
+                  <Wrench className="h-3.5 w-3.5 text-light-teal" />
+                  <span className="font-body text-sm text-white/80">Built by a practicing K-12 Director of Technology</span>
+                </div>
               </div>
             </div>
           </div>

@@ -122,3 +122,9 @@
     line-height: 1.35;
   }
 }
+
+/* Hero dot grid overlay */
+.hero-dot-grid {
+  background-image: radial-gradient(circle, hsl(180 100% 25% / 0.15) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
