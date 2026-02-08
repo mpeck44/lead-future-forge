@@ -27,6 +27,7 @@ interface Course {
   price: number | null;
   estimated_hours: number | null;
   path_type: string | null;
+  tags: string[] | null;
 }
 
 const Courses = () => {
