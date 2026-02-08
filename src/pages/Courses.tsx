@@ -211,11 +211,23 @@ const Courses = () => {
                       <Card key={course.id} className="flex flex-col hover:shadow-lg transition-shadow">
                         <CardHeader className="pb-3">
                           <div className="flex items-start justify-between gap-2 mb-2">
-                            {course.path_type && (
-                              <Badge variant="secondary" className="font-body text-xs">
-                                {course.path_type}
-                              </Badge>
-                            )}
+                            <div className="flex flex-wrap gap-1">
+                              {course.path_type && (
+                                <Badge variant="secondary" className="font-body text-xs">
+                                  {course.path_type}
+                                </Badge>
+                              )}
+                              {(course.tags || []).slice(0, 2).map((tag) => (
+                                <Badge key={tag} variant="outline" className="font-body text-xs">
+                                  {tag}
+                                </Badge>
+                              ))}
+                              {(course.tags || []).length > 2 && (
+                                <span className="text-xs text-muted-foreground self-center">
+                                  +{(course.tags || []).length - 2}
+                                </span>
+                              )}
+                            </div>
                             <span className="font-display font-bold text-primary">
                               {formatPrice(course.price)}
                             </span>

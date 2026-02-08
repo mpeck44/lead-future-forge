@@ -492,6 +492,7 @@ export default function AdminCourses() {
                 estimated_hours: editingCourse.estimated_hours || 0,
                 is_published: editingCourse.is_published || false,
                 featured: editingCourse.featured || false,
+                tags: (editingCourse as any).tags || [],
               }
             : undefined
         }
