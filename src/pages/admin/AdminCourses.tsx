@@ -142,7 +142,8 @@ export default function AdminCourses() {
           estimated_hours: values.estimated_hours || null,
           is_published: values.is_published,
           featured: values.featured,
-        })
+          tags: values.tags || [],
+        } as any)
         .eq('id', id)
         .select()
         .single();
