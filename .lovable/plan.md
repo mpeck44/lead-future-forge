@@ -1,89 +1,84 @@
 
 
-## Hero Section Refresh
+## Flexible Course Tagging System
 
-### Problems to Fix
+### Current State
 
-1. **"Join the Waitlist" button is invisible** -- white outline on a light gradient background makes it unreadable (visible in your screenshot)
-2. **Hero feels flat** -- just a gradient with centered text, no visual depth or energy
+Right now, the only categorization for courses is a single `path_type` dropdown with 5 hardcoded options (Leadership Path 1/2/3, Standalone, Bundle). Modules have a similar fixed `path_type` field. There's no way to add additional labels like "AI Literacy", "Beginner", "ISTE Aligned", etc.
 
-### What Changes
+### What This Adds
 
-The hero will be refreshed with more visual interest while keeping the same messaging and brand identity. Here's what's different:
+A flexible tagging system that lets you create and assign any number of custom tags to courses. Tags appear as color-coded badges throughout the admin and public-facing pages.
 
----
-
-### Button Fix
-
-The "Join the Waitlist" button will switch from a ghost white outline to a **solid white button with navy text** -- always visible, high contrast, and professional. On hover, it will slightly dim rather than disappear.
-
----
-
-### Visual Enhancements
-
-**1. Deeper, richer background gradient**
-- Shift from the current flat teal wash to a deeper navy-dominant gradient with more contrast
-- The background will feel more intentional and premium
-
-**2. Subtle animated grid pattern overlay**
-- A faint geometric dot grid overlaid on the background adds texture without distraction
-- Creates a "tech-forward" feel appropriate for AI-focused content
-
-**3. Floating accent shapes with subtle animation**
-- Small, slow-moving decorative elements (glowing orbs and rings) at different depths
-- Creates parallax-like visual depth that draws the eye
-- Uses brand colors (teal, gold) at low opacity so they enhance without distracting
-
-**4. Glowing accent line under the headline**
-- A short horizontal gradient bar (teal-to-gold) beneath the main headline
-- Draws the eye and creates visual separation between headline and subheadline
-
-**5. Social proof bar upgrade**
-- Instead of plain text separated by pipes, each stat gets its own subtle pill/badge with a small icon
-- "50+ leaders trained" gets a users icon, "COSN/ISTE aligned" gets a shield icon, etc.
-- Feels more polished and credible
-
-**6. Staggered animations refined**
-- Existing fade-in animations will be kept but polished with slightly different timing for a smoother cascade effect
+**Examples of tags you might create:**
+- Topic tags: "AI Literacy", "Data Privacy", "Strategic Planning"
+- Audience tags: "Beginner", "Advanced", "Cabinet-Level"
+- Alignment tags: "ISTE Aligned", "COSN Framework"
+- Status tags: "New", "Updated", "Popular"
 
 ---
 
-### What Stays the Same
+### How It Works
 
-- All copy/messaging (headline, subheadline, badge text, social proof text)
-- "See the Pathways" gold button behavior (scrolls to courses)
-- "Join the Waitlist" button behavior (opens waitlist modal)
-- Overall centered layout
-- Mobile responsiveness
+**In the Admin Course Form:**
+- A new "Tags" field appears below the existing Path Type dropdown
+- Type a tag name and press Enter (or comma) to add it
+- Tags appear as removable pills/chips in the input
+- As you type, existing tags from other courses are suggested in a dropdown (autocomplete) so you stay consistent
+- Tags are freeform -- you can type anything, no predefined list required
+
+**In the Admin Courses Table:**
+- Tags display as small badges next to the course title
+- A new "Tag" filter dropdown lets you filter courses by any tag
+
+**On the Public Courses Page:**
+- Tags appear as small badges on each course card
+- Visitors can see at a glance what each course covers
+
+**On the Landing Page (Featured Courses):**
+- Tags show as subtle badges in the course card meta bar area, alongside the existing time/audience pills
 
 ---
 
-### Technical Details
+### Technical Approach
+
+**Database: Add a `tags` column to the `courses` table**
+
+A `text[]` (text array) column on the courses table. This matches the pattern already used elsewhere in the project (e.g., `interested_courses` on `waitlist_leads`, `key_takeaways` on `lessons`). No extra tables or joins needed.
+
+```text
+ALTER TABLE courses ADD COLUMN tags text[] DEFAULT '{}';
+```
+
+This is the simplest approach for the current scale. Each course stores its own array of tag strings. To get all unique tags across courses (for autocomplete and filtering), we query distinct values from the array.
+
+**Files to create:**
+
+| File | Purpose |
+|------|---------|
+| `src/components/admin/TagInput.tsx` | Reusable tag input component with autocomplete, chip display, and keyboard support (Enter/comma to add, Backspace to remove) |
 
 **Files to modify:**
 
 | File | Change |
-|------|--------|
-| `src/components/Hero.tsx` | Update button styling, add decorative elements, enhance social proof bar, add CSS keyframes for floating animation |
-| `src/index.css` | Add keyframe animations for floating elements and grid pattern |
+|------|---------|
+| `src/components/admin/CourseFormDialog.tsx` | Add `tags` field to the form schema and render the TagInput component below Path Type |
+| `src/pages/admin/AdminCourses.tsx` | Display tags as badges in the table, add a tag filter dropdown, pass tags through create/update mutations |
+| `src/pages/Courses.tsx` | Show tags as badges on public course cards |
+| `src/components/FeaturedCourse.tsx` | Show tags in the featured course cards on the landing page, fetch tags in the query |
 
-**Button fix (specific change):**
-The outline button class changes from:
-`border-white/60 text-white hover:bg-white/10 hover:border-white`
-to:
-`bg-white text-navy hover:bg-white/90 border-white`
+**TagInput component behavior:**
+- Text input with inline chip display
+- Typing and pressing Enter or comma creates a new tag (auto-trimmed, lowercased for consistency)
+- Backspace on empty input removes the last tag
+- Dropdown shows existing tags from other courses (fetched via a query that extracts unique values from all courses' `tags` arrays)
+- Clicking a suggestion adds it
+- Each chip has an X button to remove
+- Duplicate prevention (case-insensitive)
 
-This makes it always readable -- solid white background with dark navy text.
+**Tag display styling:**
+- Admin table: small outline badges, max 3 visible with "+N more" overflow
+- Public pages: subtle colored badges matching the existing design system
 
-**New decorative elements added to the JSX:**
-- A CSS-based dot grid overlay (using `radial-gradient` in a pseudo-element)
-- 3-4 floating circles/rings with slow CSS animations (`animate-float-slow`, `animate-float-slower`)
-- A gold-to-teal gradient accent line (thin horizontal bar, ~120px wide, centered under the headline)
-
-**New CSS keyframes in `src/index.css`:**
-- `float-slow`: gentle up-down movement over 20 seconds
-- `float-slower`: slightly different timing over 25 seconds
-- Grid dot pattern via a utility class
-
-**No new dependencies needed.**
+**No changes to RLS policies needed** -- the existing course policies already cover this column since it's on the same table.
 
