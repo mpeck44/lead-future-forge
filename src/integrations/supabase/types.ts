@@ -25,6 +25,7 @@ export type Database = {
           path_type: string | null
           price: number | null
           slug: string
+          tags: string[] | null
           title: string
           updated_at: string | null
         }
@@ -38,6 +39,7 @@ export type Database = {
           path_type?: string | null
           price?: number | null
           slug: string
+          tags?: string[] | null
           title: string
           updated_at?: string | null
         }
@@ -51,6 +53,7 @@ export type Database = {
           path_type?: string | null
           price?: number | null
           slug?: string
+          tags?: string[] | null
           title?: string
           updated_at?: string | null
         }
