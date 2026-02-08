@@ -89,6 +89,7 @@ export function CourseFormDialog({
       estimated_hours: 0,
       is_published: false,
       featured: false,
+      tags: [],
       ...defaultValues,
     },
   });
@@ -105,6 +106,7 @@ export function CourseFormDialog({
         estimated_hours: 0,
         is_published: false,
         featured: false,
+        tags: [],
         ...defaultValues,
       });
     }
