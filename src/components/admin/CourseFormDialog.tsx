@@ -242,6 +242,23 @@ export function CourseFormDialog({
               )}
             />
 
+            <FormField
+              control={form.control}
+              name="tags"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Tags</FormLabel>
+                  <FormControl>
+                    <TagInput value={field.value} onChange={field.onChange} />
+                  </FormControl>
+                  <FormDescription>
+                    Add tags like "AI Literacy", "Beginner", "ISTE Aligned". Press Enter or comma to add.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             <div className="flex gap-8">
               <FormField
                 control={form.control}
