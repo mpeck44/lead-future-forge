@@ -269,8 +269,16 @@ export default function AdminCourses() {
       statusFilter === 'all' ||
       (statusFilter === 'published' && course.is_published) ||
       (statusFilter === 'draft' && !course.is_published);
-    return matchesSearch && matchesStatus;
+    const matchesTag =
+      tagFilter === 'all' ||
+      (course.tags || []).some((t) => t === tagFilter);
+    return matchesSearch && matchesStatus && matchesTag;
   });
+
+  // Collect all unique tags for the filter dropdown
+  const allUniqueTags = Array.from(
+    new Set((courses || []).flatMap((c) => c.tags || []))
+  ).sort();
 
   const formatPrice = (priceInCents: number | null) => {
     if (priceInCents === null || priceInCents === 0) return 'Free';
