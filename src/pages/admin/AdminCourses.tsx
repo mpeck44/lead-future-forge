@@ -105,12 +105,13 @@ export default function AdminCourses() {
           title: values.title,
           slug: values.slug,
           description: values.description || null,
-          price: values.price ? Math.round(values.price * 100) : null, // Convert to cents
+          price: values.price ? Math.round(values.price * 100) : null,
           path_type: values.path_type || null,
           estimated_hours: values.estimated_hours || null,
           is_published: values.is_published,
           featured: values.featured,
-        })
+          tags: values.tags || [],
+        } as any)
         .select()
         .single();
 
