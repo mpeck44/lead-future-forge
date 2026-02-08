@@ -54,6 +54,7 @@ export default function AdminCourses() {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [tagFilter, setTagFilter] = useState<string>('all');
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingCourse, setEditingCourse] = useState<CourseWithCounts | null>(null);
   const [deletingCourse, setDeletingCourse] = useState<CourseWithCounts | null>(null);
