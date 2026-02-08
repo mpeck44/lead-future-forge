@@ -382,6 +382,20 @@ export default function AdminCourses() {
                       <div>
                         <div className="font-medium">{course.title}</div>
                         <div className="text-sm text-muted-foreground">/courses/{course.slug}</div>
+                        {(course.tags || []).length > 0 && (
+                          <div className="flex flex-wrap gap-1 mt-1">
+                            {(course.tags || []).slice(0, 3).map((tag) => (
+                              <Badge key={tag} variant="outline" className="text-[10px] px-1.5 py-0">
+                                {tag}
+                              </Badge>
+                            ))}
+                            {(course.tags || []).length > 3 && (
+                              <span className="text-[10px] text-muted-foreground">
+                                +{(course.tags || []).length - 3} more
+                              </span>
+                            )}
+                          </div>
+                        )}
                       </div>
                     </TableCell>
                     <TableCell>{formatPrice(course.price)}</TableCell>
