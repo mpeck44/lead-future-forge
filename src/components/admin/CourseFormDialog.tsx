@@ -28,6 +28,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { TagInput } from '@/components/admin/TagInput';
 
 const courseFormSchema = z.object({
   title: z.string().min(1, 'Title is required').max(100, 'Title must be 100 characters or less'),
@@ -38,6 +39,7 @@ const courseFormSchema = z.object({
   estimated_hours: z.coerce.number().min(0, 'Estimated hours must be 0 or greater').optional(),
   is_published: z.boolean().default(false),
   featured: z.boolean().default(false),
+  tags: z.array(z.string()).default([]),
 });
 
 export type CourseFormValues = z.infer<typeof courseFormSchema>;
@@ -87,6 +89,7 @@ export function CourseFormDialog({
       estimated_hours: 0,
       is_published: false,
       featured: false,
+      tags: [],
       ...defaultValues,
     },
   });
@@ -103,6 +106,7 @@ export function CourseFormDialog({
         estimated_hours: 0,
         is_published: false,
         featured: false,
+        tags: [],
         ...defaultValues,
       });
     }
@@ -233,6 +237,23 @@ export function CourseFormDialog({
                       ))}
                     </SelectContent>
                   </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="tags"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Tags</FormLabel>
+                  <FormControl>
+                    <TagInput value={field.value} onChange={field.onChange} />
+                  </FormControl>
+                  <FormDescription>
+                    Add tags like "AI Literacy", "Beginner", "ISTE Aligned". Press Enter or comma to add.
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}

@@ -44,6 +44,7 @@ interface CourseWithCounts {
   is_published: boolean | null;
   featured: boolean | null;
   created_at: string | null;
+  tags: string[] | null;
   module_count: number;
   enrollment_count: number;
 }
@@ -53,6 +54,7 @@ export default function AdminCourses() {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [tagFilter, setTagFilter] = useState<string>('all');
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingCourse, setEditingCourse] = useState<CourseWithCounts | null>(null);
   const [deletingCourse, setDeletingCourse] = useState<CourseWithCounts | null>(null);
@@ -103,12 +105,13 @@ export default function AdminCourses() {
           title: values.title,
           slug: values.slug,
           description: values.description || null,
-          price: values.price ? Math.round(values.price * 100) : null, // Convert to cents
+          price: values.price ? Math.round(values.price * 100) : null,
           path_type: values.path_type || null,
           estimated_hours: values.estimated_hours || null,
           is_published: values.is_published,
           featured: values.featured,
-        })
+          tags: values.tags || [],
+        } as any)
         .select()
         .single();
 
@@ -139,7 +142,8 @@ export default function AdminCourses() {
           estimated_hours: values.estimated_hours || null,
           is_published: values.is_published,
           featured: values.featured,
-        })
+          tags: values.tags || [],
+        } as any)
         .eq('id', id)
         .select()
         .single();
@@ -265,8 +269,16 @@ export default function AdminCourses() {
       statusFilter === 'all' ||
       (statusFilter === 'published' && course.is_published) ||
       (statusFilter === 'draft' && !course.is_published);
-    return matchesSearch && matchesStatus;
+    const matchesTag =
+      tagFilter === 'all' ||
+      (course.tags || []).some((t) => t === tagFilter);
+    return matchesSearch && matchesStatus && matchesTag;
   });
+
+  // Collect all unique tags for the filter dropdown
+  const allUniqueTags = Array.from(
+    new Set((courses || []).flatMap((c) => c.tags || []))
+  ).sort();
 
   const formatPrice = (priceInCents: number | null) => {
     if (priceInCents === null || priceInCents === 0) return 'Free';
@@ -323,6 +335,21 @@ export default function AdminCourses() {
               <SelectItem value="draft">Draft</SelectItem>
             </SelectContent>
           </Select>
+          {allUniqueTags.length > 0 && (
+            <Select value={tagFilter} onValueChange={setTagFilter}>
+              <SelectTrigger className="w-[150px]">
+                <SelectValue placeholder="Tag" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Tags</SelectItem>
+                {allUniqueTags.map((tag) => (
+                  <SelectItem key={tag} value={tag}>
+                    {tag}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
         </div>
 
         {/* Courses Table */}
@@ -355,6 +382,20 @@ export default function AdminCourses() {
                       <div>
                         <div className="font-medium">{course.title}</div>
                         <div className="text-sm text-muted-foreground">/courses/{course.slug}</div>
+                        {(course.tags || []).length > 0 && (
+                          <div className="flex flex-wrap gap-1 mt-1">
+                            {(course.tags || []).slice(0, 3).map((tag) => (
+                              <Badge key={tag} variant="outline" className="text-[10px] px-1.5 py-0">
+                                {tag}
+                              </Badge>
+                            ))}
+                            {(course.tags || []).length > 3 && (
+                              <span className="text-[10px] text-muted-foreground">
+                                +{(course.tags || []).length - 3} more
+                              </span>
+                            )}
+                          </div>
+                        )}
                       </div>
                     </TableCell>
                     <TableCell>{formatPrice(course.price)}</TableCell>
@@ -451,6 +492,7 @@ export default function AdminCourses() {
                 estimated_hours: editingCourse.estimated_hours || 0,
                 is_published: editingCourse.is_published || false,
                 featured: editingCourse.featured || false,
+                tags: (editingCourse as any).tags || [],
               }
             : undefined
         }

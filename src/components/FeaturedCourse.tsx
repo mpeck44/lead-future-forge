@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Clock, Users, CheckCircle2, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import WaitlistModal from "./WaitlistModal";
 
@@ -13,6 +14,7 @@ interface CourseWithDeliverables {
   description: string | null;
   estimated_hours: number | null;
   path_type: string | null;
+  tags: string[] | null;
   deliverables: string[];
 }
 
@@ -59,7 +61,7 @@ const FeaturedCourse = () => {
       // Fetch featured courses
       const { data: coursesData, error: coursesError } = await supabase
         .from("courses")
-        .select("id, title, slug, description, estimated_hours, path_type")
+        .select("id, title, slug, description, estimated_hours, path_type, tags")
         .eq("featured", true)
         .order("created_at");
 
@@ -178,7 +180,7 @@ const FeaturedCourse = () => {
                       </p>
 
                       {/* Meta Bar */}
-                      <div className="flex flex-wrap gap-3 mb-5">
+                      <div className="flex flex-wrap gap-2 mb-5">
                         <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-muted text-xs font-body font-medium text-foreground">
                           <Clock className="w-3.5 h-3.5 text-primary" />
                           {course.estimated_hours
@@ -189,6 +191,15 @@ const FeaturedCourse = () => {
                           <Users className="w-3.5 h-3.5 text-primary" />
                           {audience}
                         </div>
+                        {(course.tags || []).slice(0, 2).map((tag) => (
+                          <Badge
+                            key={tag}
+                            variant="outline"
+                            className="text-xs font-body rounded-full px-3 py-1"
+                          >
+                            {tag}
+                          </Badge>
+                        ))}
                       </div>
 
                       {/* Deliverables */}
