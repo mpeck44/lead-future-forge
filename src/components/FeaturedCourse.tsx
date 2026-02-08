@@ -60,7 +60,7 @@ const FeaturedCourse = () => {
       // Fetch featured courses
       const { data: coursesData, error: coursesError } = await supabase
         .from("courses")
-        .select("id, title, slug, description, estimated_hours, path_type")
+        .select("id, title, slug, description, estimated_hours, path_type, tags")
         .eq("featured", true)
         .order("created_at");
 
