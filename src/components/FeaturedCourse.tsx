@@ -13,6 +13,7 @@ interface CourseWithDeliverables {
   description: string | null;
   estimated_hours: number | null;
   path_type: string | null;
+  tags: string[] | null;
   deliverables: string[];
 }
 
