@@ -44,7 +44,7 @@ const Courses = () => {
       // Fetch published courses
       const { data: coursesData, error: coursesError } = await supabase
         .from('courses')
-        .select('id, title, description, slug, price, estimated_hours, path_type')
+        .select('id, title, description, slug, price, estimated_hours, path_type, tags')
         .eq('is_published', true)
         .order('created_at', { ascending: false });
 
