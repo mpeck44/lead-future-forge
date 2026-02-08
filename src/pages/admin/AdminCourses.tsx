@@ -44,6 +44,7 @@ interface CourseWithCounts {
   is_published: boolean | null;
   featured: boolean | null;
   created_at: string | null;
+  tags: string[] | null;
   module_count: number;
   enrollment_count: number;
 }
