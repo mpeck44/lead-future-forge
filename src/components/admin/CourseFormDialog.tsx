@@ -39,6 +39,7 @@ const courseFormSchema = z.object({
   estimated_hours: z.coerce.number().min(0, 'Estimated hours must be 0 or greater').optional(),
   is_published: z.boolean().default(false),
   featured: z.boolean().default(false),
+  tags: z.array(z.string()).default([]),
 });
 
 export type CourseFormValues = z.infer<typeof courseFormSchema>;
