@@ -1,84 +1,73 @@
 
 
-## Flexible Course Tagging System
+## Add "Problem" and "Differentiator" Sections to the Landing Page
 
-### Current State
-
-Right now, the only categorization for courses is a single `path_type` dropdown with 5 hardcoded options (Leadership Path 1/2/3, Standalone, Bundle). Modules have a similar fixed `path_type` field. There's no way to add additional labels like "AI Literacy", "Beginner", "ISTE Aligned", etc.
-
-### What This Adds
-
-A flexible tagging system that lets you create and assign any number of custom tags to courses. Tags appear as color-coded badges throughout the admin and public-facing pages.
-
-**Examples of tags you might create:**
-- Topic tags: "AI Literacy", "Data Privacy", "Strategic Planning"
-- Audience tags: "Beginner", "Advanced", "Cabinet-Level"
-- Alignment tags: "ISTE Aligned", "COSN Framework"
-- Status tags: "New", "Updated", "Popular"
+Two new content sections will be inserted into the landing page flow to create emotional resonance and differentiate the platform.
 
 ---
 
-### How It Works
-
-**In the Admin Course Form:**
-- A new "Tags" field appears below the existing Path Type dropdown
-- Type a tag name and press Enter (or comma) to add it
-- Tags appear as removable pills/chips in the input
-- As you type, existing tags from other courses are suggested in a dropdown (autocomplete) so you stay consistent
-- Tags are freeform -- you can type anything, no predefined list required
-
-**In the Admin Courses Table:**
-- Tags display as small badges next to the course title
-- A new "Tag" filter dropdown lets you filter courses by any tag
-
-**On the Public Courses Page:**
-- Tags appear as small badges on each course card
-- Visitors can see at a glance what each course covers
-
-**On the Landing Page (Featured Courses):**
-- Tags show as subtle badges in the course card meta bar area, alongside the existing time/audience pills
-
----
-
-### Technical Approach
-
-**Database: Add a `tags` column to the `courses` table**
-
-A `text[]` (text array) column on the courses table. This matches the pattern already used elsewhere in the project (e.g., `interested_courses` on `waitlist_leads`, `key_takeaways` on `lessons`). No extra tables or joins needed.
+### Page Flow (Updated)
 
 ```text
-ALTER TABLE courses ADD COLUMN tags text[] DEFAULT '{}';
+Header
+  |
+Hero
+  |
+NEW: "The Problem You're Facing" section
+  |
+Featured Course Cards ("What You'll Build")
+  |
+NEW: "What Makes This Different" section
+  |
+Footer
 ```
 
-This is the simplest approach for the current scale. Each course stores its own array of tag strings. To get all unique tags across courses (for autocomplete and filtering), we query distinct values from the array.
+---
+
+### Section 1: The Problem You're Facing
+
+Placed between the Hero and the course cards. Dark navy background (matching the hero) so it feels like a natural continuation before transitioning to the lighter card section.
+
+**Layout:**
+- Section heading: "The Problem You're Facing" in display font
+- Three pain-point statements in a responsive 3-column grid (stacked on mobile), each with a subtle left border accent in teal or gold
+- Closing line below: "You don't need another workshop. You need a system." -- styled as a standout quote with gold accent
+
+**Visual details:**
+- Navy background with subtle dot grid texture (reusing the existing `.hero-dot-grid` pattern)
+- Each pain-point card has a semi-transparent background with a colored left border
+- Staggered fade-in animation on scroll (optional, keeps it simple for now)
+
+---
+
+### Section 2: What Makes This Different
+
+Placed after the course cards section. Light background (matching the card section) with a clean, professional layout.
+
+**Layout:**
+- Section heading: "What Makes This Different"
+- Four feature blocks in a 2x2 grid (stacked on mobile), each with:
+  - An icon (Hammer/wrench for practitioner, Briefcase for portfolio, GitFork/split for pathways, ShieldCheck for standards)
+  - Bold title
+  - 1-2 sentence description
+- Clean card styling with subtle borders
+
+---
+
+### Technical Details
 
 **Files to create:**
 
 | File | Purpose |
 |------|---------|
-| `src/components/admin/TagInput.tsx` | Reusable tag input component with autocomplete, chip display, and keyboard support (Enter/comma to add, Backspace to remove) |
+| `src/components/ProblemSection.tsx` | "The Problem You're Facing" section with three pain-point cards and closing statement |
+| `src/components/DifferentiatorSection.tsx` | "What Makes This Different" section with four feature blocks |
 
 **Files to modify:**
 
 | File | Change |
-|------|---------|
-| `src/components/admin/CourseFormDialog.tsx` | Add `tags` field to the form schema and render the TagInput component below Path Type |
-| `src/pages/admin/AdminCourses.tsx` | Display tags as badges in the table, add a tag filter dropdown, pass tags through create/update mutations |
-| `src/pages/Courses.tsx` | Show tags as badges on public course cards |
-| `src/components/FeaturedCourse.tsx` | Show tags in the featured course cards on the landing page, fetch tags in the query |
+|------|--------|
+| `src/pages/Index.tsx` | Import and place the two new components: ProblemSection between Hero and FeaturedCourse, DifferentiatorSection after FeaturedCourse |
 
-**TagInput component behavior:**
-- Text input with inline chip display
-- Typing and pressing Enter or comma creates a new tag (auto-trimmed, lowercased for consistency)
-- Backspace on empty input removes the last tag
-- Dropdown shows existing tags from other courses (fetched via a query that extracts unique values from all courses' `tags` arrays)
-- Clicking a suggestion adds it
-- Each chip has an X button to remove
-- Duplicate prevention (case-insensitive)
-
-**Tag display styling:**
-- Admin table: small outline badges, max 3 visible with "+N more" overflow
-- Public pages: subtle colored badges matching the existing design system
-
-**No changes to RLS policies needed** -- the existing course policies already cover this column since it's on the same table.
+All copy is exactly as provided. No database changes needed.
 
