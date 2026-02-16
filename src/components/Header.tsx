@@ -13,10 +13,12 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from "@/hooks/useAuth";
 import { useAdminRole } from "@/hooks/useAdminRole";
 import { supabase } from "@/integrations/supabase/client";
+import WaitlistModal from "./WaitlistModal";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [userName, setUserName] = useState<string | null>(null);
+  const [waitlistOpen, setWaitlistOpen] = useState(false);
   const { user, signOut } = useAuth();
   const { isAdmin } = useAdminRole();
   const navigate = useNavigate();
@@ -60,7 +62,8 @@ const Header = () => {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border">
+    <>
+      <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 lg:h-20">
           {/* Logo */}
@@ -158,11 +161,15 @@ const Header = () => {
               </DropdownMenu>
             ) : (
               <>
-                <Button variant="ghost" asChild className="font-body font-medium">
-                  <Link to="/auth">Log In</Link>
+                <Button asChild className="font-body font-medium bg-green hover:bg-green/90 text-white">
+                  <a href="#courses">Get the Leadership Forge Preview</a>
                 </Button>
-                <Button asChild className="font-body font-medium bg-primary hover:bg-dark-teal">
-                  <Link to="/auth">Sign Up</Link>
+                <Button
+                  variant="outline"
+                  className="font-body font-medium"
+                  onClick={() => setWaitlistOpen(true)}
+                >
+                  Join the Leadership Waitlist
                 </Button>
               </>
             )}
@@ -256,11 +263,18 @@ const Header = () => {
                     About
                   </a>
                   <div className="flex flex-col gap-2 pt-4 border-t border-border">
-                    <Button variant="ghost" asChild className="font-body font-medium justify-start">
-                      <Link to="/auth" onClick={() => setIsMenuOpen(false)}>Log In</Link>
+                    <Button asChild className="font-body font-medium justify-start bg-green hover:bg-green/90 text-white">
+                      <a href="#courses" onClick={() => setIsMenuOpen(false)}>Get the Leadership Forge Preview</a>
                     </Button>
-                    <Button asChild className="font-body font-medium bg-primary hover:bg-dark-teal">
-                      <Link to="/auth" onClick={() => setIsMenuOpen(false)}>Sign Up</Link>
+                    <Button
+                      variant="outline"
+                      className="font-body font-medium justify-start"
+                      onClick={() => {
+                        setWaitlistOpen(true);
+                        setIsMenuOpen(false);
+                      }}
+                    >
+                      Join the Leadership Waitlist
                     </Button>
                   </div>
                 </>
@@ -270,6 +284,9 @@ const Header = () => {
         )}
       </div>
     </header>
+
+      <WaitlistModal open={waitlistOpen} onOpenChange={setWaitlistOpen} source="header" />
+    </>
   );
 };
 

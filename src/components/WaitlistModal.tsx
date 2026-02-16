@@ -111,7 +111,7 @@ const WaitlistModal = ({
 
   const title = courseTitle
     ? `Join the Waitlist for ${courseTitle}`
-    : "Join the Waitlist";
+    : "Join the Leadership Waitlist";
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
@@ -140,7 +140,7 @@ const WaitlistModal = ({
             <DialogHeader>
               <DialogTitle className="font-display text-xl">{title}</DialogTitle>
               <DialogDescription className="font-body">
-                Be the first to know when new pathways open. No spam—just launch updates.
+                Get launch updates, timeline details, and deliverables previews. No spam.
               </DialogDescription>
             </DialogHeader>
 
@@ -222,7 +222,7 @@ const WaitlistModal = ({
                     Joining...
                   </>
                 ) : (
-                  "Join the Waitlist"
+                  "Join the Leadership Waitlist"
                 )}
               </Button>
 
