@@ -8,15 +8,15 @@ import {
   Target,
   Users,
   GraduationCap,
-  Award,
-} from "lucide-react";
+  Award } from
+"lucide-react";
 import WaitlistModal from "./WaitlistModal";
 
 const stats = [
-  { icon: Users, value: "50+", label: "District Leaders Trained" },
-  { icon: GraduationCap, value: "4", label: "Leadership Courses" },
-  { icon: Award, value: "COSN & ISTE", label: "Standards Aligned" },
-];
+{ icon: Users, value: "50+", label: "District Leaders Trained" },
+{ icon: GraduationCap, value: "4", label: "Leadership Courses" },
+{ icon: Award, value: "COSN & ISTE", label: "Standards Aligned" }];
+
 
 const Hero = () => {
   const [waitlistOpen, setWaitlistOpen] = useState(false);
@@ -35,17 +35,17 @@ const Hero = () => {
           <div className="mx-auto max-w-6xl grid lg:grid-cols-[1.05fr_0.95fr] items-center gap-12 lg:gap-10">
             {/* Left column */}
             <div className="text-center lg:text-left">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green/15 border border-green/30 mb-8 animate-fade-in">
-                <Compass className="w-4 h-4 text-green" />
-                <span className="font-body text-[11px] uppercase tracking-widest text-navy font-semibold">
-                  For K-12 Superintendents, Principals, and District Leaders
-                </span>
-              </div>
+              
+
+
+
+
+
 
               <h1
                 className="font-display text-[2.6rem] sm:text-[3rem] lg:text-[3.35rem] font-bold text-navy leading-tight mb-4 animate-fade-in"
-                style={{ animationDelay: "0.1s" }}
-              >
+                style={{ animationDelay: "0.1s" }}>
+
                 From Reactive to Strategic:{" "}
                 <span className="text-dark-teal">
                   Lead AI Adoption With Confidence and Outcomes.
@@ -54,13 +54,13 @@ const Hero = () => {
 
               <div
                 className="mb-6 h-1 w-28 rounded-full bg-gradient-to-r from-dark-teal to-green animate-fade-in lg:mx-0 mx-auto"
-                style={{ animationDelay: "0.15s" }}
-              />
+                style={{ animationDelay: "0.15s" }} />
+
 
               <p
                 className="font-body text-lg sm:text-xl text-navy/70 max-w-2xl mx-auto lg:mx-0 mb-10 leading-relaxed animate-fade-in"
-                style={{ animationDelay: "0.2s" }}
-              >
+                style={{ animationDelay: "0.2s" }}>
+
                 A professional development system designed to help K-12 leaders
                 move beyond tools and workshops to build real AI strategies,
                 governance frameworks, and implementation roadmaps — with
@@ -69,13 +69,13 @@ const Hero = () => {
 
               <div
                 className="flex flex-col sm:flex-row items-center lg:items-start justify-center lg:justify-start gap-4 animate-fade-in"
-                style={{ animationDelay: "0.3s" }}
-              >
+                style={{ animationDelay: "0.3s" }}>
+
                 <Button
                   size="lg"
                   onClick={scrollToCourses}
-                  className="font-body font-semibold bg-green hover:bg-green/90 text-white px-8 py-6 text-base group"
-                >
+                  className="font-body font-semibold bg-green hover:bg-green/90 text-white px-8 py-6 text-base group">
+
                   Get the Leadership Forge Preview
                   <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </Button>
@@ -83,8 +83,8 @@ const Hero = () => {
                   size="lg"
                   variant="outline"
                   onClick={() => setWaitlistOpen(true)}
-                  className="font-body font-semibold border-navy text-navy hover:bg-navy/5 px-8 py-6 text-base"
-                >
+                  className="font-body font-semibold border-navy text-navy hover:bg-navy/5 px-8 py-6 text-base">
+
                   Join the Leadership Waitlist
                 </Button>
               </div>
@@ -92,11 +92,11 @@ const Hero = () => {
               {/* Stats bar */}
               <div
                 className="mt-14 animate-fade-in"
-                style={{ animationDelay: "0.4s" }}
-              >
+                style={{ animationDelay: "0.4s" }}>
+
                 <div className="flex flex-wrap items-start justify-center lg:justify-start gap-10">
-                  {stats.map((stat) => (
-                    <div key={stat.label} className="flex items-center gap-3">
+                  {stats.map((stat) =>
+                  <div key={stat.label} className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-xl bg-dark-teal/10 flex items-center justify-center">
                         <stat.icon className="h-5 w-5 text-dark-teal" />
                       </div>
@@ -109,7 +109,7 @@ const Hero = () => {
                         </p>
                       </div>
                     </div>
-                  ))}
+                  )}
                 </div>
               </div>
             </div>
@@ -155,8 +155,8 @@ const Hero = () => {
 
                 <Button
                   onClick={scrollToCourses}
-                  className="w-full font-body font-semibold bg-green hover:bg-green/90 text-white"
-                >
+                  className="w-full font-body font-semibold bg-green hover:bg-green/90 text-white">
+
                   Continue with Course Preview
                 </Button>
 
@@ -175,10 +175,10 @@ const Hero = () => {
       <WaitlistModal
         open={waitlistOpen}
         onOpenChange={setWaitlistOpen}
-        source="hero-waitlist"
-      />
-    </>
-  );
+        source="hero-waitlist" />
+
+    </>);
+
 };
 
 export default Hero;
