@@ -1,56 +1,76 @@
 
 
-## Add "Problem" and "Differentiator" Sections to the Landing Page
+## Landing Page Revisions
 
-Two new content sections will be inserted into the landing page flow to create emotional resonance and differentiate the platform.
+Based on the LearnHub reference screenshots and your feedback, here are the changes planned across the landing page.
 
 ---
 
-### Page Flow (Updated)
+### 1. Hero Section Overhaul
+
+**Background**: Switch from the current dark navy gradient to a light, warm background (cream/off-white like the reference). This immediately fixes the contrast issue where everything blends together.
+
+**Text colors**: Headline becomes dark navy, subheadline becomes a muted dark gray. The accent span in the headline stays a brand color (teal) for emphasis.
+
+**Remove the social proof bubbles**: The four pill badges below the CTAs ("50+ district leaders trained", "Standards aligned", etc.) will be removed entirely.
+
+**Add a stats bar**: Replace the bubbles with a clean stats row similar to the reference (bold numbers with labels underneath), using your real figures:
+- "50+" / "District Leaders Trained"  
+- "4" / "Leadership Courses"
+- "COSN & ISTE" / "Standards Aligned"
+
+**Buttons stay** but adapt to the light background:
+- Primary CTA ("Get the Leadership Forge Preview") stays solid green
+- Secondary CTA ("Join the Leadership Waitlist") becomes an outlined dark button (navy border + navy text) so it stands out on the light background
+
+**Course card stays** on the right, unchanged -- it already looks great.
+
+**Remove floating orbs and dot grid** since they were designed for the dark background and would look odd on a light one.
+
+**Keep the audience badge** at top ("For K-12 Superintendents...") but restyle it for the light background (green pill with dark text, similar to the "New: AI-Powered Learning" badge in the reference).
+
+---
+
+### 2. Replace "Problem You're Facing" with Testimonials
+
+Instead of the pain-point section, create a testimonials section titled "What Our Leaders Say" (styled like the "What Our Students Say" reference). Three testimonial cards in a row with:
+- Star rating (5 stars)
+- Quote text
+- Name and title/role
+
+Placeholder testimonials will be used -- you can swap in real ones later. Light background, clean card styling with subtle borders.
+
+---
+
+### 3. Add Final CTA Section
+
+A new section at the very bottom of the page (before the footer) with:
+- Bold headline: "Ready to Lead AI in Your District?"
+- Short supporting line
+- Two buttons: primary CTA (green) and secondary (outline)
+- Centered layout inside a clean card on a light teal/blue background (like the reference)
+
+---
+
+### 4. Page Flow (Updated)
 
 ```text
 Header
   |
-Hero
+Hero (light background, stats bar, no bubbles)
   |
-NEW: "The Problem You're Facing" section
+Testimonials ("What Our Leaders Say") -- replaces ProblemSection
   |
-Featured Course Cards ("What You'll Build")
+Outcomes ("What This Program Delivers")
   |
-NEW: "What Makes This Different" section
+Featured Course Cards
+  |
+What Makes This Different
+  |
+NEW: Final CTA Section
   |
 Footer
 ```
-
----
-
-### Section 1: The Problem You're Facing
-
-Placed between the Hero and the course cards. Dark navy background (matching the hero) so it feels like a natural continuation before transitioning to the lighter card section.
-
-**Layout:**
-- Section heading: "The Problem You're Facing" in display font
-- Three pain-point statements in a responsive 3-column grid (stacked on mobile), each with a subtle left border accent in teal or gold
-- Closing line below: "You don't need another workshop. You need a system." -- styled as a standout quote with gold accent
-
-**Visual details:**
-- Navy background with subtle dot grid texture (reusing the existing `.hero-dot-grid` pattern)
-- Each pain-point card has a semi-transparent background with a colored left border
-- Staggered fade-in animation on scroll (optional, keeps it simple for now)
-
----
-
-### Section 2: What Makes This Different
-
-Placed after the course cards section. Light background (matching the card section) with a clean, professional layout.
-
-**Layout:**
-- Section heading: "What Makes This Different"
-- Four feature blocks in a 2x2 grid (stacked on mobile), each with:
-  - An icon (Hammer/wrench for practitioner, Briefcase for portfolio, GitFork/split for pathways, ShieldCheck for standards)
-  - Bold title
-  - 1-2 sentence description
-- Clean card styling with subtle borders
 
 ---
 
@@ -60,14 +80,15 @@ Placed after the course cards section. Light background (matching the card secti
 
 | File | Purpose |
 |------|---------|
-| `src/components/ProblemSection.tsx` | "The Problem You're Facing" section with three pain-point cards and closing statement |
-| `src/components/DifferentiatorSection.tsx` | "What Makes This Different" section with four feature blocks |
+| `src/components/TestimonialsSection.tsx` | Three testimonial cards with stars, quotes, and attribution |
+| `src/components/FinalCTA.tsx` | Bottom-of-page call-to-action section with two buttons |
 
 **Files to modify:**
 
 | File | Change |
-|------|--------|
-| `src/pages/Index.tsx` | Import and place the two new components: ProblemSection between Hero and FeaturedCourse, DifferentiatorSection after FeaturedCourse |
+|------|---------|
+| `src/components/Hero.tsx` | Light background, remove bubbles, add stats bar, restyle buttons and text for light theme, remove floating orbs/dot grid |
+| `src/pages/Index.tsx` | Replace ProblemSection with TestimonialsSection, add FinalCTA before Footer |
 
-All copy is exactly as provided. No database changes needed.
+**No database changes needed.**
 
