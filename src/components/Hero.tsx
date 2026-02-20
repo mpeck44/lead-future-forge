@@ -87,32 +87,8 @@ const Hero = () => {
                   onClick={() => setWaitlistOpen(true)}
                   className="font-body font-semibold border-navy text-navy hover:bg-navy/5 px-8 py-6 text-base">
 
-                  Join the Leadership Waitlist
-                </Button>
-              </div>
-
-              {/* Stats bar */}
-              <div
-                className="mt-14 animate-fade-in"
-                style={{ animationDelay: "0.4s" }}>
-
-                <div className="flex flex-wrap items-start justify-center lg:justify-start gap-10">
-                  {stats.map((stat) =>
-                  <div key={stat.label} className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-dark-teal/10 flex items-center justify-center">
-                        <stat.icon className="h-5 w-5 text-dark-teal" />
-                      </div>
-                      <div>
-                        <p className="font-display text-2xl font-bold text-navy leading-none">
-                          {stat.value}
-                        </p>
-                        <p className="font-body text-xs text-navy/60 mt-0.5">
-                          {stat.label}
-                        </p>
-                      </div>
-                    </div>
-                  )}
-                </div>
+                   Join the Leadership Waitlist
+                 </Button>
               </div>
             </div>
 
