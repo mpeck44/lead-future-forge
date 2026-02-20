@@ -32,7 +32,9 @@ const Hero = () => {
     <>
       <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden pt-20 bg-[hsl(40,33%,96%)]">
         <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mx-auto max-w-6xl grid lg:grid-cols-[1.05fr_0.95fr] items-center gap-12 lg:gap-10">
+          <div className="mx-auto max-w-6xl">
+            {/* Two-column grid */}
+            <div className="grid lg:grid-cols-2 items-center gap-12 lg:gap-10">
             {/* Left column */}
             <div className="text-center lg:text-left">
               
