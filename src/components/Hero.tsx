@@ -135,7 +135,7 @@ const Hero = () => {
             <div
               className="mt-12 pt-10 border-t border-navy/10 animate-fade-in"
               style={{ animationDelay: "0.45s" }}>
-              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-10">
+              <div className="flex flex-wrap items-center justify-center lg:justify-end gap-10">
                 {stats.map((stat) => (
                   <div key={stat.label} className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl bg-dark-teal/10 flex items-center justify-center">
