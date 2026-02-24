@@ -80,8 +80,8 @@ const Hero = () => {
               </div>
 
               {/* Right column — course card */}
-              <div className="animate-fade-in" style={{ animationDelay: "0.32s" }}>
-                <div className="mx-auto max-w-md rounded-3xl border border-navy/15 bg-white p-5 shadow-[0_28px_80px_-34px_rgba(8,40,52,0.18)]">
+              <div className="animate-fade-in flex items-center" style={{ animationDelay: "0.32s" }}>
+                <div className="w-full rounded-3xl border border-navy/15 bg-white p-7 shadow-[0_28px_80px_-34px_rgba(8,40,52,0.18)]">
                   <div className="flex items-start justify-between gap-3 mb-4">
                     <div className="flex items-center gap-3">
                       <div className="w-11 h-11 rounded-xl bg-[hsl(191,65%,88%)] flex items-center justify-center">
