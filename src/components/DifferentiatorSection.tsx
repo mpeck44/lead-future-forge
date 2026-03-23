@@ -29,7 +29,8 @@ const features = [
 
 const DifferentiatorSection = () => {
   return (
-    <section id="about" className="py-[120px] bg-navy">
+    <section id="about" className="relative py-[120px] bg-navy overflow-hidden">
+      <div className="absolute inset-0 forge-texture opacity-10" />
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <h2 className="font-display text-4xl sm:text-5xl lg:text-[56px] font-bold text-white mb-24">
           What Makes This Different
