@@ -45,7 +45,7 @@ const OutcomesSection = () => {
                 <div
                   className="shrink-0 w-[72px] h-[72px] sm:w-[80px] sm:h-[80px] rounded-full bg-burnt-orange flex items-center justify-center"
                   style={{
-                    boxShadow: "0 0 30px hsl(38 93% 44% / 0.35), 0 0 60px hsl(38 93% 44% / 0.15)",
+                    boxShadow: "0 0 30px hsl(43 69% 52% / 0.35), 0 0 60px hsl(43 69% 52% / 0.15)",
                   }}
                 >
                   <span className="font-display text-2xl sm:text-3xl font-bold text-white leading-none">

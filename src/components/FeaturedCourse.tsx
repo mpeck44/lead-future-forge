@@ -222,7 +222,7 @@ const FeaturedCourse = () => {
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <Button
                           onClick={() => openWaitlist(course.slug, content.title, "overview")}
-                          className="w-full font-body font-semibold gap-2 bg-burnt-orange hover:bg-burnt-orange/90 text-white text-base py-6"
+                          className="w-full font-body font-semibold gap-2 bg-burnt-orange hover:bg-[hsl(43,72%,66%)] text-navy text-base py-6"
                         >
                           <Sparkles className="w-4 h-4" />
                           Download Overview
