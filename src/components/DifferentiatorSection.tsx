@@ -1,54 +1,53 @@
-import { Hammer, Briefcase, GitFork, ShieldCheck } from "lucide-react";
-
 const features = [
   {
-    icon: Hammer,
+    number: "01",
     title: "Built by a Practitioner, For Practitioners",
     description:
-      "Every framework comes from real implementation in actual schools—not consulting theory or academic research.",
+      "Every framework comes from real implementation in actual schools — not consulting theory or academic research.",
   },
   {
-    icon: Briefcase,
+    number: "02",
     title: "Portfolio-Based Learning",
     description:
       "Each course produces deliverables you can use Monday morning: governance frameworks, communication templates, strategic roadmaps.",
   },
   {
-    icon: GitFork,
+    number: "03",
     title: "Flexible Pathways",
     description:
       "Start where you are. Follow the recommended sequence, or jump to what you need most.",
   },
   {
-    icon: ShieldCheck,
+    number: "04",
     title: "Standards-Aligned",
-    description: "Aligned with leadership standards from COSN and ISTE.",
+    description:
+      "Aligned with leadership standards from COSN and ISTE — ensuring your work meets professional benchmarks.",
   },
 ];
 
 const DifferentiatorSection = () => {
   return (
-    <section id="about" className="py-20 bg-background">
+    <section id="about" className="py-24 lg:py-32 bg-background">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 className="font-display text-3xl sm:text-4xl font-bold text-foreground text-center mb-12">
+        <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground text-center mb-20">
           What Makes This Different
         </h2>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-4xl mx-auto">
-          {features.map(({ icon: Icon, title, description }) => (
+        <div className="max-w-3xl mx-auto">
+          {features.map((item, i) => (
             <div
-              key={title}
-              className="rounded-lg border border-border bg-card p-6 flex gap-4"
+              key={item.number}
+              className={`flex gap-6 sm:gap-10 py-10 ${
+                i < features.length - 1 ? "border-b border-border" : ""
+              }`}
             >
-              <div className="flex-shrink-0 mt-1">
-                <Icon className="h-6 w-6 text-primary" />
-              </div>
+              <div className="w-1 shrink-0 rounded-full bg-burnt-orange/40" />
               <div>
-                <h3 className="font-display text-lg font-semibold text-card-foreground mb-1">
-                  {title}
+                <h3 className="font-display text-xl sm:text-2xl font-semibold text-foreground mb-2">
+                  {item.title}
                 </h3>
-                <p className="font-body text-sm text-muted-foreground leading-relaxed">
-                  {description}
+                <p className="font-body text-base text-muted-foreground leading-relaxed">
+                  {item.description}
                 </p>
               </div>
             </div>

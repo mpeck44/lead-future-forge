@@ -7,7 +7,6 @@ import {
   Map,
   Megaphone,
   Network,
-  ShieldCheck,
   Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -83,10 +82,10 @@ const COURSE_CONTENT: Record<
 };
 
 const HEADER_STYLES: Record<string, string> = {
-  fluency: "bg-[hsl(183,54%,25%)]",
-  foundations: "bg-[hsl(183,54%,22%)]",
-  strategy: "bg-[hsl(226,37%,20%)]",
-  action: "bg-[hsl(146,50%,30%)]",
+  fluency: "bg-burnt-orange",
+  foundations: "bg-charcoal",
+  strategy: "bg-navy",
+  action: "bg-burnt-orange/80",
 };
 
 const COURSE_ORDER = ["fluency", "foundations", "strategy", "action"];
@@ -149,9 +148,9 @@ const FeaturedCourse = () => {
 
   return (
     <>
-      <section id="courses" className="py-20 lg:py-32 bg-background">
+      <section id="courses" className="py-24 lg:py-32 bg-background">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
+          <div className="text-center mb-20">
             <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-4">
               What You'll Build
             </h2>
@@ -161,57 +160,63 @@ const FeaturedCourse = () => {
           </div>
 
           {isLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
               {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="rounded-2xl overflow-hidden border border-border bg-card">
-                  <Skeleton className="h-20" />
-                  <div className="p-6 space-y-4">
+                <div key={i} className="rounded-xl overflow-hidden border border-border bg-card">
+                  <Skeleton className="h-24" />
+                  <div className="p-8 space-y-4">
                     <Skeleton className="h-7 w-3/4" />
                     <Skeleton className="h-6 w-2/3" />
                     <Skeleton className="h-24 w-full" />
-                    <Skeleton className="h-20 w-full" />
                   </div>
                 </div>
               ))}
             </div>
           ) : visibleCourses.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
               {visibleCourses.map((course) => {
                 const content = COURSE_CONTENT[course.slug];
                 const Icon = content.icon;
-                const deliverables = course.deliverables.length > 0 ? course.deliverables : content.deliverables;
+                const deliverables =
+                  course.deliverables.length > 0 ? course.deliverables : content.deliverables;
 
                 return (
                   <div
                     key={course.id}
-                    className="group relative bg-card rounded-2xl overflow-hidden shadow-lg border border-border flex flex-col transition-shadow hover:shadow-xl"
+                    className="group bg-card rounded-xl overflow-hidden border border-border flex flex-col transition-shadow hover:shadow-lg"
                   >
-                    <div className={`h-20 ${HEADER_STYLES[course.slug] || "bg-primary"} px-6 flex items-center justify-between`}>
-                      <div className="w-10 h-10 rounded-lg bg-white/10 border border-white/20 flex items-center justify-center">
+                    {/* Tall header band with title */}
+                    <div
+                      className={`${HEADER_STYLES[course.slug] || "bg-primary"} px-8 py-6 flex items-center gap-4`}
+                    >
+                      <div className="w-10 h-10 rounded-lg bg-white/15 flex items-center justify-center shrink-0">
                         <Icon className="w-5 h-5 text-white" />
                       </div>
-                      <ShieldCheck className="w-4 h-4 text-white/80" />
-                    </div>
-
-                    <div className="p-6 flex flex-col flex-1">
-                      <h3 className="font-display text-xl sm:text-2xl font-bold text-foreground mb-2">
+                      <h3 className="font-display text-xl font-bold text-white leading-tight">
                         {content.title}
                       </h3>
+                    </div>
 
-                      <p className="font-body text-sm text-muted-foreground mb-4">{content.shortDescription}</p>
+                    <div className="p-8 flex flex-col flex-1">
+                      <p className="font-body text-sm text-muted-foreground mb-3">
+                        {content.shortDescription}
+                      </p>
 
-                      <p className="font-body text-xs font-semibold uppercase tracking-wider text-primary mb-4">
+                      <p className="font-body text-xs font-semibold uppercase tracking-wider text-burnt-orange mb-6">
                         {content.timeline}
                       </p>
 
-                      <div className="flex-1 mb-6">
-                        <p className="font-body text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
+                      <div className="flex-1 mb-8">
+                        <p className="font-body text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
                           Deliverables
                         </p>
-                        <ul className="space-y-1.5">
+                        <ul className="space-y-2">
                           {deliverables.slice(0, 4).map((d, i) => (
-                            <li key={i} className="flex items-start gap-2 font-body text-sm text-foreground">
-                              <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                            <li
+                              key={i}
+                              className="flex items-start gap-2.5 font-body text-sm text-foreground"
+                            >
+                              <CheckCircle2 className="w-4 h-4 text-burnt-orange mt-0.5 shrink-0" />
                               <span>{d}</span>
                             </li>
                           ))}
@@ -221,17 +226,17 @@ const FeaturedCourse = () => {
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <Button
                           onClick={() => openWaitlist(course.slug, content.title, "overview")}
-                          className="w-full font-body font-semibold gap-2 bg-green hover:bg-green/90 text-white"
+                          className="w-full font-body font-semibold gap-2 bg-burnt-orange hover:bg-burnt-orange/90 text-white"
                         >
                           <Sparkles className="w-4 h-4" />
-                          Download Deliverables Overview
+                          Download Overview
                         </Button>
                         <Button
                           onClick={() => openWaitlist(course.slug, content.title, "waitlist")}
                           variant="outline"
                           className="w-full font-body font-semibold"
                         >
-                          Join the Leadership Waitlist
+                          Join the Waitlist
                         </Button>
                       </div>
                     </div>
