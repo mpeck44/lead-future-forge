@@ -54,10 +54,10 @@ const Hero = () => {
                 <Button
                   size="lg"
                   onClick={scrollToCourses}
-                  className="font-body font-semibold text-white px-12 py-8 text-[18px] group rounded-lg"
-                  style={{ backgroundColor: "#C2410C" }}
-                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#9A3412")}
-                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#C2410C")}
+                  className="font-body font-semibold px-12 py-8 text-[18px] group rounded-lg"
+                  style={{ backgroundColor: "#d4af37", color: "#0F172A" }}
+                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#e5c56b")}
+                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#d4af37")}
                 >
                   Get the Leadership Forge Preview
                   <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
