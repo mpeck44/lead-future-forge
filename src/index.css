@@ -146,3 +146,13 @@
     linear-gradient(90deg, hsl(220 13% 80% / 0.2) 1px, transparent 1px);
   background-size: 48px 48px;
 }
+
+/* Gold button / card hover: lighter gold + subtle scale */
+.gold-hover {
+  @apply transition-all duration-200 ease-out;
+}
+.gold-hover:hover {
+  background-color: hsl(var(--gold-hover)) !important;
+  transform: scale(1.03);
+}
+}

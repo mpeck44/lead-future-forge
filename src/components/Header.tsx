@@ -197,7 +197,7 @@ const Header = () => {
                       About
                     </a>
                     <div className="flex flex-col gap-2 pt-4 border-t border-border">
-                      <Button asChild className="font-body font-medium justify-start bg-burnt-orange hover:bg-[hsl(43,72%,66%)] text-navy">
+                      <Button asChild className="gold-hover font-body font-medium justify-start bg-burnt-orange text-navy">
                         <a href="#courses" onClick={() => setIsMenuOpen(false)}>Get the Leadership Forge Preview</a>
                       </Button>
                       <Button variant="outline" className="font-body font-medium justify-start" onClick={() => { setWaitlistOpen(true); setIsMenuOpen(false); }}>
