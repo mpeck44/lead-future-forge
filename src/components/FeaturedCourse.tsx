@@ -154,7 +154,7 @@ const FeaturedCourse = () => {
           {isLoading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
               {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="rounded-2xl overflow-hidden border border-white/10 bg-white/[0.03]">
+                <div key={i} className="rounded-lg overflow-hidden border border-white/10 bg-white/[0.03]">
                   <Skeleton className="h-[300px] bg-white/5" />
                   <div className="p-10 space-y-4">
                     <Skeleton className="h-8 w-3/4 bg-white/5" />
