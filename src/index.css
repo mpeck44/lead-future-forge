@@ -6,7 +6,7 @@
    Brand Colors (HSL):
    - Navy: #0F172A → 222 47% 11%
    - Charcoal: #1E293B → 217 33% 17%
-   - Burnt Orange: #D97706 → 38 93% 44%
+   - Burnt Orange Deep: #C2410C → 16 91% 40%
    - Gold: #D4AF37 → 46 65% 52%
    - Off-White: #FAFAF8 → 60 20% 97%
    - Warm Gray: #6B7280 → 220 9% 46%
@@ -24,7 +24,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
 
-    --primary: 38 93% 44%;
+    --primary: 16 91% 40%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 217 33% 17%;
@@ -41,27 +41,26 @@
 
     --border: 220 13% 85%;
     --input: 220 13% 85%;
-    --ring: 38 93% 44%;
+    --ring: 16 91% 40%;
 
     --radius: 0.5rem;
 
     /* Extended brand palette */
     --navy: 222 47% 11%;
     --charcoal: 217 33% 17%;
-    --burnt-orange: 38 93% 44%;
-    --burnt-orange-deep: 16 91% 40%;
+    --burnt-orange: 16 91% 40%;
     --gold: 46 65% 52%;
     --warm-gray: 220 9% 46%;
     --burgundy: 0 41% 46%;
 
     --sidebar-background: 222 47% 11%;
     --sidebar-foreground: 0 0% 95%;
-    --sidebar-primary: 38 93% 44%;
+    --sidebar-primary: 16 91% 40%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 222 47% 18%;
     --sidebar-accent-foreground: 0 0% 95%;
     --sidebar-border: 222 47% 20%;
-    --sidebar-ring: 38 93% 44%;
+    --sidebar-ring: 16 91% 40%;
   }
 
   .dark {
@@ -74,7 +73,7 @@
     --popover: 222 47% 11%;
     --popover-foreground: 0 0% 95%;
 
-    --primary: 38 93% 48%;
+    --primary: 16 91% 44%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 217 33% 20%;
@@ -91,16 +90,16 @@
 
     --border: 217 33% 25%;
     --input: 217 33% 25%;
-    --ring: 38 93% 48%;
+    --ring: 16 91% 44%;
 
     --sidebar-background: 222 47% 6%;
     --sidebar-foreground: 0 0% 95%;
-    --sidebar-primary: 38 93% 48%;
+    --sidebar-primary: 16 91% 44%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 222 47% 14%;
     --sidebar-accent-foreground: 0 0% 95%;
     --sidebar-border: 222 47% 18%;
-    --sidebar-ring: 38 93% 48%;
+    --sidebar-ring: 16 91% 44%;
   }
 }
 
@@ -111,13 +110,13 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'Inter', sans-serif;
     line-height: 1.5;
   }
 
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Playfair Display', serif;
-    line-height: 1.2;
+    line-height: 1.15;
   }
 }
 
@@ -126,5 +125,23 @@
   background-image:
     linear-gradient(hsl(222 47% 15% / 0.4) 1px, transparent 1px),
     linear-gradient(90deg, hsl(222 47% 15% / 0.4) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+/* Blueprint / forged-metal texture overlay */
+.forge-texture {
+  background-image:
+    linear-gradient(hsl(222 47% 15% / 0.3) 1px, transparent 1px),
+    linear-gradient(90deg, hsl(222 47% 15% / 0.3) 1px, transparent 1px),
+    radial-gradient(ellipse at 20% 50%, hsl(16 91% 40% / 0.03) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 30%, hsl(222 47% 20% / 0.2) 0%, transparent 50%);
+  background-size: 48px 48px, 48px 48px, 100% 100%, 100% 100%;
+}
+
+/* Light section texture (subtle warm grain) */
+.forge-texture-light {
+  background-image:
+    linear-gradient(hsl(220 13% 80% / 0.2) 1px, transparent 1px),
+    linear-gradient(90deg, hsl(220 13% 80% / 0.2) 1px, transparent 1px);
   background-size: 48px 48px;
 }
