@@ -135,7 +135,7 @@ const Header = () => {
                 </DropdownMenu>
               ) : (
                 <>
-                  <Button asChild className="font-body font-medium bg-burnt-orange hover:bg-[hsl(43,72%,66%)] text-navy">
+                  <Button asChild className="gold-hover font-body font-medium bg-burnt-orange text-navy">
                     <a href="#courses">Get the Leadership Forge Preview</a>
                   </Button>
                   <Button
