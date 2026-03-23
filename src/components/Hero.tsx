@@ -16,7 +16,7 @@ const Hero = () => {
     <>
       <section className="relative min-h-screen flex items-center overflow-hidden bg-navy pt-20">
         {/* Subtle grid texture */}
-        <div className="absolute inset-0 forge-grid-texture opacity-20" />
+        <div className="absolute inset-0 forge-texture opacity-10" />
 
         {/* Gradient overlay for depth */}
         <div className="absolute inset-0 bg-gradient-to-br from-navy via-charcoal/60 to-navy" />
