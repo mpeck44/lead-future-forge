@@ -31,18 +31,15 @@ const Header = () => {
           .select('full_name')
           .eq('id', user.id)
           .single();
-        
         if (data?.full_name) {
           setUserName(data.full_name);
         } else {
-          // Fallback to email
           setUserName(user.email?.split('@')[0] || 'User');
         }
       } else {
         setUserName(null);
       }
     };
-
     fetchUserName();
   }, [user]);
 
@@ -52,238 +49,168 @@ const Header = () => {
     setIsMenuOpen(false);
   };
 
-  const getInitials = (name: string) => {
-    return name
-      .split(' ')
-      .map((n) => n[0])
-      .join('')
-      .toUpperCase()
-      .slice(0, 2);
-  };
+  const getInitials = (name: string) =>
+    name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2);
 
   return (
     <>
       <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 lg:h-20">
-          {/* Logo */}
-          <Link to="/" className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
-              <span className="text-primary-foreground font-display font-bold text-lg">LF</span>
-            </div>
-            <span className="font-display font-semibold text-lg text-foreground hidden sm:block">
-              The Leadership Forge
-            </span>
-          </Link>
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16 lg:h-20">
+            {/* Logo */}
+            <Link to="/" className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-navy flex items-center justify-center">
+                <span className="text-burnt-orange font-display font-bold text-lg">LF</span>
+              </div>
+              <span className="font-display font-semibold text-lg text-foreground hidden sm:block">
+                The Leadership Forge
+              </span>
+            </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-8">
-            {user ? (
-              // Logged-in navigation
-              <>
-                <Link
-                  to="/dashboard"
-                  className="font-body text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
-                >
-                  Dashboard
-                </Link>
-                <Link
-                  to="/my-courses"
-                  className="font-body text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
-                >
-                  My Courses
-                </Link>
-                <Link
-                  to="/portfolio"
-                  className="font-body text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
-                >
-                  Portfolio
-                </Link>
-              </>
-            ) : (
-              // Logged-out navigation
-              <>
-                <Link
-                  to="/courses"
-                  className="font-body text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
-                >
-                  Courses
-                </Link>
-                <a
-                  href="#about"
-                  className="font-body text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
-                >
-                  About
-                </a>
-              </>
-            )}
-          </nav>
-
-          {/* Desktop Auth Buttons / User Menu */}
-          <div className="hidden md:flex items-center gap-4">
-            {user ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="flex items-center gap-2 font-body font-medium">
-                    <Avatar className="h-8 w-8">
-                      <AvatarFallback className="bg-primary text-primary-foreground text-xs">
-                        {userName ? getInitials(userName) : <User className="h-4 w-4" />}
-                      </AvatarFallback>
-                    </Avatar>
-                    <span className="max-w-[120px] truncate">{userName || 'User'}</span>
-                    <ChevronDown className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-48">
-                  <DropdownMenuItem asChild>
-                    <Link to="/profile" className="flex items-center cursor-pointer">
-                      <Settings className="mr-2 h-4 w-4" />
-                      Profile Settings
-                    </Link>
-                  </DropdownMenuItem>
-                  {isAdmin && (
-                    <>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem asChild>
-                        <Link to="/admin" className="flex items-center cursor-pointer">
-                          <Shield className="mr-2 h-4 w-4" />
-                          Admin Console
-                        </Link>
-                      </DropdownMenuItem>
-                    </>
-                  )}
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer">
-                    <LogOut className="mr-2 h-4 w-4" />
-                    Log Out
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            ) : (
-              <>
-                <Button asChild className="font-body font-medium bg-green hover:bg-green/90 text-white">
-                  <a href="#courses">Get the Leadership Forge Preview</a>
-                </Button>
-                <Button
-                  variant="outline"
-                  className="font-body font-medium"
-                  onClick={() => setWaitlistOpen(true)}
-                >
-                  Join the Leadership Waitlist
-                </Button>
-              </>
-            )}
-          </div>
-
-          {/* Mobile Menu Button */}
-          <button
-            className="md:hidden p-2 text-foreground"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            aria-label="Toggle menu"
-          >
-            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
-        </div>
-
-        {/* Mobile Menu */}
-        {isMenuOpen && (
-          <div className="md:hidden py-4 border-t border-border animate-fade-in">
-            <nav className="flex flex-col gap-4">
+            {/* Desktop Navigation */}
+            <nav className="hidden md:flex items-center gap-8">
               {user ? (
-                // Logged-in mobile navigation
                 <>
-                  <Link
-                    to="/dashboard"
-                    className="flex items-center gap-2 font-body text-sm font-medium text-muted-foreground hover:text-primary transition-colors py-2"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    <LayoutDashboard className="h-4 w-4" />
+                  <Link to="/dashboard" className="font-body text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
                     Dashboard
                   </Link>
-                  <Link
-                    to="/my-courses"
-                    className="flex items-center gap-2 font-body text-sm font-medium text-muted-foreground hover:text-primary transition-colors py-2"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    <BookOpen className="h-4 w-4" />
+                  <Link to="/my-courses" className="font-body text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
                     My Courses
                   </Link>
-                  <Link
-                    to="/portfolio"
-                    className="flex items-center gap-2 font-body text-sm font-medium text-muted-foreground hover:text-primary transition-colors py-2"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    <Briefcase className="h-4 w-4" />
+                  <Link to="/portfolio" className="font-body text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
                     Portfolio
                   </Link>
-                  <div className="flex flex-col gap-2 pt-4 border-t border-border">
-                    <Link
-                      to="/profile"
-                      className="flex items-center gap-2 font-body text-sm font-medium text-muted-foreground hover:text-primary transition-colors py-2"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      <Settings className="h-4 w-4" />
-                      Profile Settings
-                    </Link>
-                    {isAdmin && (
-                      <Link
-                        to="/admin"
-                        className="flex items-center gap-2 font-body text-sm font-medium text-muted-foreground hover:text-primary transition-colors py-2"
-                        onClick={() => setIsMenuOpen(false)}
-                      >
-                        <Shield className="h-4 w-4" />
-                        Admin Console
-                      </Link>
-                    )}
-                    <Button 
-                      variant="outline" 
-                      onClick={handleSignOut}
-                      className="font-body font-medium justify-start"
-                    >
-                      <LogOut className="mr-2 h-4 w-4" />
-                      Log Out
-                    </Button>
-                  </div>
                 </>
               ) : (
-                // Logged-out mobile navigation
                 <>
-                  <Link
-                    to="/courses"
-                    className="font-body text-sm font-medium text-muted-foreground hover:text-primary transition-colors py-2"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
+                  <Link to="/courses" className="font-body text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
                     Courses
                   </Link>
-                  <a
-                    href="#about"
-                    className="font-body text-sm font-medium text-muted-foreground hover:text-primary transition-colors py-2"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
+                  <a href="#about" className="font-body text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
                     About
                   </a>
-                  <div className="flex flex-col gap-2 pt-4 border-t border-border">
-                    <Button asChild className="font-body font-medium justify-start bg-green hover:bg-green/90 text-white">
-                      <a href="#courses" onClick={() => setIsMenuOpen(false)}>Get the Leadership Forge Preview</a>
-                    </Button>
-                    <Button
-                      variant="outline"
-                      className="font-body font-medium justify-start"
-                      onClick={() => {
-                        setWaitlistOpen(true);
-                        setIsMenuOpen(false);
-                      }}
-                    >
-                      Join the Leadership Waitlist
-                    </Button>
-                  </div>
                 </>
               )}
             </nav>
+
+            {/* Desktop Auth Buttons / User Menu */}
+            <div className="hidden md:flex items-center gap-4">
+              {user ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="flex items-center gap-2 font-body font-medium">
+                      <Avatar className="h-8 w-8">
+                        <AvatarFallback className="bg-burnt-orange text-primary-foreground text-xs">
+                          {userName ? getInitials(userName) : <User className="h-4 w-4" />}
+                        </AvatarFallback>
+                      </Avatar>
+                      <span className="max-w-[120px] truncate">{userName || 'User'}</span>
+                      <ChevronDown className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-48">
+                    <DropdownMenuItem asChild>
+                      <Link to="/profile" className="flex items-center cursor-pointer">
+                        <Settings className="mr-2 h-4 w-4" />
+                        Profile Settings
+                      </Link>
+                    </DropdownMenuItem>
+                    {isAdmin && (
+                      <>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem asChild>
+                          <Link to="/admin" className="flex items-center cursor-pointer">
+                            <Shield className="mr-2 h-4 w-4" />
+                            Admin Console
+                          </Link>
+                        </DropdownMenuItem>
+                      </>
+                    )}
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer">
+                      <LogOut className="mr-2 h-4 w-4" />
+                      Log Out
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <>
+                  <Button asChild className="font-body font-medium bg-burnt-orange hover:bg-burnt-orange/90 text-white">
+                    <a href="#courses">Get the Leadership Forge Preview</a>
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="font-body font-medium"
+                    onClick={() => setWaitlistOpen(true)}
+                  >
+                    Join the Waitlist
+                  </Button>
+                </>
+              )}
+            </div>
+
+            {/* Mobile Menu Button */}
+            <button
+              className="md:hidden p-2 text-foreground"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              aria-label="Toggle menu"
+            >
+              {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
           </div>
-        )}
-      </div>
-    </header>
+
+          {/* Mobile Menu */}
+          {isMenuOpen && (
+            <div className="md:hidden py-4 border-t border-border animate-fade-in">
+              <nav className="flex flex-col gap-4">
+                {user ? (
+                  <>
+                    <Link to="/dashboard" className="flex items-center gap-2 font-body text-sm font-medium text-muted-foreground hover:text-foreground transition-colors py-2" onClick={() => setIsMenuOpen(false)}>
+                      <LayoutDashboard className="h-4 w-4" /> Dashboard
+                    </Link>
+                    <Link to="/my-courses" className="flex items-center gap-2 font-body text-sm font-medium text-muted-foreground hover:text-foreground transition-colors py-2" onClick={() => setIsMenuOpen(false)}>
+                      <BookOpen className="h-4 w-4" /> My Courses
+                    </Link>
+                    <Link to="/portfolio" className="flex items-center gap-2 font-body text-sm font-medium text-muted-foreground hover:text-foreground transition-colors py-2" onClick={() => setIsMenuOpen(false)}>
+                      <Briefcase className="h-4 w-4" /> Portfolio
+                    </Link>
+                    <div className="flex flex-col gap-2 pt-4 border-t border-border">
+                      <Link to="/profile" className="flex items-center gap-2 font-body text-sm font-medium text-muted-foreground hover:text-foreground transition-colors py-2" onClick={() => setIsMenuOpen(false)}>
+                        <Settings className="h-4 w-4" /> Profile Settings
+                      </Link>
+                      {isAdmin && (
+                        <Link to="/admin" className="flex items-center gap-2 font-body text-sm font-medium text-muted-foreground hover:text-foreground transition-colors py-2" onClick={() => setIsMenuOpen(false)}>
+                          <Shield className="h-4 w-4" /> Admin Console
+                        </Link>
+                      )}
+                      <Button variant="outline" onClick={handleSignOut} className="font-body font-medium justify-start">
+                        <LogOut className="mr-2 h-4 w-4" /> Log Out
+                      </Button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <Link to="/courses" className="font-body text-sm font-medium text-muted-foreground hover:text-foreground transition-colors py-2" onClick={() => setIsMenuOpen(false)}>
+                      Courses
+                    </Link>
+                    <a href="#about" className="font-body text-sm font-medium text-muted-foreground hover:text-foreground transition-colors py-2" onClick={() => setIsMenuOpen(false)}>
+                      About
+                    </a>
+                    <div className="flex flex-col gap-2 pt-4 border-t border-border">
+                      <Button asChild className="font-body font-medium justify-start bg-burnt-orange hover:bg-burnt-orange/90 text-white">
+                        <a href="#courses" onClick={() => setIsMenuOpen(false)}>Get the Leadership Forge Preview</a>
+                      </Button>
+                      <Button variant="outline" className="font-body font-medium justify-start" onClick={() => { setWaitlistOpen(true); setIsMenuOpen(false); }}>
+                        Join the Waitlist
+                      </Button>
+                    </div>
+                  </>
+                )}
+              </nav>
+            </div>
+          )}
+        </div>
+      </header>
 
       <WaitlistModal open={waitlistOpen} onOpenChange={setWaitlistOpen} source="header" />
     </>

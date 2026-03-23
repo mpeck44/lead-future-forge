@@ -8,36 +8,35 @@ const FinalCTA = () => {
 
   const scrollToCourses = () => {
     const el = document.getElementById("courses");
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth" });
-    }
+    if (el) el.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
     <>
-      <section className="py-20 bg-[hsl(191,40%,94%)]">
+      <section className="py-24 lg:py-32 bg-navy">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-2xl mx-auto text-center bg-white rounded-3xl border border-dark-teal/15 p-10 sm:p-14 shadow-sm">
-            <h2 className="font-display text-3xl sm:text-4xl font-bold text-navy mb-4">
+          <div className="max-w-2xl mx-auto text-center">
+            <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6">
               Ready to Lead AI in Your District?
             </h2>
-            <p className="font-body text-lg text-navy/65 mb-8">
-              Join the K-12 leaders who are moving from reactive to strategic. Start building your AI implementation roadmap today.
+            <p className="font-body text-lg text-white/50 mb-12">
+              Join the K-12 leaders who are moving from reactive to strategic.
+              Start building your AI implementation roadmap today.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Button
                 size="lg"
                 onClick={scrollToCourses}
-                className="font-body font-semibold bg-green hover:bg-green/90 text-white px-8 py-6 text-base group"
+                className="font-body font-semibold bg-burnt-orange hover:bg-burnt-orange/90 text-white px-10 py-7 text-lg group"
               >
                 Get Started Now
-                <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
               </Button>
               <Button
                 size="lg"
                 variant="outline"
                 onClick={() => setWaitlistOpen(true)}
-                className="font-body font-semibold border-navy text-navy hover:bg-navy/5 px-8 py-6 text-base"
+                className="font-body font-semibold border-white/30 text-white hover:bg-white/10 px-8 py-7 text-lg"
               >
                 Join the Waitlist
               </Button>

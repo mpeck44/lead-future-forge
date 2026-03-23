@@ -2,107 +2,104 @@
 @tailwind components;
 @tailwind utilities;
 
-/* The Leadership Forge Design System
+/* The Leadership Forge Design System — Forge Palette
    Brand Colors (HSL):
-   - Navy: #1A1F36 → 226 37% 16%
-   - Teal: #008080 → 180 100% 25%
+   - Navy: #0F172A → 222 47% 11%
+   - Charcoal: #1E293B → 217 33% 17%
+   - Burnt Orange: #D97706 → 38 93% 44%
    - Gold: #D4AF37 → 46 65% 52%
-   - Light Gray: #E5E5E5 → 0 0% 90%
-   - Text Gray: #333333 → 0 0% 20%
-   - Light Teal: #76B5C5 → 192 40% 62%
-   - Green: #2E8B57 → 146 50% 36%
-   - Dark Teal: #287E82 → 183 54% 33%
+   - Off-White: #FAFAF8 → 60 20% 97%
+   - Warm Gray: #6B7280 → 220 9% 46%
    - Burgundy: #A64646 → 0 41% 46%
 */
 
 @layer base {
   :root {
-    --background: 0 0% 98%;
-    --foreground: 226 37% 16%;
+    --background: 60 20% 97%;
+    --foreground: 222 47% 11%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 226 37% 16%;
+    --card: 40 20% 96%;
+    --card-foreground: 222 47% 11%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 226 37% 16%;
+    --popover-foreground: 222 47% 11%;
 
-    --primary: 180 100% 25%;
+    --primary: 38 93% 44%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 0 0% 90%;
-    --secondary-foreground: 0 0% 20%;
+    --secondary: 217 33% 17%;
+    --secondary-foreground: 0 0% 95%;
 
-    --muted: 0 0% 90%;
-    --muted-foreground: 0 0% 40%;
+    --muted: 220 13% 91%;
+    --muted-foreground: 220 9% 46%;
 
     --accent: 46 65% 52%;
-    --accent-foreground: 226 37% 16%;
+    --accent-foreground: 222 47% 11%;
 
     --destructive: 0 41% 46%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 85%;
-    --input: 0 0% 85%;
-    --ring: 180 100% 25%;
+    --border: 220 13% 85%;
+    --input: 220 13% 85%;
+    --ring: 38 93% 44%;
 
     --radius: 0.5rem;
 
     /* Extended brand palette */
-    --navy: 226 37% 16%;
-    --teal: 180 100% 25%;
+    --navy: 222 47% 11%;
+    --charcoal: 217 33% 17%;
+    --burnt-orange: 38 93% 44%;
     --gold: 46 65% 52%;
-    --light-teal: 192 40% 62%;
-    --green: 146 50% 36%;
-    --dark-teal: 183 54% 33%;
+    --warm-gray: 220 9% 46%;
     --burgundy: 0 41% 46%;
 
-    --sidebar-background: 226 37% 16%;
+    --sidebar-background: 222 47% 11%;
     --sidebar-foreground: 0 0% 95%;
-    --sidebar-primary: 180 100% 25%;
+    --sidebar-primary: 38 93% 44%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 226 37% 22%;
+    --sidebar-accent: 222 47% 18%;
     --sidebar-accent-foreground: 0 0% 95%;
-    --sidebar-border: 226 37% 25%;
-    --sidebar-ring: 180 100% 25%;
+    --sidebar-border: 222 47% 20%;
+    --sidebar-ring: 38 93% 44%;
   }
 
   .dark {
-    --background: 226 37% 10%;
+    --background: 222 47% 7%;
     --foreground: 0 0% 95%;
 
-    --card: 226 37% 14%;
+    --card: 222 47% 11%;
     --card-foreground: 0 0% 95%;
 
-    --popover: 226 37% 14%;
+    --popover: 222 47% 11%;
     --popover-foreground: 0 0% 95%;
 
-    --primary: 180 100% 30%;
+    --primary: 38 93% 48%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 226 37% 20%;
+    --secondary: 217 33% 20%;
     --secondary-foreground: 0 0% 90%;
 
-    --muted: 226 37% 20%;
+    --muted: 217 33% 20%;
     --muted-foreground: 0 0% 60%;
 
     --accent: 46 65% 52%;
-    --accent-foreground: 226 37% 16%;
+    --accent-foreground: 222 47% 11%;
 
     --destructive: 0 41% 50%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 226 37% 25%;
-    --input: 226 37% 25%;
-    --ring: 180 100% 30%;
+    --border: 217 33% 25%;
+    --input: 217 33% 25%;
+    --ring: 38 93% 48%;
 
-    --sidebar-background: 226 37% 8%;
+    --sidebar-background: 222 47% 6%;
     --sidebar-foreground: 0 0% 95%;
-    --sidebar-primary: 180 100% 30%;
+    --sidebar-primary: 38 93% 48%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 226 37% 15%;
+    --sidebar-accent: 222 47% 14%;
     --sidebar-accent-foreground: 0 0% 95%;
-    --sidebar-border: 226 37% 20%;
-    --sidebar-ring: 180 100% 30%;
+    --sidebar-border: 222 47% 18%;
+    --sidebar-ring: 38 93% 48%;
   }
 }
 
@@ -119,12 +116,14 @@
 
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Playfair Display', serif;
-    line-height: 1.35;
+    line-height: 1.2;
   }
 }
 
-/* Hero dot grid overlay */
-.hero-dot-grid {
-  background-image: radial-gradient(circle, hsl(180 100% 25% / 0.15) 1px, transparent 1px);
-  background-size: 32px 32px;
+/* Subtle grid texture for practitioner feel */
+.forge-grid-texture {
+  background-image:
+    linear-gradient(hsl(222 47% 15% / 0.4) 1px, transparent 1px),
+    linear-gradient(90deg, hsl(222 47% 15% / 0.4) 1px, transparent 1px);
+  background-size: 48px 48px;
 }
