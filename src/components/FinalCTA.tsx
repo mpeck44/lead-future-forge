@@ -28,7 +28,7 @@ const FinalCTA = () => {
               <Button
                 size="lg"
                 onClick={scrollToCourses}
-                className="font-body font-semibold bg-burnt-orange hover:bg-burnt-orange/90 text-white px-12 py-8 text-[18px] rounded-lg group"
+                className="font-body font-semibold bg-burnt-orange hover:bg-[hsl(43,72%,66%)] text-navy px-12 py-8 text-[18px] rounded-lg group"
               >
                 Get Started Now
                 <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />

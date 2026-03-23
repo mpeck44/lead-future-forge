@@ -32,7 +32,7 @@ const Hero = () => {
                 From Reactive Chaos{" "}
                 <br className="hidden sm:block" />
                 to{" "}
-                <span style={{ color: "#C2410C" }}>
+                <span style={{ color: "#d4af37" }}>
                   Strategic Leadership.
                 </span>
               </h1>
@@ -54,10 +54,10 @@ const Hero = () => {
                 <Button
                   size="lg"
                   onClick={scrollToCourses}
-                  className="font-body font-semibold text-white px-12 py-8 text-[18px] group rounded-lg"
-                  style={{ backgroundColor: "#C2410C" }}
-                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#9A3412")}
-                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#C2410C")}
+                  className="font-body font-semibold px-12 py-8 text-[18px] group rounded-lg"
+                  style={{ backgroundColor: "#d4af37", color: "#0F172A" }}
+                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#e5c56b")}
+                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#d4af37")}
                 >
                   Get the Leadership Forge Preview
                   <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
@@ -78,9 +78,9 @@ const Hero = () => {
                 style={{ animationDelay: "0.45s" }}
               >
                 <span>50+ District Leaders Trained</span>
-                <span className="hidden sm:inline w-1.5 h-1.5 rounded-full bg-burnt-orange" />
+                <span className="hidden sm:inline w-1.5 h-1.5 rounded-full bg-gold" />
                 <span>4 Leadership Courses</span>
-                <span className="hidden sm:inline w-1.5 h-1.5 rounded-full bg-burnt-orange" />
+                <span className="hidden sm:inline w-1.5 h-1.5 rounded-full bg-gold" />
                 <span>COSN & ISTE Aligned</span>
               </div>
             </div>

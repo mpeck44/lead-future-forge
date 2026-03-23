@@ -55,7 +55,7 @@ const TestimonialsSection = () => {
               <div
                 className="w-20 h-20 sm:w-[88px] sm:h-[88px] rounded-full bg-burnt-orange/20 border-2 border-burnt-orange/30 flex items-center justify-center mb-5"
                 style={{
-                  boxShadow: "0 0 20px hsl(16 91% 40% / 0.15)",
+                  boxShadow: "0 0 20px hsl(43 69% 52% / 0.15)",
                 }}
               >
                 <span className="font-display text-2xl sm:text-3xl font-bold text-burnt-orange">
