@@ -16,7 +16,7 @@ const Hero = () => {
     <>
       <section className="relative min-h-screen flex items-center overflow-hidden bg-navy pt-20">
         {/* Subtle grid texture */}
-        <div className="absolute inset-0 forge-grid-texture opacity-20" />
+        <div className="absolute inset-0 forge-texture opacity-10" />
 
         {/* Gradient overlay for depth */}
         <div className="absolute inset-0 bg-gradient-to-br from-navy via-charcoal/60 to-navy" />
@@ -90,7 +90,7 @@ const Hero = () => {
               className="relative animate-fade-in order-first lg:order-last"
               style={{ animationDelay: "0.25s" }}
             >
-              <div className="relative rounded-2xl overflow-hidden shadow-2xl shadow-black/40">
+              <div className="relative rounded-lg overflow-hidden shadow-2xl shadow-black/40">
                 <img
                   src={heroLeader}
                   alt="K-12 district superintendent confidently presenting AI strategy to a school board"

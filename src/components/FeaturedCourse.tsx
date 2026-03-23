@@ -139,8 +139,9 @@ const FeaturedCourse = () => {
 
   return (
     <>
-      <section id="courses" className="py-[120px] bg-navy">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+      <section id="courses" className="relative py-[120px] bg-navy overflow-hidden">
+        <div className="absolute inset-0 forge-texture opacity-10" />
+        <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-24">
             <h2 className="font-display text-4xl sm:text-5xl lg:text-[56px] font-bold text-white mb-4 leading-tight">
               What You'll Build
@@ -153,7 +154,7 @@ const FeaturedCourse = () => {
           {isLoading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
               {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="rounded-2xl overflow-hidden border border-white/10 bg-white/[0.03]">
+                <div key={i} className="rounded-lg overflow-hidden border border-white/10 bg-white/[0.03]">
                   <Skeleton className="h-[300px] bg-white/5" />
                   <div className="p-10 space-y-4">
                     <Skeleton className="h-8 w-3/4 bg-white/5" />
@@ -173,7 +174,7 @@ const FeaturedCourse = () => {
                 return (
                   <div
                     key={course.id}
-                    className="group bg-white/[0.04] backdrop-blur-sm rounded-2xl overflow-hidden border border-white/10 flex flex-col transition-all hover:border-white/20 hover:shadow-xl hover:shadow-burnt-orange/5"
+                    className="group bg-white/[0.04] backdrop-blur-sm rounded-lg overflow-hidden border border-white/10 flex flex-col transition-all hover:border-white/20 hover:shadow-xl hover:shadow-burnt-orange/5"
                     style={{ marginTop: idx % 2 === 1 ? "40px" : "0" }}
                   >
                     {/* Mockup image */}

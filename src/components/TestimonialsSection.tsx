@@ -29,7 +29,7 @@ const TestimonialsSection = () => {
   return (
     <section className="relative py-[120px] bg-navy overflow-hidden">
       {/* Subtle texture overlay */}
-      <div className="absolute inset-0 forge-grid-texture opacity-10" />
+      <div className="absolute inset-0 forge-texture opacity-10" />
 
       <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
         <h2 className="font-display text-4xl sm:text-5xl lg:text-[48px] font-bold text-white text-center mb-24 leading-tight">
@@ -40,7 +40,7 @@ const TestimonialsSection = () => {
           {testimonials.map((t, i) => (
             <div
               key={i}
-              className="relative bg-white/[0.04] backdrop-blur-sm rounded-2xl border border-white/10 p-10 flex flex-col items-center text-center"
+              className="relative bg-white/[0.04] backdrop-blur-sm rounded-lg border border-white/10 p-10 flex flex-col items-center text-center"
             >
               {/* Large orange quote mark */}
               <span className="font-display text-[48px] leading-none text-burnt-orange mb-4 select-none">
@@ -55,7 +55,7 @@ const TestimonialsSection = () => {
               <div
                 className="w-20 h-20 sm:w-[88px] sm:h-[88px] rounded-full bg-burnt-orange/20 border-2 border-burnt-orange/30 flex items-center justify-center mb-5"
                 style={{
-                  boxShadow: "0 0 20px hsl(38 93% 44% / 0.15)",
+                  boxShadow: "0 0 20px hsl(16 91% 40% / 0.15)",
                 }}
               >
                 <span className="font-display text-2xl sm:text-3xl font-bold text-burnt-orange">
