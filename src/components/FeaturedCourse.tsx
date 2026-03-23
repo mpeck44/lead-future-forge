@@ -1,17 +1,15 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import {
-  CheckCircle2,
-  LayoutDashboard,
-  Map,
-  Megaphone,
-  Network,
-  Sparkles,
-} from "lucide-react";
+import { CheckCircle2, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import WaitlistModal from "./WaitlistModal";
+
+import mockupCommunication from "@/assets/mockup-communication.jpg";
+import mockupReadiness from "@/assets/mockup-readiness.jpg";
+import mockupRoadmap from "@/assets/mockup-roadmap.jpg";
+import mockupLaunch from "@/assets/mockup-launch.jpg";
 
 interface CourseWithDeliverables {
   id: string;
@@ -27,15 +25,15 @@ const COURSE_CONTENT: Record<
     title: string;
     shortDescription: string;
     timeline: string;
-    icon: typeof Megaphone;
+    mockup: string;
     deliverables: string[];
   }
 > = {
   fluency: {
     title: "AI Communication & Stakeholder Plan",
-    shortDescription: "Tools you use Monday morning.",
-    timeline: "Board-ready assets in 1-2 weeks",
-    icon: Megaphone,
+    shortDescription: "Tools you use Monday morning — templates, coordination maps, and action plans for your first week.",
+    timeline: "BOARD-READY IN 1–2 WEEKS",
+    mockup: mockupCommunication,
     deliverables: [
       '"5 Ways I Use AI" district document',
       "Stakeholder Coordination Map",
@@ -45,9 +43,9 @@ const COURSE_CONTENT: Record<
   },
   foundations: {
     title: "AI Landscape & Readiness Assessment",
-    shortDescription: "Audit your district readiness.",
-    timeline: "Baseline scorecard in 2 weeks",
-    icon: Network,
+    shortDescription: "Audit your district's AI maturity across infrastructure, staffing, policy, and student impact.",
+    timeline: "BASELINE SCORECARD IN 2 WEEKS",
+    mockup: mockupReadiness,
     deliverables: [
       "District AI Maturity Scorecard",
       "Instructional + Operations Readiness Audit",
@@ -57,9 +55,9 @@ const COURSE_CONTENT: Record<
   },
   strategy: {
     title: "AI Strategic Roadmap & Portfolio",
-    shortDescription: "Plan priorities with confidence.",
-    timeline: "Roadmap draft in 30 days",
-    icon: Map,
+    shortDescription: "Build your district's phased AI strategy with governance, priorities, and a board-ready narrative.",
+    timeline: "ROADMAP DRAFT IN 30 DAYS",
+    mockup: mockupRoadmap,
     deliverables: [
       "AI Strategic Vision and Success Metrics",
       "Portfolio Prioritization Framework",
@@ -69,9 +67,9 @@ const COURSE_CONTENT: Record<
   },
   action: {
     title: "90-Day Launch & Implementation Plan",
-    shortDescription: "Move from plan to execution.",
-    timeline: "Implementation sprint in 90 days",
-    icon: LayoutDashboard,
+    shortDescription: "Move from plan to execution with milestones, pilot playbooks, and a live progress dashboard.",
+    timeline: "IMPLEMENTATION SPRINT IN 90 DAYS",
+    mockup: mockupLaunch,
     deliverables: [
       "90-Day Launch Plan with milestones",
       "Pilot Site Implementation Playbook",
@@ -79,13 +77,6 @@ const COURSE_CONTENT: Record<
       "Implementation Dashboard for progress tracking",
     ],
   },
-};
-
-const HEADER_STYLES: Record<string, string> = {
-  fluency: "bg-burnt-orange",
-  foundations: "bg-charcoal",
-  strategy: "bg-navy",
-  action: "bg-burnt-orange/80",
 };
 
 const COURSE_ORDER = ["fluency", "foundations", "strategy", "action"];
@@ -148,75 +139,79 @@ const FeaturedCourse = () => {
 
   return (
     <>
-      <section id="courses" className="py-24 lg:py-32 bg-background">
+      <section id="courses" className="py-[120px] bg-navy">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-20">
-            <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-4">
+          <div className="text-center mb-24">
+            <h2 className="font-display text-4xl sm:text-5xl lg:text-[56px] font-bold text-white mb-4 leading-tight">
               What You'll Build
             </h2>
-            <p className="font-body text-lg text-muted-foreground max-w-2xl mx-auto">
+            <p className="font-body text-xl text-white/50 max-w-2xl mx-auto">
               Concrete deliverables designed for district-level execution.
             </p>
           </div>
 
           {isLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
               {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="rounded-xl overflow-hidden border border-border bg-card">
-                  <Skeleton className="h-24" />
-                  <div className="p-8 space-y-4">
-                    <Skeleton className="h-7 w-3/4" />
-                    <Skeleton className="h-6 w-2/3" />
-                    <Skeleton className="h-24 w-full" />
+                <div key={i} className="rounded-2xl overflow-hidden border border-white/10 bg-white/[0.03]">
+                  <Skeleton className="h-[300px] bg-white/5" />
+                  <div className="p-10 space-y-4">
+                    <Skeleton className="h-8 w-3/4 bg-white/5" />
+                    <Skeleton className="h-6 w-2/3 bg-white/5" />
+                    <Skeleton className="h-32 w-full bg-white/5" />
                   </div>
                 </div>
               ))}
             </div>
           ) : visibleCourses.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-              {visibleCourses.map((course) => {
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto items-start">
+              {visibleCourses.map((course, idx) => {
                 const content = COURSE_CONTENT[course.slug];
-                const Icon = content.icon;
                 const deliverables =
                   course.deliverables.length > 0 ? course.deliverables : content.deliverables;
 
                 return (
                   <div
                     key={course.id}
-                    className="group bg-card rounded-xl overflow-hidden border border-border flex flex-col transition-shadow hover:shadow-lg"
+                    className="group bg-white/[0.04] backdrop-blur-sm rounded-2xl overflow-hidden border border-white/10 flex flex-col transition-all hover:border-white/20 hover:shadow-xl hover:shadow-burnt-orange/5"
+                    style={{ marginTop: idx % 2 === 1 ? "40px" : "0" }}
                   >
-                    {/* Tall header band with title */}
-                    <div
-                      className={`${HEADER_STYLES[course.slug] || "bg-primary"} px-8 py-6 flex items-center gap-4`}
-                    >
-                      <div className="w-10 h-10 rounded-lg bg-white/15 flex items-center justify-center shrink-0">
-                        <Icon className="w-5 h-5 text-white" />
-                      </div>
-                      <h3 className="font-display text-xl font-bold text-white leading-tight">
-                        {content.title}
-                      </h3>
+                    {/* Mockup image */}
+                    <div className="relative">
+                      <img
+                        src={content.mockup}
+                        alt={`${content.title} template preview`}
+                        loading="lazy"
+                        width={960}
+                        height={640}
+                        className="w-full h-[280px] sm:h-[320px] object-cover"
+                      />
+                      {/* Timeline pill badge */}
+                      <span className="absolute top-4 right-4 bg-burnt-orange text-white font-body text-xs font-bold tracking-wider px-4 py-1.5 rounded-full">
+                        {content.timeline}
+                      </span>
                     </div>
 
-                    <div className="p-8 flex flex-col flex-1">
-                      <p className="font-body text-sm text-muted-foreground mb-3">
+                    <div className="p-8 sm:p-10 flex flex-col flex-1">
+                      <h3 className="font-display text-[24px] sm:text-[28px] font-bold text-white leading-tight mb-3">
+                        {content.title}
+                      </h3>
+
+                      <p className="font-body text-lg sm:text-xl text-white/60 mb-8 leading-relaxed">
                         {content.shortDescription}
                       </p>
 
-                      <p className="font-body text-xs font-semibold uppercase tracking-wider text-burnt-orange mb-6">
-                        {content.timeline}
-                      </p>
-
                       <div className="flex-1 mb-8">
-                        <p className="font-body text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
+                        <p className="font-body text-xs font-semibold uppercase tracking-wider text-white/40 mb-4">
                           Deliverables
                         </p>
-                        <ul className="space-y-2">
+                        <ul className="space-y-3">
                           {deliverables.slice(0, 4).map((d, i) => (
                             <li
                               key={i}
-                              className="flex items-start gap-2.5 font-body text-sm text-foreground"
+                              className="flex items-start gap-3 font-body text-base sm:text-lg text-white/80"
                             >
-                              <CheckCircle2 className="w-4 h-4 text-burnt-orange mt-0.5 shrink-0" />
+                              <CheckCircle2 className="w-5 h-5 text-burnt-orange mt-0.5 shrink-0" />
                               <span>{d}</span>
                             </li>
                           ))}
@@ -226,7 +221,7 @@ const FeaturedCourse = () => {
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <Button
                           onClick={() => openWaitlist(course.slug, content.title, "overview")}
-                          className="w-full font-body font-semibold gap-2 bg-burnt-orange hover:bg-burnt-orange/90 text-white"
+                          className="w-full font-body font-semibold gap-2 bg-burnt-orange hover:bg-burnt-orange/90 text-white text-base py-6"
                         >
                           <Sparkles className="w-4 h-4" />
                           Download Overview
@@ -234,7 +229,7 @@ const FeaturedCourse = () => {
                         <Button
                           onClick={() => openWaitlist(course.slug, content.title, "waitlist")}
                           variant="outline"
-                          className="w-full font-body font-semibold"
+                          className="w-full font-body font-semibold border-white/30 text-white hover:bg-white/10 hover:border-white/50 text-base py-6"
                         >
                           Join the Waitlist
                         </Button>
@@ -245,7 +240,7 @@ const FeaturedCourse = () => {
               })}
             </div>
           ) : (
-            <p className="text-center text-muted-foreground font-body">
+            <p className="text-center text-white/50 font-body text-lg">
               The first leadership deliverable previews are being finalized this month.
             </p>
           )}
