@@ -134,7 +134,7 @@
   background-image:
     linear-gradient(hsl(222 47% 15% / 0.3) 1px, transparent 1px),
     linear-gradient(90deg, hsl(222 47% 15% / 0.3) 1px, transparent 1px),
-    radial-gradient(ellipse at 20% 50%, hsl(16 91% 40% / 0.03) 0%, transparent 60%),
+    radial-gradient(ellipse at 20% 50%, hsl(43 69% 52% / 0.03) 0%, transparent 60%),
     radial-gradient(ellipse at 80% 30%, hsl(222 47% 20% / 0.2) 0%, transparent 50%);
   background-size: 48px 48px, 48px 48px, 100% 100%, 100% 100%;
 }
