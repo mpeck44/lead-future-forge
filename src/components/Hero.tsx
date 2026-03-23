@@ -32,7 +32,7 @@ const Hero = () => {
                 From Reactive Chaos{" "}
                 <br className="hidden sm:block" />
                 to{" "}
-                <span style={{ color: "#C2410C" }}>
+                <span style={{ color: "#d4af37" }}>
                   Strategic Leadership.
                 </span>
               </h1>
