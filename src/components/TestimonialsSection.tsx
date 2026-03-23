@@ -29,7 +29,7 @@ const TestimonialsSection = () => {
   return (
     <section className="relative py-[120px] bg-navy overflow-hidden">
       {/* Subtle texture overlay */}
-      <div className="absolute inset-0 forge-grid-texture opacity-10" />
+      <div className="absolute inset-0 forge-texture opacity-10" />
 
       <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
         <h2 className="font-display text-4xl sm:text-5xl lg:text-[48px] font-bold text-white text-center mb-24 leading-tight">
