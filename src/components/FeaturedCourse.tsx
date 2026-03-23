@@ -174,7 +174,7 @@ const FeaturedCourse = () => {
                 return (
                   <div
                     key={course.id}
-                    className="group bg-white/[0.04] backdrop-blur-sm rounded-lg overflow-hidden border border-white/10 flex flex-col transition-all hover:border-white/20 hover:shadow-xl hover:shadow-burnt-orange/5"
+                    className="group bg-white/[0.04] backdrop-blur-sm rounded-lg overflow-hidden border border-white/10 flex flex-col transition-all duration-200 hover:border-white/20 hover:shadow-xl hover:shadow-gold/10 hover:scale-[1.03]"
                     style={{ marginTop: idx % 2 === 1 ? "40px" : "0" }}
                   >
                     {/* Mockup image */}
@@ -222,7 +222,7 @@ const FeaturedCourse = () => {
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <Button
                           onClick={() => openWaitlist(course.slug, content.title, "overview")}
-                          className="w-full font-body font-semibold gap-2 bg-burnt-orange hover:bg-[hsl(43,72%,66%)] text-navy text-base py-6"
+                          className="gold-hover w-full font-body font-semibold gap-2 bg-burnt-orange text-navy text-base py-6"
                         >
                           <Sparkles className="w-4 h-4" />
                           Download Overview
