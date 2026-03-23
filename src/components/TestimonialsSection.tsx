@@ -40,7 +40,7 @@ const TestimonialsSection = () => {
           {testimonials.map((t, i) => (
             <div
               key={i}
-              className="relative bg-white/[0.04] backdrop-blur-sm rounded-2xl border border-white/10 p-10 flex flex-col items-center text-center"
+              className="relative bg-white/[0.04] backdrop-blur-sm rounded-lg border border-white/10 p-10 flex flex-col items-center text-center"
             >
               {/* Large orange quote mark */}
               <span className="font-display text-[48px] leading-none text-burnt-orange mb-4 select-none">
