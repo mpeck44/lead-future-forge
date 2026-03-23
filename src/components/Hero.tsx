@@ -90,7 +90,7 @@ const Hero = () => {
               className="relative animate-fade-in order-first lg:order-last"
               style={{ animationDelay: "0.25s" }}
             >
-              <div className="relative rounded-2xl overflow-hidden shadow-2xl shadow-black/40">
+              <div className="relative rounded-lg overflow-hidden shadow-2xl shadow-black/40">
                 <img
                   src={heroLeader}
                   alt="K-12 district superintendent confidently presenting AI strategy to a school board"
