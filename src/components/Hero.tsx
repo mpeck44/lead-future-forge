@@ -78,7 +78,7 @@ const Hero = () => {
                 style={{ animationDelay: "0.45s" }}
               >
                 <span>50+ District Leaders Trained</span>
-                <span className="hidden sm:inline w-1.5 h-1.5 rounded-full bg-burnt-orange" />
+                <span className="hidden sm:inline w-1.5 h-1.5 rounded-full bg-gold" />
                 <span>4 Leadership Courses</span>
                 <span className="hidden sm:inline w-1.5 h-1.5 rounded-full bg-burnt-orange" />
                 <span>COSN & ISTE Aligned</span>
