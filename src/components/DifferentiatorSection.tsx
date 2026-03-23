@@ -1,24 +1,26 @@
+import { Hammer, Briefcase, Route, Award } from "lucide-react";
+
 const features = [
   {
-    number: "01",
+    icon: Hammer,
     title: "Built by a Practitioner, For Practitioners",
     description:
       "Every framework comes from real implementation in actual schools — not consulting theory or academic research.",
   },
   {
-    number: "02",
+    icon: Briefcase,
     title: "Portfolio-Based Learning",
     description:
       "Each course produces deliverables you can use Monday morning: governance frameworks, communication templates, strategic roadmaps.",
   },
   {
-    number: "03",
+    icon: Route,
     title: "Flexible Pathways",
     description:
       "Start where you are. Follow the recommended sequence, or jump to what you need most.",
   },
   {
-    number: "04",
+    icon: Award,
     title: "Standards-Aligned",
     description:
       "Aligned with leadership standards from COSN and ISTE — ensuring your work meets professional benchmarks.",
@@ -27,31 +29,37 @@ const features = [
 
 const DifferentiatorSection = () => {
   return (
-    <section id="about" className="py-24 lg:py-32 bg-background">
+    <section id="about" className="py-[120px] bg-navy">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground text-center mb-20">
+        <h2 className="font-display text-4xl sm:text-5xl lg:text-[56px] font-bold text-white mb-24">
           What Makes This Different
         </h2>
 
-        <div className="max-w-3xl mx-auto">
-          {features.map((item, i) => (
-            <div
-              key={item.number}
-              className={`flex gap-6 sm:gap-10 py-10 ${
-                i < features.length - 1 ? "border-b border-border" : ""
-              }`}
-            >
-              <div className="w-1 shrink-0 rounded-full bg-burnt-orange/40" />
-              <div>
-                <h3 className="font-display text-xl sm:text-2xl font-semibold text-foreground mb-2">
-                  {item.title}
-                </h3>
-                <p className="font-body text-base text-muted-foreground leading-relaxed">
-                  {item.description}
-                </p>
+        <div className="max-w-4xl">
+          {features.map((item, i) => {
+            const Icon = item.icon;
+            return (
+              <div
+                key={i}
+                className={i < features.length - 1 ? "mb-[70px]" : ""}
+              >
+                <div className="flex gap-8">
+                  {/* Thick burnt orange vertical bar */}
+                  <div className="w-[6px] shrink-0 rounded-full bg-burnt-orange" />
+
+                  <div>
+                    <Icon className="text-burnt-orange mb-5" size={48} strokeWidth={1.5} />
+                    <h3 className="font-display text-[28px] sm:text-[32px] font-bold text-white mb-3 leading-tight">
+                      {item.title}
+                    </h3>
+                    <p className="font-body text-lg sm:text-xl text-white/70 leading-relaxed max-w-2xl">
+                      {item.description}
+                    </p>
+                  </div>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>
