@@ -27,34 +27,44 @@ const outcomes = [
 
 const OutcomesSection = () => {
   return (
-    <section id="outcomes" className="py-24 lg:py-32 bg-navy">
+    <section id="outcomes" className="py-[120px] bg-navy">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-white text-center mb-6">
+        <h2 className="font-display text-4xl sm:text-5xl lg:text-[56px] font-bold text-white text-center mb-4 leading-tight">
           What This Program Actually <em>Delivers</em>
         </h2>
-        <p className="font-body text-lg text-white/50 text-center max-w-2xl mx-auto mb-20">
+        <p className="font-body text-xl sm:text-2xl text-white/50 text-center max-w-2xl mx-auto mb-24 italic">
           Not theory. Not workshops. Tangible artifacts for your district.
         </p>
 
-        <div className="max-w-3xl mx-auto">
+        <div className="max-w-4xl mx-auto">
           {outcomes.map((item, i) => (
-            <div
-              key={item.number}
-              className={`flex gap-6 sm:gap-10 py-10 ${
-                i < outcomes.length - 1 ? "border-b border-white/10" : ""
-              }`}
-            >
-              <span className="font-display text-3xl sm:text-4xl font-bold text-burnt-orange/60 leading-none pt-1 shrink-0">
-                {item.number}
-              </span>
-              <div>
-                <h3 className="font-display text-xl sm:text-2xl font-bold text-white mb-3">
-                  {item.title}
-                </h3>
-                <p className="font-body text-base text-white/60 leading-relaxed">
-                  {item.description}
-                </p>
+            <div key={item.number}>
+              <div className="flex items-start gap-8 sm:gap-12">
+                {/* Number circle with orange glow */}
+                <div
+                  className="shrink-0 w-[72px] h-[72px] sm:w-[80px] sm:h-[80px] rounded-full bg-burnt-orange flex items-center justify-center"
+                  style={{
+                    boxShadow: "0 0 30px hsl(38 93% 44% / 0.35), 0 0 60px hsl(38 93% 44% / 0.15)",
+                  }}
+                >
+                  <span className="font-display text-2xl sm:text-3xl font-bold text-white leading-none">
+                    {item.number}
+                  </span>
+                </div>
+
+                <div className="pt-2">
+                  <h3 className="font-display text-[28px] sm:text-[32px] font-bold text-white mb-3 leading-tight">
+                    {item.title}
+                  </h3>
+                  <p className="font-body text-lg sm:text-xl text-white/70 leading-relaxed max-w-2xl">
+                    {item.description}
+                  </p>
+                </div>
               </div>
+
+              {i < outcomes.length - 1 && (
+                <div className="my-[45px] sm:my-[50px] h-[3px] bg-burnt-orange/30 rounded-full" />
+              )}
             </div>
           ))}
         </div>
