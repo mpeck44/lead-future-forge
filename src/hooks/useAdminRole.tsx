@@ -30,7 +30,7 @@ export const useAdminRole = (): UseAdminRoleReturn => {
           .eq('role', 'admin')
           .maybeSingle();
 
-        console.log('Admin role query result:', { data, error });
+        if (import.meta.env.DEV) console.log('Admin role query result:', { data, error });
 
         if (error) {
           console.error('Error checking admin role:', error);
