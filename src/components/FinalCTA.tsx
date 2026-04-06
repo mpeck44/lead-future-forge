@@ -37,7 +37,7 @@ const FinalCTA = () => {
                 size="lg"
                 variant="outline"
                 onClick={() => setWaitlistOpen(true)}
-                className="font-body font-semibold border-white/30 text-white hover:bg-white/10 hover:border-white/60 px-10 py-8 text-[18px] rounded-lg"
+                className="font-body font-semibold border-white/30 bg-transparent text-white hover:bg-white/10 hover:border-white/60 px-10 py-8 text-[18px] rounded-lg"
               >
                 Join the Waitlist
               </Button>
