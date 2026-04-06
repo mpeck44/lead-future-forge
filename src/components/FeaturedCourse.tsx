@@ -230,7 +230,7 @@ const FeaturedCourse = () => {
                         <Button
                           onClick={() => openWaitlist(course.slug, content.title, "waitlist")}
                           variant="outline"
-                          className="w-full font-body font-semibold border-white/30 text-white hover:bg-white/10 hover:border-white/50 text-base py-6"
+                          className="w-full font-body font-semibold border-white/30 bg-transparent text-white hover:bg-white/10 hover:border-white/50 text-base py-6"
                         >
                           Join the Waitlist
                         </Button>
