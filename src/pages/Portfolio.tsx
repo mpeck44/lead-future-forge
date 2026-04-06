@@ -131,11 +131,16 @@ const Portfolio = () => {
       throw error;
     }
 
-    const { data: urlData } = supabase.storage
+    const { data: urlData, error: urlError } = await supabase.storage
       .from('portfolio')
-      .getPublicUrl(fileName);
+      .createSignedUrl(fileName, 3600);
 
-    return urlData.publicUrl;
+    if (urlError || !urlData?.signedUrl) {
+      console.error('Error creating signed URL:', urlError);
+      throw new Error('Failed to generate file URL');
+    }
+
+    return urlData.signedUrl;
   };
 
   const handleCreate = async () => {
