@@ -175,7 +175,6 @@ const FeaturedCourse = () => {
                   <div
                     key={course.id}
                     className="group bg-white/[0.04] backdrop-blur-sm rounded-lg overflow-hidden border border-white/10 flex flex-col transition-all duration-200 hover:border-white/20 hover:shadow-xl hover:shadow-gold/10 hover:scale-[1.03]"
-                    style={{ marginTop: idx % 2 === 1 ? "40px" : "0" }}
                   >
                     {/* Mockup image */}
                     <div className="relative">
