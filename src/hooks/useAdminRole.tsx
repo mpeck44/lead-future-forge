@@ -21,7 +21,7 @@ export const useAdminRole = (): UseAdminRoleReturn => {
       }
 
       try {
-        console.log('Checking admin role for user:', user.id);
+        if (import.meta.env.DEV) console.log('Checking admin role for user:', user.id);
         
         const { data, error } = await supabase
           .from('user_roles')
