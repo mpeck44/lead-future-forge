@@ -64,7 +64,7 @@ const Hero = () => {
                   size="lg"
                   variant="outline"
                   onClick={() => setWaitlistOpen(true)}
-                  className="font-body font-semibold border-2 border-white text-white hover:bg-white hover:text-secondary px-10 py-8 text-[18px] transition-all duration-200 rounded-lg"
+                  className="font-body font-semibold border-2 border-white hover:bg-white px-10 py-8 text-[18px] transition-all duration-200 rounded-lg text-primary-foreground"
                 >
                   Join the Waitlist
                 </Button>
