@@ -46,19 +46,6 @@ const ContentLesson = ({ lesson, getVideoEmbedUrl }: ContentLessonProps) => {
         </div>
       )}
 
-      {/* Experience Blocks - From Mike */}
-      {experienceBlocks.length > 0 && (
-        <div className="space-y-4">
-          {experienceBlocks.map((block, index) => (
-            <ExperienceBlock 
-              key={index}
-              content={block.content}
-              variant={block.variant}
-            />
-          ))}
-        </div>
-      )}
-
       {/* Video Player */}
       {lesson.video_url && (
         <div className="aspect-video rounded-lg overflow-hidden bg-black">
@@ -77,6 +64,19 @@ const ContentLesson = ({ lesson, getVideoEmbedUrl }: ContentLessonProps) => {
           className="prose prose-slate dark:prose-invert max-w-none"
           dangerouslySetInnerHTML={{ __html: sanitizeHtml(lesson.content) }}
         />
+      )}
+
+      {/* Experience Blocks - From Mike (after content, like tips/tricks) */}
+      {experienceBlocks.length > 0 && (
+        <div className="space-y-4">
+          {experienceBlocks.map((block, index) => (
+            <ExperienceBlock 
+              key={index}
+              content={block.content}
+              variant={block.variant}
+            />
+          ))}
+        </div>
       )}
 
       {/* Key Takeaways */}

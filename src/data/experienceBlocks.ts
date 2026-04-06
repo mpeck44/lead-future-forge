@@ -19,7 +19,7 @@ That's why this module is 23 minutes. You can knock it out in one sitting.`,
   ],
   
   // Module 1, Lesson 2: Creating Why AI Statement (or similar titles)
-  'Why AI': [
+  'Why AI Statement': [
     {
       content: `When I first drafted my "Why AI?" statement for Pen Argyl Area School District, I focused on efficiency and time-saving. When I shared it with teachers, they heard "You want to replace us with robots."
 
