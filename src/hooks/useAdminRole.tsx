@@ -36,7 +36,7 @@ export const useAdminRole = (): UseAdminRoleReturn => {
           console.error('Error checking admin role:', error);
           setIsAdmin(false);
         } else {
-          console.log('Setting isAdmin to:', !!data);
+          if (import.meta.env.DEV) console.log('Setting isAdmin to:', !!data);
           setIsAdmin(!!data);
         }
       } catch (err) {
