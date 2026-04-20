@@ -5,7 +5,7 @@ const features = [
     icon: Hammer,
     title: "Built by a Practitioner, For Practitioners",
     description:
-      "Every framework comes from real implementation in actual schools — not consulting theory or academic research.",
+      "Every framework comes from real implementation in actual schools, not consulting theory or academic research.",
   },
   {
     icon: Briefcase,
@@ -23,7 +23,7 @@ const features = [
     icon: Award,
     title: "Standards-Aligned",
     description:
-      "Aligned with leadership standards from COSN and ISTE — ensuring your work meets professional benchmarks.",
+      "Aligned with leadership standards from COSN and ISTE, ensuring your work meets professional benchmarks.",
   },
 ];
 

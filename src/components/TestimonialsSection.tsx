@@ -1,7 +1,7 @@
 const testimonials = [
   {
     quote:
-      "This program gave me the confidence and framework to present an AI strategy to our board — and they approved it unanimously.",
+      "This program gave me the confidence and framework to present an AI strategy to our board, and they approved it unanimously.",
     name: "Dr. Sarah Mitchell",
     title: "Superintendent",
     district: "Greenfield USD",

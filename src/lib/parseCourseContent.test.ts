@@ -358,7 +358,7 @@ resource_url: https://docs.google.com/document/template
 resource_name: AI Types Cheat Sheet Template`;
 
     const result = parseCourseContent(text);
-    // Should produce no warnings — all content lines are continuation
+    // Should produce no warnings, all content lines are continuation
     expect(result.warnings).toHaveLength(0);
     expect(result.modules).toHaveLength(1);
     expect(result.modules[0].lessons).toHaveLength(2);

@@ -31,7 +31,7 @@ const COURSE_CONTENT: Record<
 > = {
   fluency: {
     title: "AI Communication & Stakeholder Plan",
-    shortDescription: "Tools you use Monday morning — templates, coordination maps, and action plans for your first week.",
+    shortDescription: "Tools you use Monday morning: templates, coordination maps, and action plans for your first week.",
     timeline: "BOARD-READY IN 1–2 WEEKS",
     mockup: mockupCommunication,
     deliverables: [

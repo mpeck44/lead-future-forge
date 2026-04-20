@@ -23,7 +23,7 @@ const Hero = () => {
 
         <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 py-[160px] lg:py-[200px]">
           <div className="grid grid-cols-1 lg:grid-cols-[58%_42%] gap-12 lg:gap-8 items-center">
-            {/* Left column — text + CTAs */}
+            {/* Left column: text + CTAs */}
             <div>
               <h1
                 className="font-display text-[2.75rem] sm:text-[3.5rem] lg:text-[5.5rem] xl:text-[6.5rem] font-bold text-white leading-[1.05] tracking-tight mb-8 animate-fade-in"
@@ -42,7 +42,7 @@ const Hero = () => {
                 style={{ animationDelay: "0.2s" }}
               >
                 Move beyond one-off tools and workshops. Build real governance,
-                roadmaps, and board-ready plans — with deliverables you use
+                roadmaps, and board-ready plans, with deliverables you use
                 Monday morning.
               </p>
 
@@ -83,7 +83,7 @@ const Hero = () => {
               </div>
             </div>
 
-            {/* Right column — hero image */}
+            {/* Right column: hero image */}
             <div
               className="relative animate-fade-in order-first lg:order-last"
               style={{ animationDelay: "0.25s" }}
