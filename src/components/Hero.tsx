@@ -91,7 +91,7 @@ const Hero = () => {
               <div className="relative rounded-lg overflow-hidden shadow-2xl shadow-black/40">
                 <img
                   src={heroLeader}
-                  alt="K-12 district superintendent confidently presenting AI strategy to a school board"
+                  alt="Mike Peck, practicing K-12 Director of Technology and creator of The Leadership Forge"
                   width={896}
                   height={1152}
                   className="w-full h-auto object-cover aspect-[4/5] lg:aspect-[3/4]"
