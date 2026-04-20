@@ -9,7 +9,7 @@
 //   type: content | video | activity | reflection | question | quiz
 //   objective: ...
 //   estimated_minutes: 15
-//   content: ...  (multi-line supported — all following lines append until next field/marker)
+//   content: ...  (multi-line supported, all following lines append until next field/marker)
 //   takeaways: item1 | item2 | item3
 //   video_url: https://...
 //   resource_url: https://...
@@ -55,7 +55,7 @@ const VALID_LESSON_TYPES = ["content", "video", "activity", "reflection", "quest
 const VALID_PATH_TYPES = ["foundation", "path_1", "path_2", "path_3"];
 const VALID_RESOURCE_TYPES = ["google_doc", "pdf", "guide", "link"];
 
-// Known field keys — only these are treated as field markers.
+// Known field keys: only these are treated as field markers.
 // Lines with colons that don't match these are treated as continuation text.
 const KNOWN_MODULE_FIELDS = new Set([
   "description",
@@ -203,7 +203,7 @@ export function parseCourseContent(text: string): ParseResult {
       continue;
     }
 
-    // Check for field — but only if the key is a known field
+    // Check for field, but only if the key is a known field
     const fieldMatch = line.match(FIELD_REGEX);
     if (fieldMatch) {
       const key = fieldMatch[1].toLowerCase();
@@ -326,7 +326,7 @@ export function parseCourseContent(text: string): ParseResult {
       // to continuation logic below (e.g., "CATEGORY 1: Narrow AI...")
     }
 
-    // Line didn't match a known field or marker — try continuation
+    // Line didn't match a known field or marker, try continuation
     if (continuation) {
       if (continuation.target === "lesson" && currentLesson) {
         const prop = continuation.prop as keyof ParsedLesson;
@@ -350,7 +350,7 @@ export function parseCourseContent(text: string): ParseResult {
       continue;
     }
 
-    // Line doesn't match any pattern and no continuation active — warn if in context
+    // Line doesn't match any pattern and no continuation active, warn if in context
     if (currentModule || currentLesson) {
       warnings.push({
         line: lineNumber,

@@ -23,7 +23,7 @@ That's why this module is 23 minutes. You can knock it out in one sitting.`,
     {
       content: `When I first drafted my "Why AI?" statement for Pen Argyl Area School District, I focused on efficiency and time-saving. When I shared it with teachers, they heard "You want to replace us with robots."
 
-Version 2 led with "AI can't build relationships—only you can. But it can handle the paperwork that keeps you from students."
+Version 2 led with "AI can't build relationships, only you can. But it can handle the paperwork that keeps you from students."
 
 That landed better. Yours might need iteration too.`,
       variant: 'experience'

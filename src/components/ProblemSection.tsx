@@ -1,7 +1,7 @@
 const painPoints = [
   "Your district is buying AI tools, but lacks a strategy for deploying them with impact.",
   "Your board/leadership expects an AI plan, but you're unsure where to start or what success looks like.",
-  "Conference sessions show demos — but offer no pathway for organizational leadership or change.",
+  "Conference sessions show demos, but offer no pathway for organizational leadership or change.",
 ];
 
 const ProblemSection = () => {
@@ -14,7 +14,7 @@ const ProblemSection = () => {
         </h2>
 
         <p className="font-body text-lg text-white/85 text-center max-w-3xl mx-auto mb-12">
-          Your district isn't lacking AI tools — it's lacking a strategy that works at scale.
+          Your district isn't lacking AI tools. It's lacking a strategy that works at scale.
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto mb-12">

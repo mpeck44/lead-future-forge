@@ -3,13 +3,13 @@ const outcomes = [
     number: "01",
     title: "Strategic Clarity",
     description:
-      "Walk away with a blueprint you can present to your board — not a theoretical framework, but a concrete plan with timelines, owners, and success metrics.",
+      "Walk away with a blueprint you can present to your board, not a theoretical framework, but a concrete plan with timelines, owners, and success metrics.",
   },
   {
     number: "02",
     title: "Organizational Alignment",
     description:
-      "Communication frameworks that bring stakeholders — from teachers to parents to board members — into alignment around your AI vision.",
+      "Communication frameworks that bring stakeholders (from teachers to parents to board members) into alignment around your AI vision.",
   },
   {
     number: "03",
