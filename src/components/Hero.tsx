@@ -29,11 +29,11 @@ const Hero = () => {
                 className="font-display text-[2.75rem] sm:text-[3.5rem] lg:text-[5.5rem] xl:text-[6.5rem] font-bold text-white leading-[1.05] tracking-tight mb-8 animate-fade-in"
                 style={{ animationDelay: "0.1s" }}
               >
-                From Reactive Chaos{" "}
+                Stop Reacting to AI.{" "}
                 <br className="hidden sm:block" />
-                to{" "}
+                Start{" "}
                 <span style={{ color: "#d4af37" }}>
-                  Strategic Leadership.
+                  Leading Through It.
                 </span>
               </h1>
 
