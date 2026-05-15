@@ -41,12 +41,29 @@ const RichTextEditor = ({ value, onChange, placeholder = "Start typing...", clas
   }, [value]);
 
   const execCommand = useCallback((command: string, cmdValue?: string) => {
-    document.execCommand(command, false, cmdValue);
+    // Focus editor BEFORE executing command — execCommand requires the
+    // contenteditable to have focus/selection, otherwise list commands silently no-op.
     editorRef.current?.focus();
+
+    // If there's no selection inside the editor (e.g. user just clicked the toolbar
+    // button without placing the cursor), place the caret at the end so commands like
+    // insertUnorderedList have a valid range to operate on.
+    const selection = window.getSelection();
+    const editor = editorRef.current;
+    if (editor && (!selection || selection.rangeCount === 0 || !editor.contains(selection.anchorNode))) {
+      const range = document.createRange();
+      range.selectNodeContents(editor);
+      range.collapse(false);
+      selection?.removeAllRanges();
+      selection?.addRange(range);
+    }
+
+    document.execCommand(command, false, cmdValue);
+
     // Trigger onChange after command
-    if (editorRef.current) {
+    if (editor) {
       isInternalChange.current = true;
-      onChange(editorRef.current.innerHTML);
+      onChange(editor.innerHTML);
     }
   }, [onChange]);
 
