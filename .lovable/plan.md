@@ -1,37 +1,41 @@
+## Fix Rich Text Bullet/Numbered Lists
 
+### What’s going wrong
+The list buttons are likely inserting list HTML correctly, but the bullets/numbers aren’t visibly rendering because the app relies on Tailwind `prose` classes without enabling the typography plugin styles. In practice, that makes `<ul>` / `<ol>` content look like plain text.
 
-## Replace Hero Image with AI-Generated Photo of You
+### Plan
 
-### What you've provided
-Four reference images of you:
-- Professional B&W headshot (clean, smiling)
-- Speaking on stage with mic (cut-out, NFT shirt)
-- Two panel/event photos (purple stage lighting)
+**1. Enable Tailwind typography styles**
+Update `tailwind.config.ts` to register `@tailwindcss/typography`, since the package is already installed.
 
-### The plan
+**2. Add explicit list styling for editor + rendered lesson content**
+Harden the UI so lists remain visible even if typography styles are limited:
+- In `src/components/admin/RichTextEditor.tsx`, add scoped classes for `ul`, `ol`, and `li` spacing/markers on the editable area.
+- In lesson render surfaces (`LessonPreviewDialog` and course lesson content wrappers), add scoped list marker classes so saved bullet/numbered lists render consistently.
 
-**1. Generate a new hero photo using AI**
-Use the Lovable AI image model (`google/gemini-3-pro-image-preview` for highest quality) with your reference photos as input. The prompt will direct the model to:
-- Use your facial features from the B&W headshot (clearest reference)
-- Place you in a context that matches the current hero: a confident K-12 leader in a professional setting (think: superintendent presenting AI strategy, modern office or boardroom backdrop)
-- Match the existing hero's visual treatment: 4:5 aspect ratio, warm natural lighting, slight cinematic depth, color grade that complements the deep navy `#0F172A` background and gold `#d4af37` accent
-- Professional attire (button-down or blazer, no t-shirt) to match the "Director of Technology / board-ready leader" positioning
-- Authentic, approachable expression, not stiff corporate stock
+**3. Keep the current command behavior, but verify the visual result**
+No major logic rewrite unless needed. The current toolbar focus-preservation fix should stay; this pass is about making inserted lists visibly render in admin preview and learner-facing content.
 
-**2. Save and wire it up**
-- Save the generated image to `src/assets/hero-leader.jpg` (replacing the existing file, same filename so the import in `Hero.tsx` keeps working with no code change)
-- Verify the import at the top of `src/components/Hero.tsx` (`import heroLeader from "@/assets/hero-leader.jpg"`) still resolves
-- Update the `alt` text on the `<img>` to reflect that it's you (Mike Peck), since the bio strategy already centers on "Built by a practicing K-12 Director of Technology"
+### Files to update
+- `tailwind.config.ts`
+- `src/components/admin/RichTextEditor.tsx`
+- `src/components/admin/LessonPreviewDialog.tsx`
+- `src/components/course/ContentLesson.tsx`
+- `src/components/course/ActivityLesson.tsx`
+- `src/components/course/ReflectionLesson.tsx`
+- `src/components/course/QuestionLesson.tsx`
 
-**3. QA**
-- Generate, then preview the image before committing
-- If the first generation isn't strong enough (likeness off, lighting wrong, awkward composition), iterate with refined prompts up to 2-3 times
-- Confirm the 4:5 aspect ratio crops well in the existing hero layout at desktop and mobile
+### Expected outcome
+- Bullet list button shows real bullets in the editor
+- Numbered list button shows numbering
+- Saved lists render correctly in preview dialogs and in course lessons
+- Existing bold/italic/link behavior remains unchanged
 
-### Honest caveat on likeness
-AI image models can approximate your likeness from references but may not produce a perfect photographic match, this won't look identical to a real photo of you. If exact likeness matters (it often does for credibility), a real photo shoot is the gold standard. The AI version is a strong interim option and works well stylistically. I'll generate it and you decide if it's good enough to ship.
-
-### Files touched
-- `src/assets/hero-leader.jpg` (replaced)
-- `src/components/Hero.tsx` (alt text update only)
-
+### Technical notes
+- Prefer scoped utility selectors like:
+  - `[&_ul]:list-disc`
+  - `[&_ol]:list-decimal`
+  - `[&_ul]:pl-6`
+  - `[&_ol]:pl-6`
+  - `[&_li]:my-1`
+- This avoids depending on browser defaults alone and keeps the result stable across admin/editor/course contexts.

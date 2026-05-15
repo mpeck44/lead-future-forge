@@ -139,7 +139,7 @@ const ReflectionLesson = ({
             <div>
               <p className="text-sm font-medium text-primary mb-2">Reflection Prompt</p>
               <div 
-                className="prose prose-slate dark:prose-invert max-w-none"
+                className="prose prose-slate dark:prose-invert max-w-none [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_li]:my-1"
                 dangerouslySetInnerHTML={{ __html: sanitizeHtml(lesson.content) }}
               />
             </div>

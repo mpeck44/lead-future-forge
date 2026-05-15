@@ -350,7 +350,7 @@ const LessonFormDialog = ({
                           </TabsContent>
                           <TabsContent value="preview" className="mt-0">
                             <div
-                              className="min-h-[200px] p-3 border border-input rounded-md prose prose-sm max-w-none bg-muted/30"
+                              className="min-h-[200px] p-3 border border-input rounded-md prose prose-sm max-w-none bg-muted/30 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_li]:my-1"
                               dangerouslySetInnerHTML={{ __html: sanitizeHtml(contentValue || "<p class='text-muted-foreground'>No content yet</p>") }}
                             />
                           </TabsContent>

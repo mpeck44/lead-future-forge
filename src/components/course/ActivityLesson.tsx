@@ -67,7 +67,7 @@ const ActivityLesson = ({ lesson, courseId, isCompleted, onComplete, onPortfolio
         <div>
           <h4 className="font-semibold mb-3">Instructions</h4>
           <div 
-            className="prose prose-slate dark:prose-invert max-w-none"
+            className="prose prose-slate dark:prose-invert max-w-none [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_li]:my-1"
             dangerouslySetInnerHTML={{ __html: sanitizeHtml(lesson.content) }}
           />
         </div>
