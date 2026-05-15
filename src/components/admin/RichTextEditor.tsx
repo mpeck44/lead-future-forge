@@ -205,7 +205,7 @@ const RichTextEditor = ({ value, onChange, placeholder = "Start typing...", clas
       <div
         ref={editorRef}
         contentEditable
-        className="min-h-[200px] p-3 focus:outline-none prose prose-sm max-w-none"
+        className="min-h-[200px] p-3 focus:outline-none prose prose-sm max-w-none [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_li]:my-1"
         onInput={handleInput}
         onPaste={handlePaste}
         data-placeholder={placeholder}

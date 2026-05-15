@@ -105,7 +105,7 @@ const LessonPreviewDialog = ({ open, onOpenChange, lesson }: LessonPreviewDialog
 
           {/* Content Section */}
           {lesson.content && (
-            <div className="prose prose-sm max-w-none dark:prose-invert">
+            <div className="prose prose-sm max-w-none dark:prose-invert [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_li]:my-1">
               <div 
                 dangerouslySetInnerHTML={{ __html: sanitizeHtml(lesson.content) }}
                 className="[&_.video-embed]:my-4 [&_.video-embed_iframe]:rounded-lg"

@@ -136,7 +136,7 @@ const QuestionLesson = ({
             <div>
               <p className="text-sm font-medium text-indigo-700 dark:text-indigo-300 mb-2">Question</p>
               <div 
-                className="prose prose-slate dark:prose-invert max-w-none prose-p:text-indigo-900 dark:prose-p:text-indigo-100"
+                className="prose prose-slate dark:prose-invert max-w-none prose-p:text-indigo-900 dark:prose-p:text-indigo-100 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_li]:my-1"
                 dangerouslySetInnerHTML={{ __html: sanitizeHtml(lesson.content) }}
               />
             </div>
