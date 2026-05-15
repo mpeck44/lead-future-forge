@@ -111,6 +111,7 @@ const RichTextEditor = ({ value, onChange, placeholder = "Start typing...", clas
         <Button
           type="button"
           variant="ghost"
+          onMouseDown={(e) => e.preventDefault()}
           size="sm"
           onClick={() => execCommand("bold")}
           className="h-8 w-8 p-0"
@@ -121,6 +122,7 @@ const RichTextEditor = ({ value, onChange, placeholder = "Start typing...", clas
         <Button
           type="button"
           variant="ghost"
+          onMouseDown={(e) => e.preventDefault()}
           size="sm"
           onClick={() => execCommand("italic")}
           className="h-8 w-8 p-0"
@@ -131,6 +133,7 @@ const RichTextEditor = ({ value, onChange, placeholder = "Start typing...", clas
         <Button
           type="button"
           variant="ghost"
+          onMouseDown={(e) => e.preventDefault()}
           size="sm"
           onClick={() => execCommand("underline")}
           className="h-8 w-8 p-0"
@@ -142,6 +145,7 @@ const RichTextEditor = ({ value, onChange, placeholder = "Start typing...", clas
         <Button
           type="button"
           variant="ghost"
+          onMouseDown={(e) => e.preventDefault()}
           size="sm"
           onClick={() => execCommand("insertUnorderedList")}
           className="h-8 w-8 p-0"
@@ -152,6 +156,7 @@ const RichTextEditor = ({ value, onChange, placeholder = "Start typing...", clas
         <Button
           type="button"
           variant="ghost"
+          onMouseDown={(e) => e.preventDefault()}
           size="sm"
           onClick={() => execCommand("insertOrderedList")}
           className="h-8 w-8 p-0"
@@ -163,6 +168,7 @@ const RichTextEditor = ({ value, onChange, placeholder = "Start typing...", clas
         <Button
           type="button"
           variant="ghost"
+          onMouseDown={(e) => e.preventDefault()}
           size="sm"
           onClick={handleLink}
           className="h-8 w-8 p-0"
@@ -173,6 +179,7 @@ const RichTextEditor = ({ value, onChange, placeholder = "Start typing...", clas
         <Button
           type="button"
           variant="ghost"
+          onMouseDown={(e) => e.preventDefault()}
           size="sm"
           onClick={() => execCommand("removeFormat")}
           className="h-8 w-8 p-0"
@@ -184,6 +191,7 @@ const RichTextEditor = ({ value, onChange, placeholder = "Start typing...", clas
         <Button
           type="button"
           variant="ghost"
+          onMouseDown={(e) => e.preventDefault()}
           size="sm"
           onClick={handleYouTubeEmbed}
           className="h-8 w-8 p-0"
