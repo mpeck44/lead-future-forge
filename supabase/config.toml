@@ -2,3 +2,6 @@ project_id = "etrnqdvlnmnkfkenhpsf"
 
 [functions.delete-user]
 verify_jwt = false
+
+[functions.export-course]
+verify_jwt = false
