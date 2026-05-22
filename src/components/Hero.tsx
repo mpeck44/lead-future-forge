@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import WaitlistModal from "./WaitlistModal";
-import heroLeader from "@/assets/hero-leader.jpg";
+import heroLeader from "@/assets/hero-leader-v2.jpg";
 
 const Hero = () => {
   const [waitlistOpen, setWaitlistOpen] = useState(false);
@@ -91,7 +91,7 @@ const Hero = () => {
               <div className="relative rounded-lg overflow-hidden shadow-2xl shadow-black/40">
                 <img
                   src={heroLeader}
-                  alt="Mike Peck, practicing K-12 Director of Technology and creator of The Leadership Forge"
+                  alt="A K-12 technology director leading an AI strategy conversation with district staff"
                   width={896}
                   height={1152}
                   className="w-full h-auto object-cover aspect-[4/5] lg:aspect-[3/4]"
