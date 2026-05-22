@@ -1,41 +1,36 @@
-## Fix Rich Text Bullet/Numbered Lists
+## Goal
 
-### What’s going wrong
-The list buttons are likely inserting list HTML correctly, but the bullets/numbers aren’t visibly rendering because the app relies on Tailwind `prose` classes without enabling the typography plugin styles. In practice, that makes `<ul>` / `<ol>` content look like plain text.
+Swap the current studio-style portrait in the hero for an environmental/action image that visually reinforces "practicing K-12 Director of Technology" and the practitioner-led brand voice.
 
-### Plan
+## Approach
 
-**1. Enable Tailwind typography styles**
-Update `tailwind.config.ts` to register `@tailwindcss/typography`, since the package is already installed.
+1. **Generate a new hero image** using the premium image model, with a prompt tuned to the Forge brand:
+   - Subject: A K-12 technology leader (mid-40s male, professional but approachable) mid-conversation with educators in a modern school setting — whiteboard with a roadmap sketch visible behind, natural light, candid not posed
+   - Style: Editorial documentary photography, shallow depth of field, warm but cinematic
+   - Color treatment: Tones that harmonize with Deep Navy #0F172A and Brand Gold #d4af37 — warm neutrals, navy shadows, a subtle gold light source
+   - Aspect ratio: 3:4 portrait (matches current `lg:aspect-[3/4]`) so no layout changes are needed
+   - Save to `src/assets/hero-leader-v2.jpg`
 
-**2. Add explicit list styling for editor + rendered lesson content**
-Harden the UI so lists remain visible even if typography styles are limited:
-- In `src/components/admin/RichTextEditor.tsx`, add scoped classes for `ul`, `ol`, and `li` spacing/markers on the editable area.
-- In lesson render surfaces (`LessonPreviewDialog` and course lesson content wrappers), add scoped list marker classes so saved bullet/numbered lists render consistently.
+2. **Generate 1–2 alternatives** so you can compare:
+   - Alt A: Closer crop, leader at a whiteboard mid-sketch
+   - Alt B: Wider shot, leader walking a school hallway with tablet, blurred staff in background
 
-**3. Keep the current command behavior, but verify the visual result**
-No major logic rewrite unless needed. The current toolbar focus-preservation fix should stay; this pass is about making inserted lists visibly render in admin preview and learner-facing content.
+3. **Review & pick** — I'll show all options. You choose one (or ask for revisions).
 
-### Files to update
-- `tailwind.config.ts`
-- `src/components/admin/RichTextEditor.tsx`
-- `src/components/admin/LessonPreviewDialog.tsx`
-- `src/components/course/ContentLesson.tsx`
-- `src/components/course/ActivityLesson.tsx`
-- `src/components/course/ReflectionLesson.tsx`
-- `src/components/course/QuestionLesson.tsx`
+4. **Swap the import in `src/components/Hero.tsx`** from `hero-leader.jpg` to the chosen file. Update the `alt` text to describe the new scene while keeping the practitioner framing. No layout, gradient, or copy changes.
 
-### Expected outcome
-- Bullet list button shows real bullets in the editor
-- Numbered list button shows numbering
-- Saved lists render correctly in preview dialogs and in course lessons
-- Existing bold/italic/link behavior remains unchanged
+5. **Optional polish** (only if you want it after seeing the image):
+   - Add a thin gold border accent or corner mark behind the image frame to tie it to the Forge palette
+   - Slightly stronger navy gradient overlay at the bottom for better blend with the dark hero
 
-### Technical notes
-- Prefer scoped utility selectors like:
-  - `[&_ul]:list-disc`
-  - `[&_ol]:list-decimal`
-  - `[&_ul]:pl-6`
-  - `[&_ol]:pl-6`
-  - `[&_li]:my-1`
-- This avoids depending on browser defaults alone and keeps the result stable across admin/editor/course contexts.
+## Notes
+
+- Won't look like you — AI-generated people are generic by design. The win is *signal* (this person does the work), not personal likeness. If you want it to be you specifically, that needs a real photo shoot or an uploaded reference photo I can use as a starting point.
+- The existing `hero-leader.jpg` stays in the repo as fallback until you confirm the new one.
+- No backend, no copy, no layout changes — this is purely an asset swap.
+
+## Out of scope
+
+- Restyling the rest of the page sections
+- Changing hero copy, CTAs, or trust bar
+- Adding video or motion to the hero
