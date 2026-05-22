@@ -140,7 +140,7 @@ export function BulkImportDialog({
   };
 
   const handleParse = () => {
-    const result = parseCourseContent(rawText);
+    const result = parseCourseContent(rawText, { formatMarkdown });
     setParseResult(result);
     if (result.modules.length === 0) {
       toast.error("No modules found. Check your text format.");
