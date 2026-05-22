@@ -289,6 +289,24 @@ export function BulkImportDialog({
               className="min-h-[250px] font-mono text-sm"
             />
 
+            {/* Formatting options */}
+            <label className="flex items-start gap-2 text-sm cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={formatMarkdown}
+                onChange={(e) => setFormatMarkdown(e.target.checked)}
+                className="mt-0.5 h-4 w-4 rounded border-input accent-primary"
+              />
+              <span>
+                <span className="font-medium">Auto-format lesson content from Markdown</span>
+                <span className="block text-xs text-muted-foreground">
+                  Converts <code className="text-[11px]">#</code> headings, <code className="text-[11px]">-</code> bullets, <code className="text-[11px]">**bold**</code>, links, and blockquotes into proper formatting so you don't have to style each lesson by hand.
+                </span>
+              </span>
+            </label>
+
+
+
             {/* Format reference */}
             <Collapsible open={formatOpen} onOpenChange={setFormatOpen}>
               <CollapsibleTrigger asChild>
