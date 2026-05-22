@@ -377,6 +377,16 @@ export function parseCourseContent(text: string, options: ParseOptions = {}): Pa
     modules.push(currentModule);
   }
 
+  // Apply Markdown -> HTML conversion to content fields (post-trim)
+  if (formatMarkdown) {
+    for (const mod of modules) {
+      // Module descriptions stay plain text (rendered as text in admin lists)
+      for (const lesson of mod.lessons) {
+        if (lesson.content) lesson.content = markdownToHtml(lesson.content);
+      }
+    }
+  }
+
   return { modules, warnings };
 }
 
