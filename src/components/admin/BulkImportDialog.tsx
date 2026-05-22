@@ -99,6 +99,7 @@ export function BulkImportDialog({
 }: BulkImportDialogProps) {
   const [step, setStep] = useState<Step>("input");
   const [rawText, setRawText] = useState("");
+  const [formatMarkdown, setFormatMarkdown] = useState(true);
   const [parseResult, setParseResult] = useState<ParseResult | null>(null);
   const [importProgress, setImportProgress] = useState({ current: 0, total: 0 });
   const [importSummary, setImportSummary] = useState({ modules: 0, lessons: 0 });
@@ -109,6 +110,7 @@ export function BulkImportDialog({
   const resetState = () => {
     setStep("input");
     setRawText("");
+    setFormatMarkdown(true);
     setParseResult(null);
     setImportProgress({ current: 0, total: 0 });
     setImportSummary({ modules: 0, lessons: 0 });
