@@ -63,7 +63,19 @@ path_type: foundation
 type: content
 objective: Understand the basic concepts of AI
 estimated_minutes: 15
-content: Artificial intelligence refers to...
+content: # What is AI?
+
+Artificial intelligence refers to systems that perform tasks once thought to require human intelligence.
+
+## Three flavors you'll meet in schools
+
+- **Narrow AI** — chatbots, grading helpers, spell-check
+- **Generative AI** — ChatGPT, image generators
+- **Agentic AI** — tools that take actions on your behalf
+
+> Tip: Start with one narrow use case before piloting anything generative.
+
+See the [district AI policy template](https://example.com/policy) for a starting point.
 takeaways: AI is a tool | Focus on practical uses | Start small
 resource_url: https://docs.google.com/...
 
@@ -71,25 +83,11 @@ resource_url: https://docs.google.com/...
 type: video
 estimated_minutes: 10
 video_url: https://youtube.com/watch?v=...
-takeaways: Districts use AI already | Policy first
 
 --- LESSON: Reflect on Your District ---
 type: reflection
 estimated_minutes: 5
-content: Where could AI have the biggest impact?
-
-=== MODULE: Building Your AI Vision ===
-description: Create your AI leadership vision
-deliverable: AI Vision Statement
-path_type: path_1
-
---- LESSON: Crafting Your Vision ---
-type: activity
-objective: Draft a personal AI vision statement
-estimated_minutes: 20
-content: Use the template below...
-resource_url: https://docs.google.com/...
-resource_name: AI Vision Template`;
+content: Where could AI have the biggest impact in the next 90 days?`;
 
 export function BulkImportDialog({
   open,
