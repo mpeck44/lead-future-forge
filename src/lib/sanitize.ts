@@ -5,7 +5,7 @@ import DOMPurify from "dompurify";
  */
 const SANITIZE_CONFIG = {
   ADD_TAGS: ["iframe"],
-  ADD_ATTR: ["allow", "allowfullscreen", "frameborder", "src", "style", "class", "contenteditable"],
+  ADD_ATTR: ["allow", "allowfullscreen", "frameborder", "src", "style", "class", "contenteditable", "target", "rel"],
   ALLOWED_URI_REGEXP: /^(?:(?:https?|mailto|tel):|[^a-z]|[a-z+.-]+(?:[^a-z+.-:]|$))/i,
 };
 

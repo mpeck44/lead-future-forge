@@ -8,7 +8,7 @@ description: An introductory module
 deliverable: Summary Doc
 path_type: foundation`;
 
-    const result = parseCourseContent(text);
+    const result = parseCourseContent(text, { formatMarkdown: false });
     expect(result.modules).toHaveLength(1);
     expect(result.modules[0].title).toBe("Intro to AI");
     expect(result.modules[0].description).toBe("An introductory module");
@@ -34,7 +34,7 @@ estimated_minutes: 10
 video_url: https://youtube.com/watch?v=abc123
 takeaways: AI is growing | Policy matters`;
 
-    const result = parseCourseContent(text);
+    const result = parseCourseContent(text, { formatMarkdown: false });
     expect(result.modules).toHaveLength(1);
     expect(result.modules[0].lessons).toHaveLength(2);
 
@@ -68,7 +68,7 @@ type: reflection
 estimated_minutes: 5
 content: Reflect on your learning`;
 
-    const result = parseCourseContent(text);
+    const result = parseCourseContent(text, { formatMarkdown: false });
     expect(result.modules).toHaveLength(2);
     expect(result.modules[0].title).toBe("Module One");
     expect(result.modules[0].lessons).toHaveLength(1);
@@ -90,7 +90,7 @@ resource_name: Implementation Template
 resource_type: google_doc
 download_button_text: Get Template`;
 
-    const result = parseCourseContent(text);
+    const result = parseCourseContent(text, { formatMarkdown: false });
     const lesson = result.modules[0].lessons[0];
     expect(lesson.lesson_type).toBe("activity");
     expect(lesson.template_url).toBe("https://docs.google.com/doc/template");
@@ -105,7 +105,7 @@ download_button_text: Get Template`;
 --- LESSON: Bad Type ---
 type: invalid_type`;
 
-    const result = parseCourseContent(text);
+    const result = parseCourseContent(text, { formatMarkdown: false });
     expect(result.warnings.length).toBeGreaterThan(0);
     expect(result.warnings[0].message).toContain("Invalid lesson type");
     // Lesson should still have default type
@@ -116,7 +116,7 @@ type: invalid_type`;
     const text = `=== MODULE: Test ===
 path_type: invalid_path`;
 
-    const result = parseCourseContent(text);
+    const result = parseCourseContent(text, { formatMarkdown: false });
     expect(result.warnings.length).toBeGreaterThan(0);
     expect(result.warnings[0].message).toContain("Invalid path_type");
   });
@@ -125,14 +125,14 @@ path_type: invalid_path`;
     const text = `--- LESSON: Orphan Lesson ---
 type: content`;
 
-    const result = parseCourseContent(text);
+    const result = parseCourseContent(text, { formatMarkdown: false });
     expect(result.modules).toHaveLength(0);
     expect(result.warnings.length).toBeGreaterThan(0);
     expect(result.warnings[0].message).toContain("before any module");
   });
 
   it("handles empty input", () => {
-    const result = parseCourseContent("");
+    const result = parseCourseContent("", { formatMarkdown: false });
     expect(result.modules).toHaveLength(0);
     expect(result.warnings).toHaveLength(0);
   });
@@ -145,7 +145,7 @@ type: video
 video_url: https://youtube.com/watch?v=xyz
 transcript: This is the full transcript of the video`;
 
-    const result = parseCourseContent(text);
+    const result = parseCourseContent(text, { formatMarkdown: false });
     expect(result.modules[0].lessons[0].video_transcript).toBe(
       "This is the full transcript of the video"
     );
@@ -163,7 +163,7 @@ template_url: https://example.com
 video_transcript: Some transcript
 minutes: 12`;
 
-    const result = parseCourseContent(text);
+    const result = parseCourseContent(text, { formatMarkdown: false });
     expect(result.modules[0].deliverable_name).toBe("Alt Deliverable");
     const lesson = result.modules[0].lessons[0];
     expect(lesson.lesson_type).toBe("video");
@@ -189,7 +189,7 @@ Second paragraph after a blank line.
 Third paragraph here.
 takeaways: Point A | Point B`;
 
-    const result = parseCourseContent(text);
+    const result = parseCourseContent(text, { formatMarkdown: false });
     expect(result.warnings).toHaveLength(0);
     const lesson = result.modules[0].lessons[0];
     expect(lesson.content).toContain("First paragraph of content.");
@@ -213,7 +213,7 @@ content: Here are some examples:
 - Third bullet item
 takeaways: Summary point`;
 
-    const result = parseCourseContent(text);
+    const result = parseCourseContent(text, { formatMarkdown: false });
     expect(result.warnings).toHaveLength(0);
     const lesson = result.modules[0].lessons[0];
     expect(lesson.content).toContain("- First bullet item");
@@ -234,7 +234,7 @@ CATEGORY 2: Generative AI - The Creation Tools
 More content about generative AI.
 takeaways: AI has categories`;
 
-    const result = parseCourseContent(text);
+    const result = parseCourseContent(text, { formatMarkdown: false });
     expect(result.warnings).toHaveLength(0);
     const lesson = result.modules[0].lessons[0];
     expect(lesson.content).toContain("CATEGORY 1: Narrow AI");
@@ -254,7 +254,7 @@ This continues on the next line.
 type: video
 video_url: https://youtube.com/watch?v=123`;
 
-    const result = parseCourseContent(text);
+    const result = parseCourseContent(text, { formatMarkdown: false });
     expect(result.modules[0].lessons).toHaveLength(2);
     expect(result.modules[0].lessons[0].content).toContain("Content for first lesson");
     expect(result.modules[0].lessons[0].content).toContain("This continues on the next line.");
@@ -273,7 +273,7 @@ More content here
 === MODULE: Second Module ===
 description: New module`;
 
-    const result = parseCourseContent(text);
+    const result = parseCourseContent(text, { formatMarkdown: false });
     expect(result.modules).toHaveLength(2);
     expect(result.modules[0].lessons[0].content).toContain("More content here");
     expect(result.modules[1].title).toBe("Second Module");
@@ -290,7 +290,7 @@ Today we'll discuss AI in education.
 Let's get started.
 takeaways: AI is useful`;
 
-    const result = parseCourseContent(text);
+    const result = parseCourseContent(text, { formatMarkdown: false });
     expect(result.warnings).toHaveLength(0);
     const lesson = result.modules[0].lessons[0];
     expect(lesson.video_transcript).toContain("Hello and welcome.");
@@ -309,7 +309,7 @@ content: Fill in below:
 → Narrow AI = efficiency question
 takeaways: Practice makes perfect`;
 
-    const result = parseCourseContent(text);
+    const result = parseCourseContent(text, { formatMarkdown: false });
     expect(result.warnings).toHaveLength(0);
     const lesson = result.modules[0].lessons[0];
     expect(lesson.content).toContain("[Your turn: List 1-2 tools you currently use]");
@@ -357,7 +357,7 @@ takeaways: Add your school's specific AI examples | Use when evaluating vendors
 resource_url: https://docs.google.com/document/template
 resource_name: AI Types Cheat Sheet Template`;
 
-    const result = parseCourseContent(text);
+    const result = parseCourseContent(text, { formatMarkdown: false });
     // Should produce no warnings, all content lines are continuation
     expect(result.warnings).toHaveLength(0);
     expect(result.modules).toHaveLength(1);

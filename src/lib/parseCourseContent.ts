@@ -124,7 +124,15 @@ function getModuleContinuationProp(fieldKey: string): keyof ParsedModule | null 
   }
 }
 
-export function parseCourseContent(text: string): ParseResult {
+import { markdownToHtml } from "./markdown";
+
+export interface ParseOptions {
+  /** Convert Markdown in content/objective/transcript/description fields into HTML. Default true. */
+  formatMarkdown?: boolean;
+}
+
+export function parseCourseContent(text: string, options: ParseOptions = {}): ParseResult {
+  const { formatMarkdown = true } = options;
   const lines = text.split("\n");
   const modules: ParsedModule[] = [];
   const warnings: ParseWarning[] = [];
@@ -367,6 +375,16 @@ export function parseCourseContent(text: string): ParseResult {
   if (currentModule) {
     trimModuleContinuationFields(currentModule);
     modules.push(currentModule);
+  }
+
+  // Apply Markdown -> HTML conversion to content fields (post-trim)
+  if (formatMarkdown) {
+    for (const mod of modules) {
+      // Module descriptions stay plain text (rendered as text in admin lists)
+      for (const lesson of mod.lessons) {
+        if (lesson.content) lesson.content = markdownToHtml(lesson.content);
+      }
+    }
   }
 
   return { modules, warnings };

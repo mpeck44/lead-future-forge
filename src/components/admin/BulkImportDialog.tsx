@@ -63,7 +63,19 @@ path_type: foundation
 type: content
 objective: Understand the basic concepts of AI
 estimated_minutes: 15
-content: Artificial intelligence refers to...
+content: # What is AI?
+
+Artificial intelligence refers to systems that perform tasks once thought to require human intelligence.
+
+## Three flavors you'll meet in schools
+
+- **Narrow AI** — chatbots, grading helpers, spell-check
+- **Generative AI** — ChatGPT, image generators
+- **Agentic AI** — tools that take actions on your behalf
+
+> Tip: Start with one narrow use case before piloting anything generative.
+
+See the [district AI policy template](https://example.com/policy) for a starting point.
 takeaways: AI is a tool | Focus on practical uses | Start small
 resource_url: https://docs.google.com/...
 
@@ -71,25 +83,11 @@ resource_url: https://docs.google.com/...
 type: video
 estimated_minutes: 10
 video_url: https://youtube.com/watch?v=...
-takeaways: Districts use AI already | Policy first
 
 --- LESSON: Reflect on Your District ---
 type: reflection
 estimated_minutes: 5
-content: Where could AI have the biggest impact?
-
-=== MODULE: Building Your AI Vision ===
-description: Create your AI leadership vision
-deliverable: AI Vision Statement
-path_type: path_1
-
---- LESSON: Crafting Your Vision ---
-type: activity
-objective: Draft a personal AI vision statement
-estimated_minutes: 20
-content: Use the template below...
-resource_url: https://docs.google.com/...
-resource_name: AI Vision Template`;
+content: Where could AI have the biggest impact in the next 90 days?`;
 
 export function BulkImportDialog({
   open,
@@ -99,6 +97,7 @@ export function BulkImportDialog({
 }: BulkImportDialogProps) {
   const [step, setStep] = useState<Step>("input");
   const [rawText, setRawText] = useState("");
+  const [formatMarkdown, setFormatMarkdown] = useState(true);
   const [parseResult, setParseResult] = useState<ParseResult | null>(null);
   const [importProgress, setImportProgress] = useState({ current: 0, total: 0 });
   const [importSummary, setImportSummary] = useState({ modules: 0, lessons: 0 });
@@ -109,6 +108,7 @@ export function BulkImportDialog({
   const resetState = () => {
     setStep("input");
     setRawText("");
+    setFormatMarkdown(true);
     setParseResult(null);
     setImportProgress({ current: 0, total: 0 });
     setImportSummary({ modules: 0, lessons: 0 });
@@ -138,7 +138,7 @@ export function BulkImportDialog({
   };
 
   const handleParse = () => {
-    const result = parseCourseContent(rawText);
+    const result = parseCourseContent(rawText, { formatMarkdown });
     setParseResult(result);
     if (result.modules.length === 0) {
       toast.error("No modules found. Check your text format.");
@@ -288,6 +288,24 @@ export function BulkImportDialog({
               placeholder="Paste your structured content here, or upload a file above..."
               className="min-h-[250px] font-mono text-sm"
             />
+
+            {/* Formatting options */}
+            <label className="flex items-start gap-2 text-sm cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={formatMarkdown}
+                onChange={(e) => setFormatMarkdown(e.target.checked)}
+                className="mt-0.5 h-4 w-4 rounded border-input accent-primary"
+              />
+              <span>
+                <span className="font-medium">Auto-format lesson content from Markdown</span>
+                <span className="block text-xs text-muted-foreground">
+                  Converts <code className="text-[11px]">#</code> headings, <code className="text-[11px]">-</code> bullets, <code className="text-[11px]">**bold**</code>, links, and blockquotes into proper formatting so you don't have to style each lesson by hand.
+                </span>
+              </span>
+            </label>
+
+
 
             {/* Format reference */}
             <Collapsible open={formatOpen} onOpenChange={setFormatOpen}>
