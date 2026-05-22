@@ -124,7 +124,15 @@ function getModuleContinuationProp(fieldKey: string): keyof ParsedModule | null 
   }
 }
 
-export function parseCourseContent(text: string): ParseResult {
+import { markdownToHtml } from "./markdown";
+
+export interface ParseOptions {
+  /** Convert Markdown in content/objective/transcript/description fields into HTML. Default true. */
+  formatMarkdown?: boolean;
+}
+
+export function parseCourseContent(text: string, options: ParseOptions = {}): ParseResult {
+  const { formatMarkdown = true } = options;
   const lines = text.split("\n");
   const modules: ParsedModule[] = [];
   const warnings: ParseWarning[] = [];
