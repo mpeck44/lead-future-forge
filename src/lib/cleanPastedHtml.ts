@@ -21,7 +21,15 @@ export function cleanPastedHtml(html: string): string {
   if (!body) return "";
 
   // 1. Strip junk tags entirely
-  body.querySelectorAll("meta, style, script, link, title, o\\:p, img").forEach((n) => n.remove());
+  body.querySelectorAll("meta, style, script, link, title, o\\:p").forEach((n) => n.remove());
+
+  // 1b. Drop <img> with blob:/data: sources (those URLs expire); keep http(s) images
+  body.querySelectorAll("img").forEach((img) => {
+    const src = img.getAttribute("src") || "";
+    if (!/^https?:\/\//i.test(src)) {
+      img.remove();
+    }
+  });
 
   // 2. Unwrap Google Docs' outer <b id="docs-internal-guid-...">
   body.querySelectorAll('b[id^="docs-internal-guid-"]').forEach((el) => unwrap(el));
