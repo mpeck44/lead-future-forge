@@ -103,10 +103,71 @@ const RichTextEditor = ({ value, onChange, placeholder = "Start typing...", clas
     }
   }, [onChange]);
 
+  const insertImageHtml = useCallback((url: string, alt = "") => {
+    const safeAlt = alt.replace(/"/g, "&quot;");
+    const html = `<img src="${url}" alt="${safeAlt}" loading="lazy" class="rounded-lg my-4 max-w-full h-auto" /><p><br></p>`;
+    editorRef.current?.focus();
+    document.execCommand("insertHTML", false, html);
+    if (editorRef.current) {
+      isInternalChange.current = true;
+      onChange(editorRef.current.innerHTML);
+    }
+  }, [onChange]);
+
+  const uploadAndInsertImage = useCallback(async (file: File) => {
+    if (!file.type.startsWith("image/")) {
+      toast({ title: "Not an image", description: "Please choose an image file.", variant: "destructive" });
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast({ title: "Image too large", description: "Maximum size is 5 MB.", variant: "destructive" });
+      return;
+    }
+    setIsUploadingImage(true);
+    try {
+      const ext = (file.name.split(".").pop() || "png").toLowerCase().replace(/[^a-z0-9]/g, "") || "png";
+      const path = `${crypto.randomUUID()}.${ext}`;
+      const { error: uploadError } = await supabase.storage
+        .from("lesson-images")
+        .upload(path, file, { contentType: file.type, upsert: false });
+      if (uploadError) throw uploadError;
+      const { data } = supabase.storage.from("lesson-images").getPublicUrl(path);
+      if (!data?.publicUrl) throw new Error("Could not resolve public URL.");
+      insertImageHtml(data.publicUrl, file.name.replace(/\.[^.]+$/, ""));
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Upload failed.";
+      toast({ title: "Image upload failed", description: message, variant: "destructive" });
+    } finally {
+      setIsUploadingImage(false);
+    }
+  }, [insertImageHtml]);
+
+  const handleImageButtonClick = useCallback(() => {
+    fileInputRef.current?.click();
+  }, []);
+
+  const handleFileInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) uploadAndInsertImage(file);
+    e.target.value = "";
+  }, [uploadAndInsertImage]);
+
   const handlePaste = useCallback((e: React.ClipboardEvent) => {
-    e.preventDefault();
     const nativeEvent = e.nativeEvent as ClipboardEvent & { shiftKey?: boolean };
     const forcePlain = nativeEvent.shiftKey === true;
+
+    // Pasted image file (screenshot, copied image) — upload before inserting
+    if (!forcePlain) {
+      const files = Array.from(e.clipboardData.files || []);
+      const imageFile = files.find((f) => f.type.startsWith("image/"));
+      if (imageFile) {
+        e.preventDefault();
+        uploadAndInsertImage(imageFile);
+        return;
+      }
+    }
+
+    e.preventDefault();
     const html = forcePlain ? "" : e.clipboardData.getData("text/html");
 
     if (html) {
@@ -123,7 +184,7 @@ const RichTextEditor = ({ value, onChange, placeholder = "Start typing...", clas
 
     const text = e.clipboardData.getData("text/plain");
     document.execCommand("insertText", false, text);
-  }, [onChange]);
+  }, [onChange, uploadAndInsertImage]);
 
   return (
     <div className={cn("border border-input rounded-md overflow-hidden", className)}>
