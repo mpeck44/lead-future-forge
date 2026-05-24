@@ -281,6 +281,25 @@ const RichTextEditor = ({ value, onChange, placeholder = "Start typing...", clas
         >
           <Youtube className="h-4 w-4" />
         </Button>
+        <Button
+          type="button"
+          variant="ghost"
+          onMouseDown={(e) => e.preventDefault()}
+          size="sm"
+          onClick={handleImageButtonClick}
+          disabled={isUploadingImage}
+          className="h-8 w-8 p-0"
+          title="Insert Image (or paste an image)"
+        >
+          {isUploadingImage ? <Loader2 className="h-4 w-4 animate-spin" /> : <ImageIcon className="h-4 w-4" />}
+        </Button>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={handleFileInputChange}
+        />
       </div>
 
       {/* Editor */}
