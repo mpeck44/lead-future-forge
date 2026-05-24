@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Plus, Loader2, Upload } from "lucide-react";
+import { ArrowLeft, Plus, Loader2, Upload, ListOrdered } from "lucide-react";
 import ModuleCard from "@/components/admin/ModuleCard";
 import ModuleFormDialog from "@/components/admin/ModuleFormDialog";
 import LessonFormDialog, { type LessonFormData } from "@/components/admin/LessonFormDialog";
