@@ -1,9 +1,11 @@
-import React, { useRef, useCallback, useEffect } from "react";
+import React, { useRef, useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Bold, Italic, Underline, List, ListOrdered, Link, RemoveFormatting, Youtube } from "lucide-react";
+import { Bold, Italic, Underline, List, ListOrdered, Link, RemoveFormatting, Youtube, Image as ImageIcon, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { sanitizeHtml } from "@/lib/sanitize";
 import { cleanPastedHtml } from "@/lib/cleanPastedHtml";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
 
 interface RichTextEditorProps {
   value: string;
