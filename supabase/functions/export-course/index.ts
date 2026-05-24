@@ -21,8 +21,7 @@ Deno.serve(async (req) => {
     }
 
     const url = new URL(req.url);
-    const providedKey =
-      req.headers.get("x-export-key") ?? url.searchParams.get("key");
+    const providedKey = req.headers.get("x-export-key");
 
     if (providedKey !== expectedKey) {
       return new Response(
