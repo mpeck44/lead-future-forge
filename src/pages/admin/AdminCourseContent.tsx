@@ -225,6 +225,33 @@ const AdminCourseContent = () => {
     },
   });
 
+  // Renumber modules to consecutive 1..N (compacts gaps after deletions)
+  const renumberModulesMutation = useMutation({
+    mutationFn: async () => {
+      const sorted = [...modules].sort((a, b) => a.sequence_order - b.sequence_order);
+      // Two-phase to avoid any potential unique conflicts: bump into a high range first
+      const OFFSET = 1000;
+      await Promise.all(
+        sorted.map((m, i) =>
+          supabase.from("modules").update({ sequence_order: OFFSET + i + 1 }).eq("id", m.id)
+        )
+      );
+      await Promise.all(
+        sorted.map((m, i) =>
+          supabase.from("modules").update({ sequence_order: i + 1 }).eq("id", m.id)
+        )
+      );
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-course-modules", courseId] });
+      toast.success("Modules renumbered");
+    },
+    onError: (error) => {
+      console.error("Error renumbering modules:", error);
+      toast.error("Failed to renumber modules");
+    },
+  });
+
   // Create lesson mutation
   const createLessonMutation = useMutation({
     mutationFn: async (data: LessonFormData & { module_id: string }) => {
