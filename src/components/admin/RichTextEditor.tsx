@@ -29,7 +29,9 @@ const parseYouTubeUrl = (url: string): string | null => {
 
 const RichTextEditor = ({ value, onChange, placeholder = "Start typing...", className }: RichTextEditorProps) => {
   const editorRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const isInternalChange = useRef(false);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
 
   // Only update the editor content when value changes externally (not from typing)
   useEffect(() => {
