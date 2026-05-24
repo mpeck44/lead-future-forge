@@ -497,6 +497,15 @@ const AdminCourseContent = () => {
             </div>
           </div>
           <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              onClick={() => renumberModulesMutation.mutate()}
+              disabled={renumberModulesMutation.isPending || modules.length === 0}
+              title="Compact module numbers to 1, 2, 3… (removes gaps from deleted modules)"
+            >
+              <ListOrdered className="mr-2 h-4 w-4" />
+              Renumber
+            </Button>
             <Button variant="outline" onClick={() => setBulkImportOpen(true)}>
               <Upload className="mr-2 h-4 w-4" />
               Import Content
