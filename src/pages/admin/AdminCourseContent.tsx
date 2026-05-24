@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Plus, Loader2, Upload } from "lucide-react";
+import { ArrowLeft, Plus, Loader2, Upload, ListOrdered } from "lucide-react";
 import ModuleCard from "@/components/admin/ModuleCard";
 import ModuleFormDialog from "@/components/admin/ModuleFormDialog";
 import LessonFormDialog, { type LessonFormData } from "@/components/admin/LessonFormDialog";
@@ -222,6 +222,33 @@ const AdminCourseContent = () => {
     onError: (error) => {
       console.error("Error reordering modules:", error);
       toast.error("Failed to reorder modules");
+    },
+  });
+
+  // Renumber modules to consecutive 1..N (compacts gaps after deletions)
+  const renumberModulesMutation = useMutation({
+    mutationFn: async () => {
+      const sorted = [...modules].sort((a, b) => a.sequence_order - b.sequence_order);
+      // Two-phase to avoid any potential unique conflicts: bump into a high range first
+      const OFFSET = 1000;
+      await Promise.all(
+        sorted.map((m, i) =>
+          supabase.from("modules").update({ sequence_order: OFFSET + i + 1 }).eq("id", m.id)
+        )
+      );
+      await Promise.all(
+        sorted.map((m, i) =>
+          supabase.from("modules").update({ sequence_order: i + 1 }).eq("id", m.id)
+        )
+      );
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-course-modules", courseId] });
+      toast.success("Modules renumbered");
+    },
+    onError: (error) => {
+      console.error("Error renumbering modules:", error);
+      toast.error("Failed to renumber modules");
     },
   });
 
@@ -470,6 +497,15 @@ const AdminCourseContent = () => {
             </div>
           </div>
           <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              onClick={() => renumberModulesMutation.mutate()}
+              disabled={renumberModulesMutation.isPending || modules.length === 0}
+              title="Compact module numbers to 1, 2, 3… (removes gaps from deleted modules)"
+            >
+              <ListOrdered className="mr-2 h-4 w-4" />
+              Renumber
+            </Button>
             <Button variant="outline" onClick={() => setBulkImportOpen(true)}>
               <Upload className="mr-2 h-4 w-4" />
               Import Content
