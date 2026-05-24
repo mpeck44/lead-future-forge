@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Bold, Italic, Underline, List, ListOrdered, Link, RemoveFormatting, Youtube } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { sanitizeHtml } from "@/lib/sanitize";
+import { cleanPastedHtml } from "@/lib/cleanPastedHtml";
 
 interface RichTextEditorProps {
   value: string;
@@ -100,9 +101,25 @@ const RichTextEditor = ({ value, onChange, placeholder = "Start typing...", clas
 
   const handlePaste = useCallback((e: React.ClipboardEvent) => {
     e.preventDefault();
+    const nativeEvent = e.nativeEvent as ClipboardEvent & { shiftKey?: boolean };
+    const forcePlain = nativeEvent.shiftKey === true;
+    const html = forcePlain ? "" : e.clipboardData.getData("text/html");
+
+    if (html) {
+      const cleaned = sanitizeHtml(cleanPastedHtml(html));
+      if (cleaned) {
+        document.execCommand("insertHTML", false, cleaned);
+        if (editorRef.current) {
+          isInternalChange.current = true;
+          onChange(editorRef.current.innerHTML);
+        }
+        return;
+      }
+    }
+
     const text = e.clipboardData.getData("text/plain");
     document.execCommand("insertText", false, text);
-  }, []);
+  }, [onChange]);
 
   return (
     <div className={cn("border border-input rounded-md overflow-hidden", className)}>

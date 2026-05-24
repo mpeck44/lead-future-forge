@@ -1,65 +1,71 @@
-# Auto-format lesson content on import
+# Paste rich content from Google Docs into the lesson editor
 
-Right now the bulk importer stores whatever you paste into `content:` as plain text with line breaks. The lesson viewer renders that as HTML, so paragraphs collapse, lists stay as `- foo`, and headings have no visual weight — which is why you re-format every lesson by hand in the rich text editor.
+Right now, when you paste from Google Docs into the **Content** rich text editor on a lesson, all formatting is stripped — headings become regular text, bullets become lines, bold disappears. That's because `RichTextEditor.handlePaste` deliberately grabs only `text/plain` from the clipboard and reinserts it as plain text.
 
-Two complementary fixes, both opt-in per import:
+Google Docs (and Word, Notion, Pages, web pages) actually put a full HTML version of the selection on the clipboard under the `text/html` MIME type. We just need to read it, clean it up, and insert it.
 
-## 1. Markdown → HTML in the parser (default ON)
+## What changes
 
-Update `src/lib/parseCourseContent.ts` so any multi-line `content:` / `objective:` / `description:` / `transcript:` block is run through a lightweight Markdown-to-HTML conversion before it lands in the DB. This is deterministic, free, and handles the 90% case.
+### 1. New paste pipeline in `RichTextEditor`
 
-Supported syntax (standard Markdown subset):
+Replace the current plain-text paste with a smarter handler:
 
-- `# H1`, `## H2`, `### H3` → `<h2>` / `<h3>` / `<h4>` (we skip `<h1>` because the lesson title is already H1 on the page)
-- Blank line between blocks → new `<p>`
-- `- item` or `* item` → `<ul><li>`
-- `1. item` → `<ol><li>`
-- `**bold**` → `<strong>`, `*italic*` / `_italic_` → `<em>`
-- `[label](url)` → `<a href>` (with `target="_blank" rel="noopener"`)
-- `> quote` → `<blockquote>`
-- Triple-newline / `---` → `<hr>`
-- Raw `<iframe>` / existing HTML passes through untouched (so your YouTube embeds still work)
+1. Read `text/html` from the clipboard. If absent, fall back to `text/plain` (current behavior).
+2. Run the HTML through a new `cleanPastedHtml()` function (see below) that strips Google Docs cruft and normalizes it to the small set of tags we already render in lessons.
+3. Run it through the existing `sanitizeHtml()` from `src/lib/sanitize.ts` (XSS safety, YouTube embed allow-list).
+4. Insert via `document.execCommand("insertHTML", false, cleaned)` so it merges into the current selection.
+5. Fire the existing `onChange` so the form state updates.
 
-Implementation: add a small `markdownToHtml()` helper in `src/lib/markdown.ts`. We'll use the existing `marked` library if it's already installed, otherwise add it (tiny, ~30kb) — it handles all of the above correctly and we already run output through `sanitizeHtml()` in the viewer, so XSS is covered. Same sanitizer runs on import so DB content stays clean.
+### 2. New helper: `src/lib/cleanPastedHtml.ts`
 
-Result: paste plain Markdown into the import file and lessons render with real headings, bullets, and paragraphs — no manual editor work.
+Google Docs paste HTML is famously noisy — wrapping `<b>` tags, inline `style="font-weight:700"` instead of real `<strong>`, `<span>` soup, MS Office conditional comments, image-less `<img>` tags pointing at `googleusercontent.com`, etc. This helper normalizes it:
 
-## 2. Optional "AI cleanup" toggle in the import dialog
+- Parse the HTML in a detached `DOMParser` document (no script execution).
+- **Unwrap Google's container**: Docs wraps everything in `<b style="font-weight:normal" id="docs-internal-guid-…">`. Replace that node with its children.
+- **Strip junk tags**: remove `<meta>`, `<style>`, `<script>`, `<o:p>`, MS Office `<!--[if …]-->` comments, and empty `<span>`s.
+- **Convert inline styles to semantic tags**:
+  - `style="font-weight:700|bold"` → wrap contents in `<strong>`
+  - `style="font-style:italic"` → `<em>`
+  - `style="text-decoration:underline"` → `<u>`
+  - `style="text-decoration:line-through"` → `<s>`
+- **Headings**: Google Docs uses real `<h1>`–`<h6>`. Down-shift by one (`h1`→`h2`, …, `h5`→`h6`, `h6`→`<p><strong>`) to match our existing convention (lesson title is the page H1) — same rule already used by `markdownToHtml()` in `src/lib/markdown.ts`.
+- **Lists**: keep `<ul>`/`<ol>`/`<li>` as-is. Strip list-style inline CSS so our editor's `prose` classes take over.
+- **Links**: keep `href`. If it's an http(s) link, add `target="_blank" rel="noopener noreferrer"`. Strip Google's redirect wrappers (`https://www.google.com/url?q=REAL_URL&sa=…`) and use the unwrapped `REAL_URL`.
+- **Images**: drop them. Google Docs pasted images are blob URLs that die when the clipboard is released, and we don't have storage hooked into this editor yet. Add a small toast: "Images aren't supported when pasting from Google Docs — upload them with the image tool." (Skip the toast for now if it adds friction; happy to add in a follow-up.)
+- **Strip all remaining `style`, `class`, `id`, `dir`, `lang` attributes** on every element.
+- **Collapse empty paragraphs** that Google inserts between blocks.
 
-For content you pasted from PDFs, slide notes, or unstructured prose (no Markdown), add a checkbox in `BulkImportDialog`:
+Return the cleaned `innerHTML` string.
 
-> ☐ **Auto-format lesson content with AI** (slower, ~5–10s per lesson)
+### 3. Shift+paste escape hatch
 
-When checked, each lesson's `content` is sent to a new edge function `format-lesson-content` that calls Lovable AI (`google/gemini-3.5-flash` — cheap, fast, good at structure) with a strict system prompt:
+If the user holds **Shift** while pasting, skip the HTML path entirely and insert plain text (current behavior). Matches how Google Docs / Notion / VS Code work. Implemented by checking `e.nativeEvent.shiftKey` in `handlePaste`.
 
-> You are formatting a single course lesson for K-12 leaders. Convert the input into clean semantic HTML using only `<h2>`, `<h3>`, `<p>`, `<ul>`, `<ol>`, `<li>`, `<strong>`, `<em>`, `<a>`, `<blockquote>`. Do not invent content, do not summarize, do not add intros or outros. Preserve every fact. Break long paragraphs, group related points into lists, promote natural subsection titles to `<h2>`. Return only the HTML, no code fences.
+### 4. Tests
 
-Calls run in parallel batches of 5 with progress shown in the existing "Importing..." UI. If a call fails, we fall back to the Markdown-converted version so import never blocks.
+New `src/lib/cleanPastedHtml.test.ts` covering:
 
-## Import dialog changes
-
-`src/components/admin/BulkImportDialog.tsx`:
-- Add two checkboxes above the format reference:
-  - ☑ **Convert Markdown to formatted HTML** (default ON)
-  - ☐ **Use AI to format unstructured content** (default OFF, shows cost/time hint)
-- Preview step shows a "✨ Formatted" badge on lessons whose content was transformed, with a peek at the rendered HTML
-- Format reference example updated to show Markdown usage in `content:` blocks
+- Real Google Docs paste fixture (`<b id="docs-internal-guid-…">…</b>` wrapper) is unwrapped
+- `style="font-weight:700"` becomes `<strong>`
+- `<h1>` becomes `<h3>` (because we additionally down-shift, matching markdown.ts)
+- Bulleted and numbered lists survive intact
+- Google redirect URLs are unwrapped
+- `<script>` and inline `onclick` are removed
+- Empty `<span>` and `<meta>` tags are stripped
+- Plain-text paste path (no `text/html`) still works
 
 ## Files
 
-- new: `src/lib/markdown.ts` — `markdownToHtml(text)` + tests
-- edit: `src/lib/parseCourseContent.ts` — apply markdown conversion to continuation fields when the new flag is set
-- edit: `src/components/admin/BulkImportDialog.tsx` — checkboxes, AI formatting pass, preview badges
-- new: `supabase/functions/format-lesson-content/index.ts` — Lovable AI call, auth-required, admin-only
-- edit: `supabase/config.toml` — register the new function
-- new: `src/lib/markdown.test.ts` — verify headings, lists, links, sanitization
+- **edit** `src/components/admin/RichTextEditor.tsx` — rewrite `handlePaste`
+- **new** `src/lib/cleanPastedHtml.ts` — DOM-based normalizer
+- **new** `src/lib/cleanPastedHtml.test.ts`
 
 ## Out of scope
 
-- Re-formatting lessons that are already in the database (this only affects new imports). Happy to add a "Reformat existing lesson" button in the lesson editor in a follow-up.
-- Changing the rich text editor itself.
-- Image extraction / table parsing.
+- Image paste from Google Docs (blob URLs expire; would need storage upload — separate feature).
+- Pasting Google Docs tables. They paste as `<table>` HTML; we'd render them but the lesson viewer's `prose` styles don't currently format tables. Can add table styling later if you need it.
+- Changing the bulk import flow — this is only about the in-editor paste experience.
 
-## Recommendation
+## Why this works
 
-Start with **just #1 (Markdown)** — it removes 80% of the manual work and ships in one round of edits. Add #2 later if you find yourself importing a lot of unstructured prose where Markdown isn't practical to add by hand. Want me to do both, or just the Markdown layer first?
+The lesson viewer already renders the full set of tags this produces (`h2`–`h4`, `p`, `ul`/`ol`/`li`, `strong`, `em`, `u`, `s`, `a`, `blockquote`), the same `sanitizeHtml()` already protects against XSS, and `contenteditable` + `execCommand("insertHTML")` is the standard mechanism every rich text editor uses for paste. No new dependencies.
