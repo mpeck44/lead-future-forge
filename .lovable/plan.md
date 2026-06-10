@@ -1,44 +1,30 @@
-## Add image support to the lesson content editor
+## Plan: Update Problem Section Copy
 
-Yes — this is very doable. Here's the plan.
+### What We're Changing
+Replace the three pain-point statements in `src/components/ProblemSection.tsx` with the new copy provided, adding a supporting line under each main statement.
 
-### What you'll get
+### What We're NOT Changing
+- Hero, navigation, or any other section
+- The existing layout (3-column grid), styling, or Tailwind classes
+- The heading, subtitle, or closing CTA sentence
 
-In the RichTextEditor toolbar (used everywhere lesson content is edited), a new **Image** button next to the YouTube button. Clicking it opens a file picker. You select an image from your computer, it uploads to storage, and gets inserted at the cursor as a properly sized, responsive image. You can also **paste** images directly from the clipboard (e.g. screenshots, copied images from Google Docs).
+### New Copy
 
-Images render in the lesson viewer (ContentLesson, ActivityLesson, etc.) automatically since they use the same sanitized HTML pipeline.
+1. **Main:** "AI is already in your buildings. Your approach is improvised."  
+   **Supporting:** "Teachers are using tools you never approved. You're answering questions case by case."
 
-### Implementation
+2. **Main:** "Your board — or your boss — is asking for a plan you don't have."  
+   **Supporting:** "The question has moved from 'what is AI?' to 'what's our strategy?'"
 
-**1. Storage bucket**
-- New public storage bucket `lesson-images` via migration
-- RLS: admins can upload/delete; anyone can read (images are embedded in public-facing lessons)
-- 5 MB per-file limit, restricted to image MIME types
+3. **Main:** "You wrote the plan. Nothing is moving."  
+   **Supporting:** "The framework got adopted. The binder got shelved. Practice hasn't changed."
 
-**2. `src/components/admin/RichTextEditor.tsx`**
-- Add `Image` toolbar button (lucide `ImageIcon`)
-- New `handleImageUpload(file)`: validates type/size, uploads to `lesson-images/{uuid}.{ext}` via Supabase client, inserts `<img src="..." alt="" class="rounded-lg my-4 max-w-full h-auto" />` at the cursor
-- Click handler opens a hidden `<input type="file" accept="image/*">`
-- Extend `handlePaste` to detect image items in `clipboardData.files` and route them through the same upload flow
-- Loading state on the toolbar button while uploading; toast on error
+### Technical Details
+- Convert the flat `painPoints` string array into an array of objects (`{ title: string, supporting: string }`).
+- Inside the mapped cards, render the `title` in the existing `<p>` tag, then add a second `<p>` below it for the `supporting` line with slightly muted styling (`text-white/60`, `text-sm`, `mt-3`).
+- All existing CSS classes on the section wrapper, grid, and card containers remain untouched.
 
-**3. `src/lib/cleanPastedHtml.ts`**
-- Currently strips all `<img>` tags (because Google Docs pastes blob URLs that expire). Update to **keep** `<img>` tags whose `src` starts with `http://` or `https://` (real hosted images), and continue stripping `blob:` and `data:` URLs. This way an image already hosted on the web survives a paste.
+### Files to Edit
+- `src/components/ProblemSection.tsx`
 
-**4. `src/lib/sanitize.ts`**
-- Already allows `<img>` via DOMPurify defaults — verify `src`, `alt`, `width`, `height`, `class` attributes pass through. Add `loading="lazy"` via the existing pipeline if needed.
-
-**5. Lesson viewers**
-- No changes needed — `ContentLesson`, `ActivityLesson`, etc. already render sanitized HTML inside `prose` containers. Tailwind Typography styles images automatically. We just want to confirm `max-w-full h-auto` classes are preserved.
-
-### Out of scope (can add later if useful)
-
-- Image resizing handles / alignment controls (left/right/center). For now images are full-width responsive — clean and consistent.
-- Captions
-- Drag-and-drop file upload onto the editor (paste covers most use cases)
-- Image library / reuse picker
-- Bulk import dialog image support (would need Markdown `![alt](url)` syntax — easy follow-up if you want it)
-
-### Approval needed
-
-This requires a database migration to create the `lesson-images` storage bucket. Approve the plan and I'll create the migration, then wire up the editor.
+No new dependencies. No database changes.

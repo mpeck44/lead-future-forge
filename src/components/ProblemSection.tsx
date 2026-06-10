@@ -1,7 +1,16 @@
 const painPoints = [
-  "Your district is buying AI tools, but lacks a strategy for deploying them with impact.",
-  "Your board/leadership expects an AI plan, but you're unsure where to start or what success looks like.",
-  "Conference sessions show demos, but offer no pathway for organizational leadership or change.",
+  {
+    title: "AI is already in your buildings. Your approach is improvised.",
+    supporting: "Teachers are using tools you never approved. You're answering questions case by case.",
+  },
+  {
+    title: "Your board — or your boss — is asking for a plan you don't have.",
+    supporting: "The question has moved from 'what is AI?' to 'what's our strategy?'",
+  },
+  {
+    title: "You wrote the plan. Nothing is moving.",
+    supporting: "The framework got adopted. The binder got shelved. Practice hasn't changed.",
+  },
 ];
 
 const ProblemSection = () => {
@@ -20,7 +29,8 @@ const ProblemSection = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto mb-12">
           {painPoints.map((point, i) => (
             <div key={i} className="border-l-4 border-dark-teal bg-white/5 rounded-r-lg p-6">
-              <p className="font-body text-white/90 text-base leading-relaxed">{point}</p>
+              <p className="font-body text-white/90 text-base leading-relaxed">{point.title}</p>
+              <p className="font-body text-white/60 text-sm leading-relaxed mt-3">{point.supporting}</p>
             </div>
           ))}
         </div>
