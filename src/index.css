@@ -155,3 +155,76 @@
   background-color: hsl(var(--gold-hover)) !important;
   transform: scale(1.03);
 }
+
+/* Reveal-on-scroll */
+.rv { opacity: 0; transform: translateY(14px); transition: opacity .6s ease, transform .6s ease; }
+.rv.in { opacity: 1; transform: none; }
+.rv-d1 { transition-delay: .08s; }
+.rv-d2 { transition-delay: .16s; }
+.rv-d3 { transition-delay: .24s; }
+@media (prefers-reduced-motion: reduce) {
+  .rv { opacity: 1; transform: none; transition: none; }
+}
+
+/* Hero horizon glow */
+.hero-horizon-glow::before {
+  content: "";
+  position: absolute;
+  inset: auto -20% -45% -20%;
+  height: 80%;
+  background: radial-gradient(ellipse at 50% 100%, hsl(46 65% 52% / 0.13) 0%, hsl(46 65% 52% / 0.04) 38%, transparent 68%);
+  pointer-events: none;
+}
+
+/* Dashed gold border util */
+.border-dashed-gold {
+  border: 1.5px dashed hsl(46 65% 52% / 0.55);
+}
+
+/* Pathway rail */
+.pathway-rail { position: relative; }
+.pathway-rail::before {
+  content: "";
+  position: absolute;
+  left: 17px; top: 18px; bottom: 18px; width: 2px;
+  background: hsl(217 33% 25%);
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 1.1s ease .2s;
+}
+.pathway-rail.drawn::before { transform: scaleY(1); }
+@media (min-width: 900px) {
+  .pathway-rail::before {
+    left: 4.5%; right: 4.5%; top: 17px; bottom: auto; width: auto; height: 2px;
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+  .pathway-rail.drawn::before { transform: scaleX(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pathway-rail::before { transform: none; transition: none; }
+}
+
+/* Door card threshold bar */
+.door-card { position: relative; overflow: hidden; }
+.door-card::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 4px;
+  background: hsl(46 65% 52%);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform .3s ease;
+}
+.door-card:hover::before,
+.door-card:focus-visible::before { transform: scaleX(1); }
+@media (prefers-reduced-motion: reduce) {
+  .door-card::before { transform: scaleX(1); transition: none; }
+}
+
+/* Layer stem dotted line */
+.layer-stem {
+  width: 1px; height: 38px; margin: 0 auto;
+  background-image: linear-gradient(hsl(46 65% 52%) 45%, transparent 45%);
+  background-size: 1px 8px;
+}

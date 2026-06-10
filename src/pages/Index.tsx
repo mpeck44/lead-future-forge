@@ -1,28 +1,44 @@
+import { useState } from "react";
 import Header from "@/components/Header";
-import Hero from "@/components/Hero";
-import ProblemSection from "@/components/ProblemSection";
-import TestimonialsSection from "@/components/TestimonialsSection";
-import FeaturedCourse from "@/components/FeaturedCourse";
-import OutcomesSection from "@/components/OutcomesSection";
-import DifferentiatorSection from "@/components/DifferentiatorSection";
-import FinalCTA from "@/components/FinalCTA";
-import Footer from "@/components/Footer";
+import HeroV2 from "@/components/landing/HeroV2";
+import ProblemV2 from "@/components/landing/ProblemV2";
+import DoorsSection from "@/components/landing/DoorsSection";
+import PathwaySection from "@/components/landing/PathwaySection";
+import DeliverablesSection from "@/components/landing/DeliverablesSection";
+import BioSection from "@/components/landing/BioSection";
+import TestimonialsV2 from "@/components/landing/TestimonialsV2";
+import PricingWaitlist from "@/components/landing/PricingWaitlist";
+import FaqSection from "@/components/landing/FaqSection";
+import FooterV2 from "@/components/landing/FooterV2";
+import WaitlistModal from "@/components/WaitlistModal";
+import { useReveal } from "@/hooks/useReveal";
 
 const Index = () => {
+  const [waitlistOpen, setWaitlistOpen] = useState(false);
+  const [waitlistSource, setWaitlistSource] = useState("hero");
+  useReveal();
+
+  const openWaitlist = (source: string) => {
+    setWaitlistSource(source);
+    setWaitlistOpen(true);
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <main>
-        <Hero />
-        <ProblemSection />
-        <TestimonialsSection />
-
-        <OutcomesSection />
-        <FeaturedCourse />
-        <DifferentiatorSection />
-        <FinalCTA />
+      <main id="main">
+        <HeroV2 onWaitlist={() => openWaitlist("hero")} />
+        <ProblemV2 />
+        <DoorsSection onAudit={() => openWaitlist("readiness-audit")} />
+        <PathwaySection />
+        <DeliverablesSection />
+        <BioSection />
+        <TestimonialsV2 />
+        <PricingWaitlist />
+        <FaqSection />
       </main>
-      <Footer />
+      <FooterV2 />
+      <WaitlistModal open={waitlistOpen} onOpenChange={setWaitlistOpen} source={waitlistSource} />
     </div>
   );
 };
