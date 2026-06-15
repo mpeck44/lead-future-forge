@@ -1,10 +1,9 @@
 import { useEffect, useRef } from "react";
 
 const steps = [
-  { num: 1, title: "The Launchpad", tag: "Foundations", body: "A focused orientation. The shared language and frameworks everything else builds on." },
-  { num: 2, title: "Command the Tools", tag: "Fluency", body: "Real capability through practice, not theory. Hands on the work, not slides about it." },
-  { num: 3, title: "Chart the Course", tag: "Strategy", body: "Governance, vision, and the three-year roadmap your board is asking for." },
-  { num: 4, title: "Ship It", tag: "Action", body: "Ninety-day execution: targeted PD, resistance management, and scale-or-stop calls." },
+  { num: 1, title: "Command the Tools", tag: "Fluency", body: "Real capability through practice, not theory. Hands on the work, not slides about it." },
+  { num: 2, title: "Chart the Course", tag: "Strategy", body: "Governance, vision, and the three-year roadmap your board is asking for." },
+  { num: 3, title: "Ship It", tag: "Action", body: "Ninety-day execution: targeted PD, resistance management, and scale-or-stop calls." },
 ];
 
 const PathwaySection = () => {
@@ -36,22 +35,9 @@ const PathwaySection = () => {
           </p>
         </div>
 
-        <div className="rv max-w-[560px] mx-auto border-dashed-gold rounded-lg px-[1.6rem] py-[1.35rem] text-center">
-          <span className="inline-flex items-center gap-2 text-[0.74rem] font-semibold tracking-[0.14em] uppercase text-[hsl(43_72%_66%)] mb-[0.45rem]">
-            <span className="w-2 h-2 rounded-full bg-gold" />
-            The foresight layer
-          </span>
-          <h3 className="font-display text-[1.32rem] text-white mb-[0.35rem]">Leaders Make the Future</h3>
-          <p className="text-[0.93rem] text-white/60">
-            Position your district for the next 3–10 years — not just the next school year.
-          </p>
-        </div>
-
-        <div className="layer-stem" />
-
         <div
           ref={railRef}
-          className="pathway-rail grid grid-cols-1 md:grid-cols-4 gap-[2.2rem] md:gap-[1.8rem] pl-[2.2rem] md:pl-0 md:pt-[3.2rem]"
+          className="pathway-rail grid grid-cols-1 md:grid-cols-3 gap-[2.2rem] md:gap-[1.8rem] pl-[2.2rem] md:pl-0 md:pt-[3.2rem]"
         >
           {steps.map((s, i) => (
             <div key={s.num} className={`rv rv-d${Math.min(i + 1, 3)} relative md:pt-0`}>

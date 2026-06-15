@@ -92,6 +92,16 @@ const PricingWaitlist = () => {
             Institutional / team pricing available.
           </p>
         </div>
+
+        <div className="rv max-w-[640px] mx-auto mt-[3.2rem] border-dashed-gold rounded-lg px-[1.5rem] py-[1.2rem] text-left">
+          <span className="inline-flex items-center gap-2 text-[0.7rem] font-semibold tracking-[0.14em] uppercase text-[hsl(43_72%_66%)] mb-[0.4rem]">
+            <span className="w-2 h-2 rounded-full bg-gold" />
+            The advanced track
+          </span>
+          <p className="text-white/80 text-[0.95rem] leading-[1.5]">
+            <strong className="font-display text-white text-[1.05rem]">Leaders Make the Future</strong> — Finished a course? The advanced track: ten leadership capacities for the next decade, not the next quarter.
+          </p>
+        </div>
       </div>
     </section>
   );

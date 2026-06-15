@@ -1,7 +1,16 @@
 const lines = [
-  { text: "Your district is buying AI tools without a strategy for using them.", size: "text-[clamp(1.12rem,2vw,1.3rem)]" },
-  { text: "Your board wants an AI plan, and you're not sure where to start.", size: "text-[clamp(1.22rem,2.3vw,1.48rem)]" },
-  { text: "Every conference teaches the same demos — nobody's teaching you how to lead the change.", size: "text-[clamp(1.32rem,2.6vw,1.66rem)]" },
+  {
+    text: "Your teachers are using AI tools you didn't approve. You're improvising the response.",
+    size: "text-[clamp(1.12rem,2vw,1.3rem)]",
+  },
+  {
+    text: "Your board is asking where the district stands on AI. You don't have a plan to point at.",
+    size: "text-[clamp(1.22rem,2.3vw,1.48rem)]",
+  },
+  {
+    text: "The policy passed. It's months later. Nothing in your buildings has actually changed.",
+    size: "text-[clamp(1.32rem,2.6vw,1.66rem)]",
+  },
 ];
 
 const ProblemV2 = () => (
