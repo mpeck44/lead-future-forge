@@ -35,6 +35,7 @@ import ActivityLesson from '@/components/course/ActivityLesson';
 import ReflectionLesson from '@/components/course/ReflectionLesson';
 import QuestionLesson from '@/components/course/QuestionLesson';
 import PortfolioTracker from '@/components/course/PortfolioTracker';
+import AuditLesson from '@/components/course/AuditLesson';
 
 interface Lesson {
   id: string;
@@ -632,6 +633,16 @@ const CourseViewer = () => {
             getVideoEmbedUrl={getVideoEmbedUrl}
           />
         );
+
+      case 'audit':
+        return (
+          <AuditLesson
+            lesson={currentLesson}
+            isCompleted={completedLessons.has(currentLesson.id)}
+            onComplete={handleMarkComplete}
+            isPending={markCompleteMutation.isPending}
+          />
+        );
       
       default:
         return (
@@ -901,7 +912,7 @@ const CourseViewer = () => {
                     </Button>
 
                     <div className="flex gap-2 justify-center">
-                      {!completedLessons.has(currentLesson.id) && currentLesson.lesson_type !== 'activity' && (
+                      {!completedLessons.has(currentLesson.id) && currentLesson.lesson_type !== 'activity' && currentLesson.lesson_type !== 'audit' && (
                         <Button
                           onClick={handleMarkComplete}
                           disabled={markCompleteMutation.isPending}
