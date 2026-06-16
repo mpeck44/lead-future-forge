@@ -1,93 +1,63 @@
-# AI Equity Audit — Interactive Lesson in The Launchpad
+## Final step: routing screen for The Launchpad
 
-Replaces the existing **"Build Your AI Equity Audit Checklist"** activity in the Foundations course (slug = `foundations`, AKA The Launchpad) with an interactive scored audit that writes to `audit_attempts` and `audit_responses`. No other Launchpad lesson changes.
+A new lesson type, `router`, slotted as the last lesson of The Launchpad (Foundations course) immediately after the audit results. It writes `profiles.recommended_course` and `profiles.recommendation_source` on selection, then shows a confirmation screen.
 
-## Question bank (hardcoded)
-New file `src/lib/auditQuestions.ts` — 15 items, 3 per category, 4-point scale (1 = Not yet, 4 = Embedded practice).
+### What the learner sees
 
-Categories and starter items (editable):
+**Selection screen**
+- Headline: "Where are you right now?"
+- Subhead: "Pick the sentence that sounds like your district — or let your audit decide."
+- Three situation cards (filled, equal weight):
+  1. "AI is already in my buildings. Our approach is improvised." → `fluency` (Command the Tools)
+  2. "My board — or my boss — is asking for a plan I don't have." → `strategy` (Chart the Course)
+  3. "We wrote the plan. Nothing is moving." → `action` (Ship It)
+- Fourth option, outline button, visually separated under the three cards: "Use my audit score" → reads the latest completed `audit_attempts` for the user, picks the lowest-scoring category, maps it (see Technical), and sets `recommendation_source = 'audit'`. Disabled with a hint if the audit hasn't been completed.
 
-- **fluency** — district-wide working understanding of AI
-  1. Leaders can describe the difference between generative, predictive, and assistive AI.
-  2. Staff can name at least three approved AI tools and what each is for.
-  3. We have a shared vocabulary for talking about AI risks and benefits with families.
-- **strategy** — vision, alignment, prioritization
-  1. We have a written AI vision tied to our strategic plan.
-  2. AI initiatives are prioritized against measurable student outcomes.
-  3. Cabinet reviews AI direction at least quarterly.
-- **action** — implementation discipline
-  1. New AI tools follow a documented adoption process before reaching classrooms.
-  2. Pilots have defined success criteria and a sunset date.
-  3. We track which AI tools are actually being used and by whom.
-- **governance** — policy, oversight, defensibility
-  1. We have an approved AI Acceptable Use Policy covering staff and students.
-  2. Data privacy review happens before any AI tool is approved.
-  3. We can produce an audit trail of AI decisions for the board.
-- **capacity** — people, time, support
-  1. Staff have protected time to learn and practice with AI.
-  2. We have at least one identified AI lead per building or department.
-  3. Coaching and follow-up exist beyond one-time PD.
+**Confirmation screen** (replaces the selection UI, same lesson)
+- Heading is the matching result copy:
+  - command_the_tools / `fluency`: "Your gap is operational. Tools are in use without evaluation criteria. Start by getting what's already happening under control."
+  - chart_the_course / `strategy`: "Your gap is strategic. Activity without direction. Start by building the framework and roadmap your stakeholders are waiting for."
+  - ship_it / `action`: "Your gap is execution. The thinking is done; the follow-through isn't. Start by turning your plan into assignments with names and dates."
+- Single primary button: "Go to {course title}". If the user is enrolled in that course (row in `enrollments` for `user_id` + `course_id`), link to `/course/{slug}`; otherwise link to `/courses`.
+- Small "Change my answer" ghost link that returns to the selection screen (does not clear the saved recommendation until a new one is chosen).
 
-Each item: `{ key, category, prompt }`. The 4-point scale labels are shared across items.
+The lesson auto-marks complete the moment a selection is made (same pattern AuditLesson already uses for `onComplete`).
 
-## Lesson conversion (data)
-Single data migration on the existing lesson row (title = `Build Your AI Equity Audit Checklist`):
-- Set `lesson_type = 'audit'` (new type)
-- Optionally rename title to `AI Equity Audit` (yes — matches the landing-page promise)
-- Clear `template_url`, `resource_type`, `resource_name`, `download_button_text`
-- Keep `is_published`, `sequence_order`, `estimated_minutes`
+### Visual style
+Reuses the existing lesson card pattern (`border rounded-lg bg-card p-6`), brand gold accents (`#d4af37`), Playfair headline, Inter body — matches AuditLesson's summary screen.
 
-No schema migration needed beyond data update.
+### Out of scope
+Other Launchpad lessons, other courses, the dashboard, the landing-page routing section, adding a real purchase page, multi-attempt history. Source of truth for course slugs stays `fluency` / `strategy` / `action`.
 
-## New lesson component: `src/components/course/AuditLesson.tsx`
+### Technical details
 
-Props mirror existing lesson components (`lesson`, `onComplete`, etc.).
+**Lesson row.** Convert the existing `"Choose Your Path"` content lesson (id `5abe638f-...`, sequence_order 5 in the Foundations "Building Your Foundation" module) into the router, via a data update:
+- `lesson_type = 'router'`
+- `title = 'Choose Your Path'` (kept)
+- `content` cleared / set to short intro markup; no template/resource fields.
 
-State machine:
-```text
-idle → in_progress (category 0..4) → review → submitted (summary view)
-```
+No schema migration needed — `lesson_type` is free-form text, and `profiles.recommended_course` / `recommendation_source` already exist from the earlier step.
 
-Behavior:
-- On mount, fetch latest `audit_attempts` for this user. If incomplete (no `completed_at`), resume. Otherwise show summary of the latest completed attempt with "Retake audit" button (creates new attempt with `attempt_number + 1`).
-- "Start audit" → `INSERT INTO audit_attempts(user_id, attempt_number)` then advance.
-- One screen per category. Each item rendered as a 4-button radio row (labels: 1 Not yet · 2 Emerging · 3 Established · 4 Embedded). Saves each answer via `UPSERT INTO audit_responses` keyed by `(attempt_id, item_key)` — supports navigation back/forward without losing input.
-- Progress bar uses existing `<Progress>` component: `answeredCount / 15`.
-- Next/Back buttons; Next disabled until all items on the current category are answered.
-- On the final category's Next, set `completed_at = now()`, call `supabase.rpc('get_audit_summary', { _attempt_id })`, mark lesson complete via existing `onComplete` flow, then render summary.
+**New component:** `src/components/course/RouterLesson.tsx`
+- Props mirror AuditLesson: `{ lesson, isCompleted, onComplete, isPending }`.
+- Local state: `phase: 'select' | 'confirm'`, `selectedSlug: 'fluency'|'strategy'|'action'|null`, `source: 'self_selected'|'audit'`.
+- On mount: read `profiles.recommended_course` + `recommendation_source` for the current user; if present, hydrate state and start on `confirm`. Also fetch the latest *completed* `audit_attempts` row id (one query, `.order('completed_at', desc).limit(1)`) to know whether the audit option is enabled.
+- Card click handler: `setRecommendation(slug, 'self_selected')`.
+- Audit-score handler: call `supabase.rpc('get_audit_summary', { _attempt_id })` with the latest completed attempt; pick the row where `is_lowest = true` (RPC already orders ties by category order: fluency, strategy, action, governance, capacity, which yields the required tiebreak when combined with the mapping below); map category → slug:
+  - `fluency` → `fluency`
+  - `strategy` or `governance` → `strategy`
+  - `action` or `capacity` → `action`
+  Then `setRecommendation(mappedSlug, 'audit')`.
+- `setRecommendation` upserts `profiles { recommended_course, recommendation_source }` for `auth.uid()`, calls `onComplete()` once (guarded by `isCompleted`), and transitions to `confirm`.
+- Confirmation screen: looks up enrollment with `supabase.from('enrollments').select('id').eq('user_id', user.id).eq('course_id', courseId).maybeSingle()` where `courseId` is resolved by a one-time `courses` query keyed on the three slugs (cached in a `useMemo`/`useQuery`). Button `<Link>` to `/course/{slug}` when enrolled, otherwise `/courses`.
 
-Summary view (horizontal bar chart):
-- For each category: label, average score (e.g. 2.3), and a horizontal bar (width = `avg/4 * 100%`).
-- Bars use `bg-foreground/15` track + `bg-primary` fill. The lowest category's bar uses `bg-[#d4af37]` (Brand Gold) and shows a `<Badge>` "Focus area".
-- Below the chart: one sentence — "Your strongest fit right now is **{course title}**." with a button linking to `/course/{recommended_course}` (course title resolved from existing `courses` table query).
-- "Retake audit" link (subdued).
+**CourseViewer wiring:** `src/pages/CourseViewer.tsx`
+- Add `import RouterLesson from '@/components/course/RouterLesson'`.
+- Add a `case 'router':` branch in `renderLessonContent()` returning `<RouterLesson ... />` with the same prop shape used by AuditLesson.
+- Extend the existing exclusion on line 915 so the manual "Mark as Complete" button does not render for `'router'` either (component handles completion itself).
+- No changes to icons/labels are required; the default content icon is acceptable for this step.
 
-Visual style consistency:
-- Reuse `Card` / `CardHeader` / `CardContent` from existing lesson components (see `ActivityLesson.tsx` for the canonical wrapper).
-- Reuse `Button`, `Progress`, `Badge`, typography classes already in the codebase.
-- No new colors beyond `--primary` and the existing Brand Gold `#d4af37`.
-
-## CourseViewer wiring
-In `src/pages/CourseViewer.tsx`:
-- Add `import AuditLesson from '@/components/course/AuditLesson'`.
-- Add `'audit'` branch to the lesson-type switch that already handles `content/video/activity/reflection/question`. Pass the same props the others receive.
-- No changes to sidebar, completion logic, or navigation.
-
-## Recommendation write-back (this step)
-On successful audit submission, also update `profiles`:
-```ts
-update profiles set recommended_course = <lowest>, recommendation_source = 'audit' where id = auth.uid()
-```
-Only overwrites when the audit completes — never on partial progress. Self-selected recommendations from elsewhere are out of scope here.
-
-## Out of scope
-- Admin UI for editing the question bank
-- Any other Launchpad lessons
-- Surfacing the recommendation on Dashboard / landing page (separate step)
-- Email of audit results
-- Comparison across multiple attempts
-
-## Files touched
-- New: `src/lib/auditQuestions.ts`, `src/components/course/AuditLesson.tsx`
-- Edited: `src/pages/CourseViewer.tsx` (one switch branch + import)
-- Data update via `supabase--insert`: the single lesson row
+**Files**
+- New: `src/components/course/RouterLesson.tsx`
+- Edited: `src/pages/CourseViewer.tsx`
+- Data update (via supabase--insert) on `public.lessons` row `5abe638f-c7e5-4a34-a330-fa38fc1c0c90`.
