@@ -912,7 +912,7 @@ const CourseViewer = () => {
                     </Button>
 
                     <div className="flex gap-2 justify-center">
-                      {!completedLessons.has(currentLesson.id) && currentLesson.lesson_type !== 'activity' && currentLesson.lesson_type !== 'audit' && (
+                      {!completedLessons.has(currentLesson.id) && currentLesson.lesson_type !== 'activity' && currentLesson.lesson_type !== 'audit' && currentLesson.lesson_type !== 'router' && (
                         <Button
                           onClick={handleMarkComplete}
                           disabled={markCompleteMutation.isPending}
