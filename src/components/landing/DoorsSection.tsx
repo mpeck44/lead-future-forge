@@ -164,15 +164,6 @@ const DoorsSection = ({ onAudit }: Props) => {
           </p>
         </div>
 
-        {/* Launchpad prerequisite one-liner */}
-        <div className="rv max-w-[760px] mx-auto border-dashed-gold rounded-lg px-[1.4rem] py-[1rem] text-center mb-[2.4rem]">
-          <p className="text-foreground/80 text-[0.97rem]">
-            <span className="text-[0.7rem] font-semibold tracking-[0.14em] uppercase text-[hsl(40_72%_30%)] mr-2">
-              The Launchpad
-            </span>
-            Every path starts with a 20-minute baseline. You'll leave it with your district's AI Equity Audit score.
-          </p>
-        </div>
 
         <div className="grid gap-[1.4rem] md:gap-[1.6rem] grid-cols-1 md:grid-cols-3 items-start">
           {doors.map((d, i) => (
@@ -259,6 +250,16 @@ const DoorsSection = ({ onAudit }: Props) => {
             Launching with our beta. Waitlist members get it first.
           </span>
         </p>
+
+        {/* Launchpad prerequisite — quiet divider band below the routing section */}
+        <div className="rv mt-[3rem] pt-[1.4rem] border-t border-foreground/10 text-center">
+          <p className="text-foreground/60 text-[0.92rem]">
+            <span className="text-[0.68rem] font-semibold tracking-[0.14em] uppercase text-[hsl(40_72%_30%)] mr-2">
+              The Launchpad
+            </span>
+            Every path starts with a 20-minute baseline. You'll leave it with your district's AI Equity Audit score.
+          </p>
+        </div>
       </div>
     </section>
   );
