@@ -14,6 +14,71 @@ export type Database = {
   }
   public: {
     Tables: {
+      audit_attempts: {
+        Row: {
+          attempt_number: number
+          completed_at: string | null
+          created_at: string
+          id: string
+          started_at: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          attempt_number?: number
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          started_at?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          attempt_number?: number
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          started_at?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      audit_responses: {
+        Row: {
+          attempt_id: string
+          category: string
+          created_at: string
+          id: string
+          item_key: string
+          score: number
+        }
+        Insert: {
+          attempt_id: string
+          category: string
+          created_at?: string
+          id?: string
+          item_key: string
+          score: number
+        }
+        Update: {
+          attempt_id?: string
+          category?: string
+          created_at?: string
+          id?: string
+          item_key?: string
+          score?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "audit_responses_attempt_id_fkey"
+            columns: ["attempt_id"]
+            isOneToOne: false
+            referencedRelation: "audit_attempts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       courses: {
         Row: {
           created_at: string | null
@@ -323,6 +388,8 @@ export type Database = {
           email: string | null
           full_name: string | null
           id: string
+          recommendation_source: string | null
+          recommended_course: string | null
           role: string | null
           status: string | null
           updated_at: string | null
@@ -333,6 +400,8 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id: string
+          recommendation_source?: string | null
+          recommended_course?: string | null
           role?: string | null
           status?: string | null
           updated_at?: string | null
@@ -343,6 +412,8 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id?: string
+          recommendation_source?: string | null
+          recommended_course?: string | null
           role?: string | null
           status?: string | null
           updated_at?: string | null
@@ -538,6 +609,16 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_audit_summary: {
+        Args: { _attempt_id: string }
+        Returns: {
+          avg_score: number
+          category: string
+          is_lowest: boolean
+          item_count: number
+          recommended_course: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
