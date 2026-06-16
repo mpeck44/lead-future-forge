@@ -36,6 +36,7 @@ import ReflectionLesson from '@/components/course/ReflectionLesson';
 import QuestionLesson from '@/components/course/QuestionLesson';
 import PortfolioTracker from '@/components/course/PortfolioTracker';
 import AuditLesson from '@/components/course/AuditLesson';
+import RouterLesson from '@/components/course/RouterLesson';
 
 interface Lesson {
   id: string;
@@ -637,6 +638,16 @@ const CourseViewer = () => {
       case 'audit':
         return (
           <AuditLesson
+            lesson={currentLesson}
+            isCompleted={completedLessons.has(currentLesson.id)}
+            onComplete={handleMarkComplete}
+            isPending={markCompleteMutation.isPending}
+          />
+        );
+
+      case 'router':
+        return (
+          <RouterLesson
             lesson={currentLesson}
             isCompleted={completedLessons.has(currentLesson.id)}
             onComplete={handleMarkComplete}
