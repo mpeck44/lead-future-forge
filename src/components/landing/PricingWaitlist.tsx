@@ -93,14 +93,25 @@ const PricingWaitlist = () => {
           </p>
         </div>
 
-        <div className="rv max-w-[640px] mx-auto mt-[3.2rem] border-dashed-gold rounded-lg px-[1.5rem] py-[1.2rem] text-left">
-          <span className="inline-flex items-center gap-2 text-[0.7rem] font-semibold tracking-[0.14em] uppercase text-[hsl(43_72%_66%)] mb-[0.4rem]">
+        <div className="rv max-w-[640px] mx-auto mt-[3.2rem] border-dashed-gold rounded-lg px-[1.5rem] py-[1.3rem] text-left">
+          <span className="inline-flex items-center gap-2 text-[0.68rem] font-semibold tracking-[0.14em] uppercase text-[hsl(43_72%_66%)] mb-[0.5rem]">
             <span className="w-2 h-2 rounded-full bg-gold" />
             The advanced track
           </span>
-          <p className="text-white/80 text-[0.95rem] leading-[1.5]">
-            <strong className="font-display text-white text-[1.05rem]">Leaders Make the Future</strong> — Finished a course? The advanced track: ten leadership capacities for the next decade, not the next quarter.
+          <h3 className="font-display text-white text-[1.15rem] leading-[1.3] mb-[0.4rem]">
+            After the courses: Leaders Make the Future
+          </h3>
+          <p className="text-white/70 text-[0.93rem] leading-[1.55] mb-[0.9rem]">
+            The advanced track — ten leadership capacities built for the next decade, not the next quarter.
           </p>
+          <button
+            type="button"
+            disabled
+            aria-disabled="true"
+            className="text-[0.82rem] font-semibold tracking-[0.08em] uppercase text-white/45 border border-white/15 rounded-[6px] px-[0.9rem] py-[0.45rem] cursor-not-allowed"
+          >
+            Coming soon
+          </button>
         </div>
       </div>
     </section>
