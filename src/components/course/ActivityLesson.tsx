@@ -109,7 +109,7 @@ const ActivityLesson = ({ lesson, courseId, isCompleted, onComplete, onPortfolio
             </div>
             <Button asChild onClick={handleDownload}>
               <a 
-                href={lesson.template_url} 
+                href={safeTemplateUrl} 
                 target="_blank" 
                 rel="noopener noreferrer"
               >
