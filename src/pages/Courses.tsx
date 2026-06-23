@@ -100,6 +100,26 @@ const Courses = () => {
       } else {
         setEnrolledCourseIds(prev => new Set([...prev, courseId]));
         toast.success('Successfully enrolled!');
+
+        // Analytics: course_purchased + ladder follow/skip
+        const slug = courses.find(c => c.id === courseId)?.slug ?? null;
+        void logRoutingEvent({ eventType: 'course_purchased', courseKey: slug });
+        try {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('recommended_course')
+            .eq('id', user.id)
+            .maybeSingle();
+          const recommended = profile?.recommended_course ?? null;
+          if (recommended && slug) {
+            void logRoutingEvent({
+              eventType: recommended === slug ? 'ladder_followed' : 'ladder_skipped',
+              courseKey: slug,
+            });
+          }
+        } catch {
+          // swallow — analytics must not break enroll flow
+        }
       }
     } catch (error) {
       console.error('Error enrolling:', error);
