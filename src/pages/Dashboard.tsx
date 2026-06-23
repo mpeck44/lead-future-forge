@@ -8,9 +8,11 @@ import DashboardHero from "@/components/dashboard/DashboardHero";
 import PathwayStrip, { PathStep } from "@/components/dashboard/PathwayStrip";
 import PortfolioGrid, { PortfolioCardItem } from "@/components/dashboard/PortfolioGrid";
 import DashboardFooter from "@/components/dashboard/DashboardFooter";
+import RecommendationCard from "@/components/dashboard/RecommendationCard";
 
 interface Profile {
   full_name: string | null;
+  recommended_course: string | null;
 }
 
 interface Enrollment {
