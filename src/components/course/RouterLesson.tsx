@@ -8,6 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { sanitizeHtml } from "@/lib/sanitize";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { logRoutingEvent } from "@/lib/analytics/logRoutingEvent";
 
 interface RouterLessonProps {
   lesson: {
