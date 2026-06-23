@@ -43,7 +43,7 @@ const Dashboard = () => {
     if (!user) return;
     supabase
       .from("profiles")
-      .select("full_name")
+      .select("full_name, recommended_course")
       .eq("id", user.id)
       .single()
       .then(({ data }) => data && setProfile(data));
