@@ -1,63 +1,68 @@
-## Final step: routing screen for The Launchpad
+## Add Recommendation Card to Learner Dashboard
 
-A new lesson type, `router`, slotted as the last lesson of The Launchpad (Foundations course) immediately after the audit results. It writes `profiles.recommended_course` and `profiles.recommendation_source` on selection, then shows a confirmation screen.
+Insert a single recommendation card above the existing `PathwayStrip` + `PortfolioGrid` in `src/pages/Dashboard.tsx`. No other dashboard structure changes. Catalog and pathway remain untouched.
 
-### What the learner sees
+### Component
 
-**Selection screen**
-- Headline: "Where are you right now?"
-- Subhead: "Pick the sentence that sounds like your district — or let your audit decide."
-- Three situation cards (filled, equal weight):
-  1. "AI is already in my buildings. Our approach is improvised." → `fluency` (Command the Tools)
-  2. "My board — or my boss — is asking for a plan I don't have." → `strategy` (Chart the Course)
-  3. "We wrote the plan. Nothing is moving." → `action` (Ship It)
-- Fourth option, outline button, visually separated under the three cards: "Use my audit score" → reads the latest completed `audit_attempts` for the user, picks the lowest-scoring category, maps it (see Technical), and sets `recommendation_source = 'audit'`. Disabled with a hint if the audit hasn't been completed.
+Create `src/components/dashboard/RecommendationCard.tsx` — a self-contained card that:
+- Reads `profiles.recommended_course` for the current user (already fetched alongside `full_name` after a small extension to the profile query in `Dashboard.tsx`).
+- Computes the recommended course's state from data the dashboard already loads: `enrollments` + `progressBundle.byCourse` (done/total lessons).
+- Renders one of four variants. Visually matches the existing gold-bordered hero card (same `border-t-4 border-gold`, navy/gold tokens, gold CTA button) so it sits naturally above the pathway strip.
 
-**Confirmation screen** (replaces the selection UI, same lesson)
-- Heading is the matching result copy:
-  - command_the_tools / `fluency`: "Your gap is operational. Tools are in use without evaluation criteria. Start by getting what's already happening under control."
-  - chart_the_course / `strategy`: "Your gap is strategic. Activity without direction. Start by building the framework and roadmap your stakeholders are waiting for."
-  - ship_it / `action`: "Your gap is execution. The thinking is done; the follow-through isn't. Start by turning your plan into assignments with names and dates."
-- Single primary button: "Go to {course title}". If the user is enrolled in that course (row in `enrollments` for `user_id` + `course_id`), link to `/course/{slug}`; otherwise link to `/courses`.
-- Small "Change my answer" ghost link that returns to the selection screen (does not clear the saved recommendation until a new one is chosen).
+### Variants
 
-The lesson auto-marks complete the moment a selection is made (same pattern AuditLesson already uses for `onComplete`).
+| State | Condition | Headline | Body | CTA |
+|---|---|---|---|---|
+| **Start** | enrolled but `done === 0`, OR not enrolled | "Your recommended starting point: {Course Name}" | course's situation line | "Start {Course Name}" → `/course/{slug}` if enrolled, else `/courses` |
+| **Continue** | enrolled, `0 < done < total` | "Pick up where you left off in {Course Name}" | "{done} of {total} lessons complete" | "Continue {Course Name}" → `/course/{slug}` |
+| **Next-step** | recommended course completed AND there is a next rung on the ladder | "You finished {Just-Done Course}. Next: {Next Course Name}" | next course's situation line | "Start {Next Course Name}" → `/course/{next-slug}` if enrolled, else `/courses` |
+| **Re-audit** | recommended course is `action` AND completed (top of ladder reached) | "Re-run your Equity Audit" | "The trend line from your baseline is the story you tell next year." | "Start new audit" → inserts a fresh `audit_attempts` row, then navigates to `/course/foundations` |
 
-### Visual style
-Reuses the existing lesson card pattern (`border rounded-lg bg-card p-6`), brand gold accents (`#d4af37`), Playfair headline, Inter body — matches AuditLesson's summary screen.
+If `recommended_course` is null / empty, render nothing (card simply doesn't appear; existing dashboard is unchanged).
+
+### Ladder
+
+Hardcoded in the component, mapped to actual DB slugs (per earlier decision):
+- `fluency` → `strategy` → `action` → re-audit
+
+(Spec slugs `command_the_tools` / `chart_the_course` / `ship_it` map to `fluency` / `strategy` / `action`.)
+
+### Situation lines
+
+Lifted verbatim from `src/components/landing/DoorsSection.tsx` and stored in a small constant map inside `RecommendationCard.tsx` keyed by slug — no DB schema change.
+
+### Re-audit click
+
+```ts
+// pick next attempt_number = max(existing) + 1, then insert
+const { data: latest } = await supabase
+  .from("audit_attempts")
+  .select("attempt_number")
+  .eq("user_id", user.id)
+  .order("attempt_number", { ascending: false })
+  .limit(1);
+const nextNum = (latest?.[0]?.attempt_number ?? 0) + 1;
+await supabase.from("audit_attempts").insert({ user_id: user.id, attempt_number: nextNum });
+navigate("/course/foundations");
+```
+
+Because `AuditLesson` resumes the latest incomplete attempt, this drops the learner into a fresh audit.
+
+### Dashboard wiring
+
+In `src/pages/Dashboard.tsx`:
+1. Extend the profile fetch to also select `recommended_course`.
+2. Fetch course titles for the three slugs once (small `courses` query already feasible — or include in the existing enrollment query results / add a lightweight `useQuery`).
+3. Render `<RecommendationCard ... />` immediately after `<DashboardHero />` and before `<PathwayStrip />`.
 
 ### Out of scope
-Other Launchpad lessons, other courses, the dashboard, the landing-page routing section, adding a real purchase page, multi-attempt history. Source of truth for course slugs stays `fluency` / `strategy` / `action`.
 
-### Technical details
+- Pathway strip, portfolio grid, hero continue-card (untouched).
+- Catalog page (`/courses`) — all three courses already visible and purchasable; no change.
+- Editing recommendation source / re-routing logic (lives in `RouterLesson`).
+- Changing `recommended_course` slug values.
 
-**Lesson row.** Convert the existing `"Choose Your Path"` content lesson (id `5abe638f-...`, sequence_order 5 in the Foundations "Building Your Foundation" module) into the router, via a data update:
-- `lesson_type = 'router'`
-- `title = 'Choose Your Path'` (kept)
-- `content` cleared / set to short intro markup; no template/resource fields.
+### Files
 
-No schema migration needed — `lesson_type` is free-form text, and `profiles.recommended_course` / `recommendation_source` already exist from the earlier step.
-
-**New component:** `src/components/course/RouterLesson.tsx`
-- Props mirror AuditLesson: `{ lesson, isCompleted, onComplete, isPending }`.
-- Local state: `phase: 'select' | 'confirm'`, `selectedSlug: 'fluency'|'strategy'|'action'|null`, `source: 'self_selected'|'audit'`.
-- On mount: read `profiles.recommended_course` + `recommendation_source` for the current user; if present, hydrate state and start on `confirm`. Also fetch the latest *completed* `audit_attempts` row id (one query, `.order('completed_at', desc).limit(1)`) to know whether the audit option is enabled.
-- Card click handler: `setRecommendation(slug, 'self_selected')`.
-- Audit-score handler: call `supabase.rpc('get_audit_summary', { _attempt_id })` with the latest completed attempt; pick the row where `is_lowest = true` (RPC already orders ties by category order: fluency, strategy, action, governance, capacity, which yields the required tiebreak when combined with the mapping below); map category → slug:
-  - `fluency` → `fluency`
-  - `strategy` or `governance` → `strategy`
-  - `action` or `capacity` → `action`
-  Then `setRecommendation(mappedSlug, 'audit')`.
-- `setRecommendation` upserts `profiles { recommended_course, recommendation_source }` for `auth.uid()`, calls `onComplete()` once (guarded by `isCompleted`), and transitions to `confirm`.
-- Confirmation screen: looks up enrollment with `supabase.from('enrollments').select('id').eq('user_id', user.id).eq('course_id', courseId).maybeSingle()` where `courseId` is resolved by a one-time `courses` query keyed on the three slugs (cached in a `useMemo`/`useQuery`). Button `<Link>` to `/course/{slug}` when enrolled, otherwise `/courses`.
-
-**CourseViewer wiring:** `src/pages/CourseViewer.tsx`
-- Add `import RouterLesson from '@/components/course/RouterLesson'`.
-- Add a `case 'router':` branch in `renderLessonContent()` returning `<RouterLesson ... />` with the same prop shape used by AuditLesson.
-- Extend the existing exclusion on line 915 so the manual "Mark as Complete" button does not render for `'router'` either (component handles completion itself).
-- No changes to icons/labels are required; the default content icon is acceptable for this step.
-
-**Files**
-- New: `src/components/course/RouterLesson.tsx`
-- Edited: `src/pages/CourseViewer.tsx`
-- Data update (via supabase--insert) on `public.lessons` row `5abe638f-c7e5-4a34-a330-fa38fc1c0c90`.
+- **Create** `src/components/dashboard/RecommendationCard.tsx`
+- **Edit** `src/pages/Dashboard.tsx` (add profile field, course-title lookup, render card)

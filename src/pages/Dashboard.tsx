@@ -8,9 +8,11 @@ import DashboardHero from "@/components/dashboard/DashboardHero";
 import PathwayStrip, { PathStep } from "@/components/dashboard/PathwayStrip";
 import PortfolioGrid, { PortfolioCardItem } from "@/components/dashboard/PortfolioGrid";
 import DashboardFooter from "@/components/dashboard/DashboardFooter";
+import RecommendationCard from "@/components/dashboard/RecommendationCard";
 
 interface Profile {
   full_name: string | null;
+  recommended_course: string | null;
 }
 
 interface Enrollment {
@@ -41,7 +43,7 @@ const Dashboard = () => {
     if (!user) return;
     supabase
       .from("profiles")
-      .select("full_name")
+      .select("full_name, recommended_course")
       .eq("id", user.id)
       .single()
       .then(({ data }) => data && setProfile(data));
@@ -61,6 +63,19 @@ const Dashboard = () => {
       return (data || []) as Enrollment[];
     },
     enabled: !!user,
+  });
+
+  // Core course titles (fluency, strategy, action) — used by RecommendationCard
+  const { data: coreCourses = [] } = useQuery({
+    queryKey: ["dashboard-core-course-titles"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("courses")
+        .select("slug, title")
+        .in("slug", ["fluency", "strategy", "action"]);
+      if (error) throw error;
+      return data || [];
+    },
   });
 
   // Per-course progress + current module
@@ -272,6 +287,16 @@ const Dashboard = () => {
           subtitle={subtitle}
           continueCard={continueCard}
           ctaWhenEmpty={{ label: "Explore Courses", href: "/courses" }}
+        />
+        <RecommendationCard
+          recommendedSlug={profile?.recommended_course ?? null}
+          courseTitles={Object.fromEntries(coreCourses.map((c: any) => [c.slug, c.title]))}
+          enrollmentsBySlug={Object.fromEntries(
+            enrollments
+              .filter((e) => e.courses?.slug)
+              .map((e) => [e.courses.slug, { courseId: e.course_id, slug: e.courses.slug }])
+          )}
+          progressByCourseId={progressBundle?.byCourse ?? new Map()}
         />
         <PathwayStrip steps={pathSteps} />
         <PortfolioGrid
