@@ -173,6 +173,7 @@ const RouterLesson = ({ lesson, isCompleted, onComplete }: RouterLessonProps) =>
     setSelectedSlug(slug);
     setSource(src);
     setPhase("confirm");
+    void logRoutingEvent({ eventType: "door_selected", courseKey: slug, source: src });
     if (!isCompleted) onComplete();
   };
 
