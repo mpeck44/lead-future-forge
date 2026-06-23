@@ -557,7 +557,15 @@ const CourseViewer = () => {
     if (vimeoMatch) {
       return `https://player.vimeo.com/video/${vimeoMatch[1]}`;
     }
-    return url;
+    // Unrecognized host: only allow https URLs to prevent stored XSS via
+    // javascript:/data:/http: URLs being embedded in unsandboxed iframes.
+    try {
+      const parsed = new URL(url);
+      if (parsed.protocol === 'https:') return parsed.toString();
+    } catch {
+      // invalid URL — fall through
+    }
+    return '';
   };
 
   // Render the appropriate lesson component based on type
