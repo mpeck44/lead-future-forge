@@ -65,6 +65,19 @@ const Dashboard = () => {
     enabled: !!user,
   });
 
+  // Core course titles (fluency, strategy, action) — used by RecommendationCard
+  const { data: coreCourses = [] } = useQuery({
+    queryKey: ["dashboard-core-course-titles"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("courses")
+        .select("slug, title")
+        .in("slug", ["fluency", "strategy", "action"]);
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
   // Per-course progress + current module
   const { data: progressBundle } = useQuery({
     queryKey: ["dashboard-progress-bundle", user?.id, enrollments.map((e) => e.course_id).join(",")],
