@@ -37,6 +37,18 @@ const ActivityLesson = ({ lesson, courseId, isCompleted, onComplete, onPortfolio
   const ResourceIcon = resourceConfig.icon;
   const buttonText = lesson.download_button_text || "Download Template";
 
+  // Only allow https URLs in the download link to prevent stored XSS via
+  // javascript:/data: URLs that survive a generic URL parse.
+  const safeTemplateUrl = (() => {
+    if (!lesson.template_url) return null;
+    try {
+      const parsed = new URL(lesson.template_url);
+      return parsed.protocol === 'https:' ? parsed.toString() : null;
+    } catch {
+      return null;
+    }
+  })();
+
   const createPortfolioItem = () => {
     if (onPortfolioCreate) {
       const description = `Completed activity: ${lesson.resource_name || lesson.title}`;
@@ -74,7 +86,7 @@ const ActivityLesson = ({ lesson, courseId, isCompleted, onComplete, onPortfolio
       )}
 
       {/* Resource Download Card */}
-      {lesson.template_url && (
+      {safeTemplateUrl && (
         <div className="border rounded-lg p-6 bg-card">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="flex items-start gap-4">
@@ -97,7 +109,7 @@ const ActivityLesson = ({ lesson, courseId, isCompleted, onComplete, onPortfolio
             </div>
             <Button asChild onClick={handleDownload}>
               <a 
-                href={lesson.template_url} 
+                href={safeTemplateUrl} 
                 target="_blank" 
                 rel="noopener noreferrer"
               >
