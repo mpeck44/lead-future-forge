@@ -86,7 +86,7 @@ const ActivityLesson = ({ lesson, courseId, isCompleted, onComplete, onPortfolio
       )}
 
       {/* Resource Download Card */}
-      {lesson.template_url && (
+      {safeTemplateUrl && (
         <div className="border rounded-lg p-6 bg-card">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="flex items-start gap-4">
