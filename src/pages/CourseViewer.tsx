@@ -263,8 +263,17 @@ const CourseViewer = () => {
       
       if (error) throw error;
     },
-    onSuccess: () => {
+    onSuccess: (_data, lessonId) => {
       queryClient.invalidateQueries({ queryKey: ['user-progress', course?.id, user?.id] });
+      // Analytics: fire course_completed once, on the transition that finishes the course
+      if (
+        course?.slug &&
+        allLessons.length > 0 &&
+        !completedLessons.has(lessonId) &&
+        completedLessons.size + 1 === allLessons.length
+      ) {
+        void logRoutingEvent({ eventType: 'course_completed', courseKey: course.slug });
+      }
       toast({
         title: 'Lesson completed!',
         description: 'Your progress has been saved.',
