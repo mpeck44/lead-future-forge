@@ -1,44 +1,49 @@
-# Rebalance the Problem section
+## Rebuild the Artifacts section to match the mockup
 
-Rework `src/components/landing/ProblemV2.tsx` from a single stacked column into the two-column layout shown in the mockup. No copy changes elsewhere, no new components, no token changes.
+Rewrite `src/components/landing/DeliverablesSection.tsx` so the section matches the attached mockup. The current version (4 identical white cards) gets replaced with a 3-part layout: a hero "Featured deliverable" card on the left, a clean stacked list of supporting deliverables on the right, and a full-width dark testimonial below. The stray "Photo / browse files" placeholder visible in the screenshot is a mockup artifact and will not exist in the built version.
 
-## Layout
+### Layout
 
 ```text
-┌──────────────────────────────┬──────────────────────────────────────────┐
-│ • THE SITUATION              │ 01  Your teachers are using AI tools…    │
-│                              │ ─────────────────────────────────────── │
-│ The problem school           │ 02  Your board is asking where the…      │
-│ leaders face                 │ ─────────────────────────────────────── │
-│                              │ 03  The policy passed. It's months…      │
-│ You're being asked to lead   │ ─────────────────────────────────────── │
-│ on AI before anyone handed   │                                          │
-│ you a playbook. Sound        │     You don't need another workshop.     │
-│ familiar?                    │     You need a *system.*                 │
-└──────────────────────────────┴──────────────────────────────────────────┘
+┌─ eyebrow + headline + subhead (left-aligned, max ~640px) ──┐
+│                                                            │
+├──────────────────────────────────┬─────────────────────────┤
+│ FEATURED DELIVERABLE             │ ▣ AI Governance Framework
+│ 3-Year AI Strategic Roadmap      │   Customized to your…   │
+│                       [Board-ready] ─────────────────────── │
+│  Y1 ████████████░░░  Foundations │ ▣ Pilot Program Design  │
+│  Y2 ████████░░░░░░░  Scaled      │   Scoped, staffed…      │
+│  Y3 █████░░░░░░░░░░  District    │ ───────────────────────  │
+│  ──                              │ ▣ Stakeholder Comms     │
+│  Sequenced, defensible, and yours│   Board, parents, staff…│
+├──────────────────────────────────┴─────────────────────────┤
+│  ░ dark navy band                                           │
+│  "I walked into my board meeting with a roadmap            │
+│   instead of a shrug. That's the difference."              │
+│  Dr. Maria Ellison — Superintendent, suburban district     │
+└────────────────────────────────────────────────────────────┘
 ```
 
-- Grid: `lg:grid-cols-[1fr_1.35fr]` with generous column gap; stacks on mobile.
-- Left column (sticky-feeling, no actual sticky):
-  - Gold-dot eyebrow "THE SITUATION" (existing styling).
-  - Display headline: **The problem school leaders face**.
-  - Muted subhead: *You're being asked to lead on AI before anyone handed you a playbook. Sound familiar?*
-- Right column:
-  - Three numbered rows (`01`, `02`, `03`) in gold display type, content in foreground display type, separated by `border-b border-foreground/10` (top border on first row).
-  - Below the third divider, the closing line in display: **You don't need another workshop. You need a *system.*** (gold italic "system.")
+- Two-column grid `lg:grid-cols-[1.05fr_1fr]` with `gap-10`; stacks on mobile.
+- Featured card: white surface, `rounded-xl`, soft shadow, `p-7`. Top row = gold uppercase eyebrow "FEATURED DELIVERABLE" + display headline; right side a small gold pill "Board-ready". Body = three rows (Y1/Y2/Y3) each rendered as `grid-cols-[auto_1fr_auto]` with gold display year label, slim progress bar (gold fill on `bg-foreground/10`, widths 78%/58%/38%), and a muted right-side caption ("Foundations & policy", "Scaled pilots", "District-wide"). A `border-t border-foreground/10` then a muted footer line.
+- Right column: three deliverable rows separated by `border-b border-foreground/10`. Each row = `grid-cols-[auto_1fr]` with a small navy square icon tile (`bg-deep-navy text-gold rounded-md w-10 h-10`) holding a Lucide icon, plus title (`font-display`) and muted body. Icons: `ShieldCheck`, `FlaskConical`, `MessageSquareQuote`.
+- Testimonial band: full-width inside the container, `bg-deep-navy text-background rounded-xl px-10 py-9 mt-12`. Italic Playfair quote, then `Dr. Maria Ellison` in gold + muted role line. No avatar/photo element.
 
-## Copy (final)
+### Content
 
-- Eyebrow: `The situation`
-- Headline: `The problem school leaders face`
-- Subhead: `You're being asked to lead on AI before anyone handed you a playbook. Sound familiar?`
-- 01: `Your teachers are using AI tools you didn't approve. You're improvising the response.`
-- 02: `Your board is asking where the district stands on AI. You don't have a plan to point at.`
-- 03: `The policy passed. It's months later. Nothing in your buildings has actually changed.`
-- Closing: `You don't need another workshop. You need a system.`
+- Eyebrow: `What you'll walk away with`
+- Headline: `You don't finish with notes. You finish with` *artifacts.* (italic gold last word)
+- Subhead: `Every module produces something you can put in front of your board, your cabinet, or your staff — this week.`
+- Featured: title `3-Year AI Strategic Roadmap`, pill `Board-ready`, footer `Sequenced, defensible, and yours — generated from your district's real policies, people, and risk tolerance.`
+- Right list:
+  - `AI Governance Framework` — `Customized to your district's policies, people, and risk tolerance.`
+  - `Pilot Program Design` — `Scoped, staffed, and measured — success metrics defined before you start.`
+  - `Stakeholder Comms Templates` — `Board, parents, staff — the messages ready before the questions come.`
+- Quote: `"I walked into my board meeting with a roadmap instead of a shrug. That's the difference."` — `Dr. Maria Ellison` — `Superintendent, suburban district (4,800 students)`
 
-## Out of scope
+### Out of scope
 
-- No changes to Hero, Doors, or other sections.
-- No new design tokens, fonts, or assets.
-- No reveal-animation changes beyond keeping existing `rv` classes on the same elements.
+- No new tokens, fonts, or assets.
+- No changes to other landing sections or Index ordering.
+- No photo/avatar element on the testimonial.
+- No backend, data, or routing changes.
