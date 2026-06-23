@@ -288,6 +288,16 @@ const Dashboard = () => {
           continueCard={continueCard}
           ctaWhenEmpty={{ label: "Explore Courses", href: "/courses" }}
         />
+        <RecommendationCard
+          recommendedSlug={profile?.recommended_course ?? null}
+          courseTitles={Object.fromEntries(coreCourses.map((c: any) => [c.slug, c.title]))}
+          enrollmentsBySlug={Object.fromEntries(
+            enrollments
+              .filter((e) => e.courses?.slug)
+              .map((e) => [e.courses.slug, { courseId: e.course_id, slug: e.courses.slug }])
+          )}
+          progressByCourseId={progressBundle?.byCourse ?? new Map()}
+        />
         <PathwayStrip steps={pathSteps} />
         <PortfolioGrid
           items={portfolioCards}
