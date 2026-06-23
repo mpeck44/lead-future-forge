@@ -1,63 +1,44 @@
-## Hero revision — match the mockup
+# Rebalance the Problem section
 
-Replace the current `HeroV2` content with a two-column layout that matches the mockup. No changes outside the hero section.
+Rework `src/components/landing/ProblemV2.tsx` from a single stacked column into the two-column layout shown in the mockup. No copy changes elsewhere, no new components, no token changes.
 
-### Layout
+## Layout
 
-```
-┌─────────────────────────────────────────────────────────┐
-│  Header (unchanged)                                     │
-├──────────────────────────┬──────────────────────────────┤
-│  Headline                │  ┌─ browser chrome ───────┐  │
-│  Subhead                 │  │ app.leadershipforge.org│  │
-│  [Explore] [Audit]       │  │                        │  │
-│  ──────────────          │  │ Your pathway           │  │
-│  50+   4    ISTE·CoSN    │  │ Welcome back, Dr...    │  │
-│                          │  │ [1] Command the Tools  │  │
-│                          │  │ [2] Chart the Course   │  │
-│                          │  │ [3] Ship It            │  │
-│                          │  └──── toast: Artifact ───┘  │
-├─────────────────────────────────────────────────────────┤
-│  TRUSTED IN DISTRICTS …  Pen Argyl · Chester · …        │
-└─────────────────────────────────────────────────────────┘
+```text
+┌──────────────────────────────┬──────────────────────────────────────────┐
+│ • THE SITUATION              │ 01  Your teachers are using AI tools…    │
+│                              │ ─────────────────────────────────────── │
+│ The problem school           │ 02  Your board is asking where the…      │
+│ leaders face                 │ ─────────────────────────────────────── │
+│                              │ 03  The policy passed. It's months…      │
+│ You're being asked to lead   │ ─────────────────────────────────────── │
+│ on AI before anyone handed   │                                          │
+│ you a playbook. Sound        │     You don't need another workshop.     │
+│ familiar?                    │     You need a *system.*                 │
+└──────────────────────────────┴──────────────────────────────────────────┘
 ```
 
-### Content
+- Grid: `lg:grid-cols-[1fr_1.35fr]` with generous column gap; stacks on mobile.
+- Left column (sticky-feeling, no actual sticky):
+  - Gold-dot eyebrow "THE SITUATION" (existing styling).
+  - Display headline: **The problem school leaders face**.
+  - Muted subhead: *You're being asked to lead on AI before anyone handed you a playbook. Sound familiar?*
+- Right column:
+  - Three numbered rows (`01`, `02`, `03`) in gold display type, content in foreground display type, separated by `border-b border-foreground/10` (top border on first row).
+  - Below the third divider, the closing line in display: **You don't need another workshop. You need a *system.*** (gold italic "system.")
 
-- Headline: "Stop reacting to AI. Start *leading through it.*" (lowercase "reacting"/"leading", italic gold phrase — matches mockup; current is title-cased).
-- Subhead: keep current copy ("The only professional-development system… Monday morning.").
-- Primary CTA: "Explore the courses →" scrolls to `#doors` (was "Which one is you? ↓").
-- Secondary CTA: "Take the 5-min readiness audit" opens the audit/waitlist flow (keep current `onWaitlist` wiring).
-- Stat trio under a hairline divider:
-  - **50+** District Leaders Trained
-  - **4** Leadership Courses
-  - **ISTE · CoSN** aligned
-- Bottom strip (inside hero section, above next section): small caps label "TRUSTED IN DISTRICTS ACROSS PA & BEYOND" + four wordmarks as styled text: Pen Argyl ASD, Chester County IU, Bethlehem Area, Easton ASD.
+## Copy (final)
 
-### App preview mockup (HTML/CSS, no real data)
+- Eyebrow: `The situation`
+- Headline: `The problem school leaders face`
+- Subhead: `You're being asked to lead on AI before anyone handed you a playbook. Sound familiar?`
+- 01: `Your teachers are using AI tools you didn't approve. You're improvising the response.`
+- 02: `Your board is asking where the district stands on AI. You don't have a plan to point at.`
+- 03: `The policy passed. It's months later. Nothing in your buildings has actually changed.`
+- Closing: `You don't need another workshop. You need a system.`
 
-New component `src/components/landing/HeroAppPreview.tsx` — pure presentational, no data fetching:
+## Out of scope
 
-- Outer card: `bg-[#0b1220]` (slightly lighter than navy), rounded-lg, subtle border, shadow.
-- Browser chrome row: three dots + `app.leadershipforge.org` label.
-- Body:
-  - Eyebrow "Your pathway" + "Welcome back, Dr. Ellison" in display font.
-  - Three pathway rows, each a dark card with a numbered square badge:
-    1. **Command the Tools** — progress bar 72% in gold, "72%" right-aligned. Active state (gold left border / badge filled gold).
-    2. **Chart the Course** — "Strategy · 6 modules", "Locked" pill right.
-    3. **Ship It** — "Action · 90-day plan", "Locked" pill right.
-- Floating toast (absolute, bottom-right, overlapping card edge): white card, green check icon, "Artifact saved" bold + "3-Year Roadmap · ready for your board".
-
-All colors via existing tokens (navy, gold, muted, foreground) — no hardcoded brand colors except the slightly-lighter card background, which I'll add as an inline style or extend the existing surface scale.
-
-### Files touched
-
-- `src/components/landing/HeroV2.tsx` — rewrite content/layout (keep `onWaitlist` prop, keep `hero-horizon-glow` and reveal classes).
-- `src/components/landing/HeroAppPreview.tsx` — new, pure JSX/Tailwind.
-- No changes to `Index.tsx`, header, or other sections.
-
-### Out of scope
-
-- District names are placeholders — wire to real partners later.
-- No image generation; mockup is built in markup.
-- No font, route, or backend changes.
+- No changes to Hero, Doors, or other sections.
+- No new design tokens, fonts, or assets.
+- No reveal-animation changes beyond keeping existing `rv` classes on the same elements.
