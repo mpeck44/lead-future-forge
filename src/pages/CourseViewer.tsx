@@ -37,6 +37,7 @@ import QuestionLesson from '@/components/course/QuestionLesson';
 import PortfolioTracker from '@/components/course/PortfolioTracker';
 import AuditLesson from '@/components/course/AuditLesson';
 import RouterLesson from '@/components/course/RouterLesson';
+import { logRoutingEvent } from '@/lib/analytics/logRoutingEvent';
 
 interface Lesson {
   id: string;
