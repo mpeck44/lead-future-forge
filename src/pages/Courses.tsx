@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { logRoutingEvent } from '@/lib/analytics/logRoutingEvent';
 
 interface Course {
   id: string;
