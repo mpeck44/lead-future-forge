@@ -1,68 +1,59 @@
-## Add Recommendation Card to Learner Dashboard
+# Routing Analytics
 
-Insert a single recommendation card above the existing `PathwayStrip` + `PortfolioGrid` in `src/pages/Dashboard.tsx`. No other dashboard structure changes. Catalog and pathway remain untouched.
+Lightweight, write-only telemetry to settle the routing architecture question during beta. No UI changes. You'll inspect `routing_events` directly in the backend.
 
-### Component
+## 1. New table: `public.routing_events`
 
-Create `src/components/dashboard/RecommendationCard.tsx` — a self-contained card that:
-- Reads `profiles.recommended_course` for the current user (already fetched alongside `full_name` after a small extension to the profile query in `Dashboard.tsx`).
-- Computes the recommended course's state from data the dashboard already loads: `enrollments` + `progressBundle.byCourse` (done/total lessons).
-- Renders one of four variants. Visually matches the existing gold-bordered hero card (same `border-t-4 border-gold`, navy/gold tokens, gold CTA button) so it sits naturally above the pathway strip.
+Columns:
+- `id uuid pk default gen_random_uuid()`
+- `user_id uuid not null` (references the authenticated user)
+- `event_type text not null` — one of `door_selected`, `course_purchased`, `course_completed`, `ladder_followed`, `ladder_skipped` (CHECK constraint)
+- `course_key text` — slug like `fluency`/`strategy`/`action` (nullable so we don't lose events if a slug is missing)
+- `source text` — only set for `door_selected`: `self_selected` or `audit`
+- `created_at timestamptz not null default now()`
 
-### Variants
+Index: `(user_id, created_at desc)` for quick per-user review.
 
-| State | Condition | Headline | Body | CTA |
-|---|---|---|---|---|
-| **Start** | enrolled but `done === 0`, OR not enrolled | "Your recommended starting point: {Course Name}" | course's situation line | "Start {Course Name}" → `/course/{slug}` if enrolled, else `/courses` |
-| **Continue** | enrolled, `0 < done < total` | "Pick up where you left off in {Course Name}" | "{done} of {total} lessons complete" | "Continue {Course Name}" → `/course/{slug}` |
-| **Next-step** | recommended course completed AND there is a next rung on the ladder | "You finished {Just-Done Course}. Next: {Next Course Name}" | next course's situation line | "Start {Next Course Name}" → `/course/{next-slug}` if enrolled, else `/courses` |
-| **Re-audit** | recommended course is `action` AND completed (top of ladder reached) | "Re-run your Equity Audit" | "The trend line from your baseline is the story you tell next year." | "Start new audit" → inserts a fresh `audit_attempts` row, then navigates to `/course/foundations` |
+RLS:
+- `insert`: authenticated users can insert rows where `user_id = auth.uid()`.
+- `select`: authenticated users can read their own rows; service_role full access (so you can query everything in the backend).
+- No anon access. No update/delete policies.
 
-If `recommended_course` is null / empty, render nothing (card simply doesn't appear; existing dashboard is unchanged).
+Grants: `INSERT, SELECT` to `authenticated`; `ALL` to `service_role`.
 
-### Ladder
+## 2. Logging points (no UI changes)
 
-Hardcoded in the component, mapped to actual DB slugs (per earlier decision):
-- `fluency` → `strategy` → `action` → re-audit
+A small helper `src/lib/analytics/logRoutingEvent.ts` will wrap the insert and swallow errors silently so analytics never breaks a flow. All call sites use it fire-and-forget.
 
-(Spec slugs `command_the_tools` / `chart_the_course` / `ship_it` map to `fluency` / `strategy` / `action`.)
+| Event | Where | Trigger |
+| --- | --- | --- |
+| `door_selected` | `src/components/course/RouterLesson.tsx` → `persistRecommendation` | After the profile update succeeds. `course_key` = chosen slug, `source` = `self_selected` or `audit`. |
+| `course_purchased` | `src/pages/Courses.tsx` → `handleEnroll` | After the `enrollments` insert succeeds (not on the duplicate-enrollment branch). `course_key` = the course slug looked up from the `courses` list already in state. |
+| `course_completed` | `src/pages/CourseViewer.tsx` → `markCompleteMutation.onSuccess` (and the two auto-complete branches in the reflection/question mutations) | After invalidating progress, recompute completion: if `completedLessons.size + 1 === allLessons.length` (i.e. this completion finishes the course), log once with `course_key` = current course slug. Guarded so it only fires on the transition, not on every later view. |
+| `ladder_followed` / `ladder_skipped` | `src/pages/Courses.tsx` → `handleEnroll`, right after `course_purchased` | Read `profiles.recommended_course` for the current user. If it equals the slug just enrolled → `ladder_followed`; otherwise → `ladder_skipped`. `course_key` = the slug just enrolled. Only logged when `recommended_course` is non-null (otherwise there is no ladder to compare against). |
 
-### Situation lines
+Notes:
+- `course_purchased` is logged on every successful enrollment insert. Courses are currently free, so this captures "started owning the course" — matching the spec's intent.
+- The ladder events are derived from the recommendation stored on the profile at enrollment time; no extra state needed.
+- No retries, no toasts, no user-visible behavior. Errors are logged to `console.warn` in dev only.
 
-Lifted verbatim from `src/components/landing/DoorsSection.tsx` and stored in a small constant map inside `RecommendationCard.tsx` keyed by slug — no DB schema change.
+## 3. Out of scope
 
-### Re-audit click
+- No dashboard, no admin views, no charts.
+- No backfill of historical enrollments/completions.
+- No changes to existing flows beyond the logging calls.
+- No changes to other courses or the landing page.
 
-```ts
-// pick next attempt_number = max(existing) + 1, then insert
-const { data: latest } = await supabase
-  .from("audit_attempts")
-  .select("attempt_number")
-  .eq("user_id", user.id)
-  .order("attempt_number", { ascending: false })
-  .limit(1);
-const nextNum = (latest?.[0]?.attempt_number ?? 0) + 1;
-await supabase.from("audit_attempts").insert({ user_id: user.id, attempt_number: nextNum });
-navigate("/course/foundations");
-```
+## Technical details
 
-Because `AuditLesson` resumes the latest incomplete attempt, this drops the learner into a fresh audit.
-
-### Dashboard wiring
-
-In `src/pages/Dashboard.tsx`:
-1. Extend the profile fetch to also select `recommended_course`.
-2. Fetch course titles for the three slugs once (small `courses` query already feasible — or include in the existing enrollment query results / add a lightweight `useQuery`).
-3. Render `<RecommendationCard ... />` immediately after `<DashboardHero />` and before `<PathwayStrip />`.
-
-### Out of scope
-
-- Pathway strip, portfolio grid, hero continue-card (untouched).
-- Catalog page (`/courses`) — all three courses already visible and purchasable; no change.
-- Editing recommendation source / re-routing logic (lives in `RouterLesson`).
-- Changing `recommended_course` slug values.
-
-### Files
-
-- **Create** `src/components/dashboard/RecommendationCard.tsx`
-- **Edit** `src/pages/Dashboard.tsx` (add profile field, course-title lookup, render card)
+- Migration creates the table, CHECK constraint on `event_type`, the index, GRANTs, RLS, and three policies (insert-own, select-own, service_role all).
+- Helper signature:
+  ```ts
+  logRoutingEvent({
+    eventType: 'door_selected' | 'course_purchased' | 'course_completed' | 'ladder_followed' | 'ladder_skipped',
+    courseKey?: string | null,
+    source?: 'self_selected' | 'audit' | null,
+  }): Promise<void>
+  ```
+  Internally reads `supabase.auth.getUser()` and inserts; returns void; never throws.
+- `course_completed` guard uses the lesson list and completed set already in `CourseViewer` state to detect the "this completion was the last one" transition before the query invalidation refetches.

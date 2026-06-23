@@ -496,6 +496,33 @@ export type Database = {
           },
         ]
       }
+      routing_events: {
+        Row: {
+          course_key: string | null
+          created_at: string
+          event_type: string
+          id: string
+          source: string | null
+          user_id: string
+        }
+        Insert: {
+          course_key?: string | null
+          created_at?: string
+          event_type: string
+          id?: string
+          source?: string | null
+          user_id: string
+        }
+        Update: {
+          course_key?: string | null
+          created_at?: string
+          event_type?: string
+          id?: string
+          source?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_progress: {
         Row: {
           completed_at: string | null
