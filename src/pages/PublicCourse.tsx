@@ -55,6 +55,29 @@ const COURSE_FAQS: Record<string, { q: string; a: string }[]> = {
 
 const SITE_URL = "https://lead-future-forge.lovable.app";
 
+const COURSE_SEO: Record<string, { title: string; description: string }> = {
+  foundations: {
+    title: "K-12 AI Foundations Course — The Launchpad | The Leadership Forge",
+    description:
+      "Free AI foundations course for K-12 district leaders. Complete the AI Equity Audit and get a personal readiness profile in about four hours.",
+  },
+  fluency: {
+    title: "K-12 AI Fluency for Leaders — Command the Tools | The Leadership Forge",
+    description:
+      "Hands-on AI fluency for superintendents, principals, and district leaders. Build a personal AI workflow you can use the next day.",
+  },
+  strategy: {
+    title: "K-12 AI Strategy Course — Chart the Course | The Leadership Forge",
+    description:
+      "Build a board-ready 3-year AI strategic roadmap for your school district. For superintendents, tech and curriculum directors.",
+  },
+  action: {
+    title: "K-12 AI Pilot Design — Ship It | The Leadership Forge",
+    description:
+      "Design and launch AI pilots with measurable outcomes. Leave with a pilot design, board communication, and 90-day launch plan for your district.",
+  },
+};
+
 const formatRole = (role: string) =>
   ROLE_OPTIONS.find((r) => r.value === role)?.label || role.replace(/_/g, " ");
 
