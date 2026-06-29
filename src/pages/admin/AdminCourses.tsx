@@ -33,6 +33,8 @@ import { Plus, Search, MoreHorizontal, Pencil, Copy, Trash2, ExternalLink, FileT
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
+type AuditCategory = 'fluency' | 'strategy' | 'action' | 'governance' | 'capacity';
+
 interface CourseWithCounts {
   id: string;
   title: string;
@@ -44,10 +46,20 @@ interface CourseWithCounts {
   is_published: boolean | null;
   featured: boolean | null;
   created_at: string | null;
-  tags: string[] | null;
+  audit_category: AuditCategory | null;
+  role_fit: string[] | null;
+  requires_foundations: boolean;
   module_count: number;
   enrollment_count: number;
 }
+
+const AUDIT_CATEGORY_LABELS: Record<AuditCategory, string> = {
+  fluency: 'Fluency',
+  strategy: 'Strategy',
+  action: 'Action',
+  governance: 'Governance',
+  capacity: 'Capacity',
+};
 
 export default function AdminCourses() {
   const queryClient = useQueryClient();
