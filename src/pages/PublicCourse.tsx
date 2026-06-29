@@ -153,9 +153,12 @@ const PublicCourse = () => {
   }
 
   const url = `${SITE_URL}/courses/${course.slug}`;
-  const titleTag = `${course.title} — The Leadership Forge`;
-  const description = (course.description || "").split("\n")[0].slice(0, 158) ||
-    "AI professional development for K-12 leaders. Build artifacts you can use in your district.";
+  const seo = COURSE_SEO[course.slug];
+  const titleTag = seo?.title || `${course.title} — The Leadership Forge`;
+  const description =
+    seo?.description ||
+    (course.description || "").split("\n")[0].slice(0, 158) ||
+    "AI professional development for K-12 district leaders. Build artifacts you can use in your district.";
   const faqs = COURSE_FAQS[course.slug] || [];
 
   const courseJsonLd = {
