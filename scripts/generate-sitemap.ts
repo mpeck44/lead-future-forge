@@ -56,6 +56,26 @@ async function fetchPublishedCourseSlugs(): Promise<string[]> {
   }
 }
 
+async function fetchPublishedResources(): Promise<Array<{ slug: string; updated_at?: string }>> {
+  const env = { ...loadEnv(), ...process.env } as Record<string, string>;
+  const url = env.VITE_SUPABASE_URL;
+  const key = env.VITE_SUPABASE_PUBLISHABLE_KEY || env.VITE_SUPABASE_ANON_KEY;
+  if (!url || !key) return [];
+  try {
+    const res = await fetch(`${url}/rest/v1/resources?select=slug,updated_at&status=eq.published`, {
+      headers: { apikey: key, Authorization: `Bearer ${key}` },
+    });
+    if (!res.ok) {
+      console.warn(`[sitemap] resources fetch failed: ${res.status}`);
+      return [];
+    }
+    return (await res.json()) as Array<{ slug: string; updated_at?: string }>;
+  } catch (err) {
+    console.warn("[sitemap] Resources fetch error:", err);
+    return [];
+  }
+}
+
 function buildXml(entries: SitemapEntry[]): string {
   const urls = entries.map((e) =>
     [
@@ -78,13 +98,22 @@ function buildXml(entries: SitemapEntry[]): string {
 }
 
 (async () => {
-  const slugs = await fetchPublishedCourseSlugs();
+  const [slugs, resources] = await Promise.all([
+    fetchPublishedCourseSlugs(),
+    fetchPublishedResources(),
+  ]);
   const courseEntries: SitemapEntry[] = slugs.map((slug) => ({
     path: `/courses/${slug}`,
     changefreq: "monthly",
     priority: "0.8",
   }));
-  const entries = [...staticEntries, ...courseEntries];
+  const resourceEntries: SitemapEntry[] = resources.map((r) => ({
+    path: `/resources/${r.slug}`,
+    lastmod: r.updated_at ? r.updated_at.slice(0, 10) : undefined,
+    changefreq: "monthly",
+    priority: "0.7",
+  }));
+  const entries = [...staticEntries, ...courseEntries, ...resourceEntries];
   const xml = buildXml(entries);
   writeFileSync(resolve("public/sitemap.xml"), xml);
   console.log(`sitemap.xml written (${entries.length} entries)`);
