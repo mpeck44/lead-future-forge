@@ -1,52 +1,77 @@
-## Audit Insights in the Admin Console
+## Goal
+Make The Leadership Forge highly discoverable in (a) Google Search and (b) LLM answer engines (ChatGPT, Perplexity, Claude, Gemini, Google AI Overviews) — since K-12 leaders mostly find PD through search, peer referrals, and increasingly AI assistants, not social.
 
-Give you a single place to see who has completed the AI Equity Audit, what they scored, and where the aggregate gaps are across the platform.
+## Current state (what's already in place)
+- `react-helmet-async` per-route titles/descriptions/canonicals on Home + Courses
+- `index.html` with Organization + WebSite JSON-LD
+- `public/sitemap.xml`, `public/robots.txt`, `public/llms.txt`
+- Clean URLs, semantic HTML, mobile responsive
 
-### New admin page: `/admin/audits`
+## Gaps that hurt discoverability
+1. **Thin sitemap** — only 3 URLs. Course detail pages (`/course/:slug`) and any future content aren't listed, so Google won't crawl them efficiently.
+2. **No per-course SEO** — `/course/:slug` likely has no Helmet tags, no `Course` JSON-LD, no canonical. These are the pages that should rank for "AI strategy for school districts" etc.
+3. **No long-form indexable content** — Google and LLMs reward depth. There's no `/blog`, `/guides`, or `/resources` section. LLMs cite pages with substantive, quotable, factual content.
+4. **llms.txt is minimal** — doesn't expose the most quotable assertions (who Mike is, what the audit measures, what each course produces). LLMs use this to summarize the site.
+5. **No structured data for the people/products that matter** — no `Person` schema for Mike (E-E-A-T signal), no `Course` schema per course, no `FAQPage` schema on the FAQ section, no `BreadcrumbList`.
+6. **No Google Search Console verification** — can't see what Google sees, can't submit sitemap, can't request indexing.
+7. **Sitemap is static** — won't auto-include new courses or blog posts as you add them.
+8. **No OG image** — link previews in Slack/email/LinkedIn (where superintendents actually share) fall back to nothing.
 
-Linked from the Admin Console nav alongside Courses, Users, etc.
+## Plan
 
-**Top — Summary cards**
-- Total attempts (completed vs. in-progress)
-- Unique users who have taken the audit
-- Average score per category (fluency, strategy, action, governance, capacity)
-- Most common "lowest category" (i.e. where most people need to go next)
+### 1. Per-course SEO (biggest single win)
+- Add `<Helmet>` to `CourseViewer` / course detail route with:
+  - Title: `{course.title} — The Leadership Forge`
+  - Description: pull from `course.description`
+  - Self-referencing canonical + `og:url`
+  - `Course` JSON-LD (name, description, provider=Organization, educationalLevel, timeRequired from `estimated_hours`, `audit_category` → `educationalCredentialAwarded`/`about`)
 
-**Middle — Category breakdown**
-A simple bar chart of average score per category so you can see at a glance where the cohort is strongest/weakest.
+### 2. Dynamic sitemap generator
+- Add `scripts/generate-sitemap.ts` wired to `predev` + `prebuild`
+- Pulls all `is_published=true` courses from Supabase and emits `/course/{slug}` URLs alongside static routes
+- Keeps sitemap fresh automatically as you publish courses
 
-**Bottom — Attempts table**
-One row per attempt with:
-- Name / email / role / district (from `profiles`)
-- Completed date
-- Score per category (5 small cells)
-- Lowest category + recommended course
-- Row click → detail drawer showing every individual question response and score
+### 3. Enrich structured data on the landing page
+- `Person` JSON-LD for Mike Peck (jobTitle, worksFor, sameAs) — strong E-E-A-T signal Google uses for YMYL-adjacent content like PD
+- `FAQPage` JSON-LD generated from `FaqSection` content — eligible for rich results and frequently cited by AI Overviews
+- `BreadcrumbList` on inner pages
 
-Filters: completed-only toggle, date range, role, district search.
-Export: "Download CSV" of the current filtered view.
+### 4. Expand `llms.txt`
+- Add an "About the instructor" block (the Director of Technology bio — your signature line)
+- Add a "Courses" block listing each course with one-sentence outcome
+- Add a "What the AI Equity Audit measures" block (the 5 categories) — directly quotable by LLMs answering "how do I assess my district's AI readiness?"
+- Add an "FAQ" block mirroring the on-page FAQ
 
-### How access is secured
+### 5. Google Search Console verification + submission
+- Use the META verification flow (already documented for this stack) to verify `https://lead-future-forge.lovable.app`
+- Add the verification meta tag to `index.html`
+- Submit sitemap via the Search Console API
+- This unlocks: indexing coverage reports, search query data, "Request indexing" for new pages
 
-- New page wrapped in the existing `AdminProtectedRoute` (admin role required).
-- Backend access via a new `SECURITY DEFINER` RPC `get_audit_attempts_admin()` that:
-  - Checks `has_role(auth.uid(), 'admin')` and returns empty otherwise.
-  - Joins `audit_attempts` + `audit_responses` + `profiles` and returns aggregated per-attempt rows plus per-category averages.
-- A second RPC `get_audit_attempt_detail_admin(_attempt_id)` returns the per-question responses for the drawer, with the same admin check.
-- No new direct table policies needed — admins read exclusively through these RPCs, so learner-facing RLS on `audit_attempts` / `audit_responses` stays untouched.
+### 6. Social/LLM preview image
+- Generate one branded `og-image.jpg` (1200×630) — Forge wordmark + tagline on the navy/gold palette
+- Wire into sitewide `og:image` + `twitter:image` in `index.html`
+- Helps every shared link (email, Slack, LinkedIn DMs) render with authority
 
-### Technical notes
+### 7. Lightweight content surface for organic growth (optional, flag for your call)
+- Scaffold a `/resources` route backed by a `resources` table (title, slug, excerpt, body MD, published_at)
+- Each resource gets its own Helmet + `Article` JSON-LD + sitemap entry
+- Even 4–6 evergreen pieces ("K-12 AI acceptable use policy template", "AI readiness audit for school districts", "3-year district AI roadmap") would meaningfully expand your search surface and give LLMs more to cite
+- I'd recommend this but it's a larger build — say yes/no and I'll include or defer
 
-- Files added:
-  - `src/pages/admin/AdminAudits.tsx` (page + table + filters + CSV export)
-  - `src/components/admin/AuditAttemptDetailDrawer.tsx`
-  - `src/components/admin/AuditCategoryChart.tsx` (uses existing `recharts`)
-- Route registered in `App.tsx`; nav entry added to the admin sidebar/header.
-- Migration adds the two RPCs only — no schema changes to existing tables.
-- CSV export is client-side from the already-loaded rows (no extra endpoint).
+## What I'd skip (not worth the effort right now)
+- Submitting to Bing Webmaster Tools — Bingbot already crawls; manual submission moves the needle marginally
+- Schema.org `Review`/`AggregateRating` — you don't have public reviews yet; faking these is a policy violation
+- AMP — dead format
 
-### Out of scope (can add later)
-- Emailing/notifying you when a new audit is completed.
-- Cohort comparisons across time periods or per-district dashboards.
+## Deliverables after build
+- Every course page indexable with rich `Course` results
+- Sitemap auto-updates with new courses
+- Verified in Google Search Console with sitemap submitted
+- FAQ rich-result eligible
+- Branded OG image on every share
+- Expanded llms.txt that LLMs can quote directly
+- (Optional) `/resources` content surface
 
-Want me to build this as described, or adjust the columns/filters first?
+## One question before I build
+Do you want me to include **#7 (the `/resources` content surface)** in this pass, or ship #1–#6 first and add `/resources` as a follow-up?

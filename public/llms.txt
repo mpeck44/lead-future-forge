@@ -1,11 +1,56 @@
 # The Leadership Forge
 
-> Practical AI professional development for K-12 leaders navigating AI transformation. Built by a practicing K-12 Director of Technology.
+> Practical AI professional development for K-12 district leaders, built by a practicing K-12 Director of Technology. The program ladders from AI Foundations through an AI Equity Audit into three tracks — Fluency, Strategy, and Action — and every course ends in a working artifact (governance framework, pilot design, board communication, 3-year roadmap) that leaders use in their districts.
 
-The Leadership Forge helps district leaders build the tools, frameworks, and 3-year roadmap they need to lead AI adoption — without academic theory or vendor pitches. Courses ladder from AI Foundations through an Equity Audit into Fluency, Strategy, and Action tracks.
+## About the instructor
+
+Mike Peck is a practicing K-12 Director of Technology. The Leadership Forge is built from the decisions actually sitting on a district leader's desk — not academic theory or vendor pitches. Every course scenario is drawn from real district work happening right now.
+
+## Audience
+
+Superintendents, assistant superintendents, principals, curriculum and instructional directors, and technology directors in U.S. K-12 public and independent schools. Resources inside each course are segmented by role so a principal and a tech director working through the same module each leave with deliverables for their own seat.
+
+## The pathway
+
+1. **The Launchpad (AI Foundations)** — Short orientation that establishes the shared language the rest of the pathway builds on. No technical background required.
+2. **The AI Equity Audit** — Built into The Launchpad. A short structured assessment that scores a district across five categories (Fluency, Strategy, Action, Governance, Capacity) and routes the leader to the course that closes their largest gap.
+3. **Fluency / Strategy / Action track** — Determined by audit results. Each track ends in a usable artifact for the leader's district.
+
+## What the AI Equity Audit measures
+
+The audit is a structured self-assessment scored across five categories. Each category surfaces a different aspect of district readiness:
+
+- **Fluency** — How confidently leaders, teachers, and staff can use AI tools in their daily work.
+- **Strategy** — Whether the district has a written, board-aligned AI strategy that connects to instructional and operational goals.
+- **Action** — Whether AI use cases are moving from conversation into structured pilots with measurable outcomes.
+- **Governance** — Whether acceptable-use, data-privacy, and equity policies cover AI specifically (not just generic IT).
+- **Capacity** — Whether the district has the staffing, time, and PD infrastructure to sustain AI work over multiple years.
+
+After completion, the audit produces a per-category score and a single recommended next course.
+
+## Courses
+
+- **The Launchpad** — Orients leaders to the AI landscape and runs them through the AI Equity Audit. Deliverable: a personal readiness profile and a recommended next course.
+- **Command the Tools (Fluency track)** — Hands-on AI fluency for leaders who need to use the tools confidently themselves. Deliverable: a personal AI workflow.
+- **Chart the Course (Strategy track)** — Building a board-ready 3-year AI strategic roadmap aligned to district priorities. Deliverable: a 3-year AI strategic roadmap.
+- **Ship It (Action track)** — Designing and launching structured AI pilots with measurable outcomes. Deliverable: a pilot design document and board communication.
+
+## Format
+
+- Self-paced, four to five hours of focused work per course, broken into short modules.
+- Typical leader finishes a course in two to three weeks at a module every few days.
+- Every course issues a certificate of completion with documented hours.
+- Aligned to ISTE and CoSN AI standards, but built around producing artifacts rather than awareness.
+
+## Frequently asked
+
+- **How is this different from ISTE or CoSN training?** ISTE and CoSN give standards and awareness — this program adds a system that ends each module in a usable artifact built for the leader's specific district.
+- **Can I get PD credit?** Every course issues a certificate with documented hours. Whether those hours count toward state continuing-education requirements depends on the state and district; most leaders submit the certificate through local approval.
+- **Is this only for tech directors?** No. It is built for the full district leadership team — superintendents, principals, curriculum directors, and technology directors. Course resources are role-segmented.
+- **What if I'm new to AI?** Start with The Launchpad. No technical background is required anywhere in the pathway; this is leadership development, not technical training.
 
 ## Pages
 
-- [Home](/): Overview of the program, the three course "doors", and the pathway from Foundations to Action.
-- [Courses](/courses): Catalog of professional development courses for K-12 leaders.
-- [Sign in](/auth): Sign in or create an account.
+- [Home](https://lead-future-forge.lovable.app/): Program overview, the three course doors, and the Foundations → Audit → Track pathway.
+- [Courses](https://lead-future-forge.lovable.app/courses): Course catalog with descriptions, hours, and prerequisites.
+- [Sign in](https://lead-future-forge.lovable.app/auth): Sign in or create an account.

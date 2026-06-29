@@ -152,6 +152,7 @@ const Courses = () => {
         <meta property="og:title" content="Course Catalog — The Leadership Forge" />
         <meta property="og:description" content="Browse AI professional development courses for K-12 leaders." />
         <meta property="og:url" content="https://lead-future-forge.lovable.app/courses" />
+        <meta property="og:image" content="https://lead-future-forge.lovable.app/og-image.jpg" />
         <script type="application/ld+json">{JSON.stringify({
           "@context": "https://schema.org",
           "@type": "CollectionPage",
