@@ -125,6 +125,22 @@ const App = () => (
               }
             />
             <Route
+              path="/admin/resources"
+              element={
+                <AdminProtectedRoute>
+                  <AdminResources />
+                </AdminProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/resources/:id"
+              element={
+                <AdminProtectedRoute>
+                  <AdminResourceEdit />
+                </AdminProtectedRoute>
+              }
+            />
+            <Route
               path="/admin/courses/:courseId/content"
               element={
                 <AdminProtectedRoute>
