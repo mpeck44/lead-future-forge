@@ -28,7 +28,9 @@ interface Course {
   price: number | null;
   estimated_hours: number | null;
   path_type: string | null;
-  tags: string[] | null;
+  audit_category: 'fluency' | 'strategy' | 'action' | 'governance' | 'capacity' | null;
+  role_fit: string[] | null;
+  requires_foundations: boolean;
 }
 
 const Courses = () => {
