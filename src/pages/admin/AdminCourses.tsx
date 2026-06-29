@@ -351,16 +351,17 @@ export default function AdminCourses() {
               <SelectItem value="draft">Draft</SelectItem>
             </SelectContent>
           </Select>
-          {allUniqueTags.length > 0 && (
+          {presentCategories.length > 0 && (
             <Select value={tagFilter} onValueChange={setTagFilter}>
-              <SelectTrigger className="w-[150px]">
-                <SelectValue placeholder="Tag" />
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Audit category" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Tags</SelectItem>
-                {allUniqueTags.map((tag) => (
-                  <SelectItem key={tag} value={tag}>
-                    {tag}
+                <SelectItem value="all">All Categories</SelectItem>
+                <SelectItem value="none">None (foundational)</SelectItem>
+                {presentCategories.map((cat) => (
+                  <SelectItem key={cat} value={cat}>
+                    {AUDIT_CATEGORY_LABELS[cat]}
                   </SelectItem>
                 ))}
               </SelectContent>
