@@ -1,4 +1,4 @@
-import { LayoutDashboard, BookOpen, Users, ClipboardList, ClipboardCheck, ArrowLeft } from 'lucide-react';
+import { LayoutDashboard, BookOpen, Users, ClipboardList, ClipboardCheck, FileText, ArrowLeft } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import { Link } from 'react-router-dom';
 import {
