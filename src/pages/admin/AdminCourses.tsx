@@ -156,8 +156,10 @@ export default function AdminCourses() {
           estimated_hours: values.estimated_hours || null,
           is_published: values.is_published,
           featured: values.featured,
-          tags: values.tags || [],
-        } as any)
+          audit_category: values.audit_category,
+          role_fit: values.role_fit || [],
+          requires_foundations: values.requires_foundations,
+        })
         .eq('id', id)
         .select()
         .single();
