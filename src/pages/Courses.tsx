@@ -28,7 +28,9 @@ interface Course {
   price: number | null;
   estimated_hours: number | null;
   path_type: string | null;
-  tags: string[] | null;
+  audit_category: 'fluency' | 'strategy' | 'action' | 'governance' | 'capacity' | null;
+  role_fit: string[] | null;
+  requires_foundations: boolean;
 }
 
 const Courses = () => {
@@ -45,7 +47,7 @@ const Courses = () => {
       // Fetch published courses
       const { data: coursesData, error: coursesError } = await supabase
         .from('courses')
-        .select('id, title, description, slug, price, estimated_hours, path_type, tags')
+        .select('id, title, description, slug, price, estimated_hours, path_type, audit_category, role_fit, requires_foundations')
         .eq('is_published', true)
         .order('created_at', { ascending: false });
 
@@ -238,15 +240,10 @@ const Courses = () => {
                                   {course.path_type}
                                 </Badge>
                               )}
-                              {(course.tags || []).slice(0, 2).map((tag) => (
-                                <Badge key={tag} variant="outline" className="font-body text-xs">
-                                  {tag}
+                              {course.requires_foundations && (
+                                <Badge variant="outline" className="font-body text-xs">
+                                  Requires Foundations
                                 </Badge>
-                              ))}
-                              {(course.tags || []).length > 2 && (
-                                <span className="text-xs text-muted-foreground self-center">
-                                  +{(course.tags || []).length - 2}
-                                </span>
                               )}
                             </div>
                             <span className="font-display font-bold text-primary">

@@ -21,6 +21,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Select,
   SelectContent,
@@ -28,7 +29,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { TagInput } from '@/components/admin/TagInput';
+import {
+  ROLE_OPTIONS,
+  AUDIT_CATEGORY_OPTIONS,
+  type AuditCategoryValue,
+} from '@/lib/roleOptions';
+
+const NONE = '__none__';
 
 const courseFormSchema = z.object({
   title: z.string().min(1, 'Title is required').max(100, 'Title must be 100 characters or less'),
@@ -39,7 +46,12 @@ const courseFormSchema = z.object({
   estimated_hours: z.coerce.number().min(0, 'Estimated hours must be 0 or greater').optional(),
   is_published: z.boolean().default(false),
   featured: z.boolean().default(false),
-  tags: z.array(z.string()).default([]),
+  audit_category: z
+    .enum(['fluency', 'strategy', 'action', 'governance', 'capacity'])
+    .nullable()
+    .default(null),
+  role_fit: z.array(z.string()).default([]),
+  requires_foundations: z.boolean().default(true),
 });
 
 export type CourseFormValues = z.infer<typeof courseFormSchema>;
@@ -70,6 +82,20 @@ function generateSlug(title: string): string {
     .trim();
 }
 
+const FORM_DEFAULTS: CourseFormValues = {
+  title: '',
+  slug: '',
+  description: '',
+  price: 0,
+  path_type: '',
+  estimated_hours: 0,
+  is_published: false,
+  featured: false,
+  audit_category: null,
+  role_fit: [],
+  requires_foundations: true,
+};
+
 export function CourseFormDialog({
   open,
   onOpenChange,
@@ -80,35 +106,13 @@ export function CourseFormDialog({
 }: CourseFormDialogProps) {
   const form = useForm<CourseFormValues>({
     resolver: zodResolver(courseFormSchema),
-    defaultValues: {
-      title: '',
-      slug: '',
-      description: '',
-      price: 0,
-      path_type: '',
-      estimated_hours: 0,
-      is_published: false,
-      featured: false,
-      tags: [],
-      ...defaultValues,
-    },
+    defaultValues: { ...FORM_DEFAULTS, ...defaultValues },
   });
 
   // Reset form when dialog opens with new default values
   useEffect(() => {
     if (open) {
-      form.reset({
-        title: '',
-        slug: '',
-        description: '',
-        price: 0,
-        path_type: '',
-        estimated_hours: 0,
-        is_published: false,
-        featured: false,
-        tags: [],
-        ...defaultValues,
-      });
+      form.reset({ ...FORM_DEFAULTS, ...defaultValues });
     }
   }, [open, defaultValues, form]);
 
@@ -120,6 +124,14 @@ export function CourseFormDialog({
       form.setValue('slug', newSlug, { shouldValidate: true });
     }
   }, [watchTitle, isEditing, form]);
+
+  // When audit_category is cleared, the course is foundational — no prerequisite makes sense.
+  const watchCategory = form.watch('audit_category');
+  useEffect(() => {
+    if (watchCategory === null) {
+      form.setValue('requires_foundations', false);
+    }
+  }, [watchCategory, form]);
 
   const handleSubmit = async (values: CourseFormValues) => {
     await onSubmit(values);
@@ -244,17 +256,93 @@ export function CourseFormDialog({
 
             <FormField
               control={form.control}
-              name="tags"
+              name="audit_category"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Tags</FormLabel>
-                  <FormControl>
-                    <TagInput value={field.value} onChange={field.onChange} />
-                  </FormControl>
+                  <FormLabel>Audit Category</FormLabel>
+                  <Select
+                    onValueChange={(v) =>
+                      field.onChange(v === NONE ? null : (v as AuditCategoryValue))
+                    }
+                    value={field.value ?? NONE}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value={NONE}>None — foundational course</SelectItem>
+                      {AUDIT_CATEGORY_OPTIONS.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <FormDescription>
-                    Add tags like "AI Literacy", "Beginner", "ISTE Aligned". Press Enter or comma to add.
+                    The single audit gap this course closes. Drives recommendations from the AI Equity Audit.
                   </FormDescription>
                   <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="role_fit"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Role Fit</FormLabel>
+                  <div className="grid grid-cols-2 gap-2 rounded-lg border p-3">
+                    {ROLE_OPTIONS.map((option) => {
+                      const checked = field.value.includes(option.value);
+                      return (
+                        <label
+                          key={option.value}
+                          className="flex items-center gap-2 text-sm cursor-pointer"
+                        >
+                          <Checkbox
+                            checked={checked}
+                            onCheckedChange={(c) => {
+                              if (c) {
+                                field.onChange([...field.value, option.value]);
+                              } else {
+                                field.onChange(field.value.filter((v) => v !== option.value));
+                              }
+                            }}
+                          />
+                          {option.label}
+                        </label>
+                      );
+                    })}
+                  </div>
+                  <FormDescription>
+                    Which roles this course is built for. Leave empty if it fits everyone.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="requires_foundations"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                  <div className="space-y-0.5">
+                    <FormLabel>Requires Foundations</FormLabel>
+                    <FormDescription>
+                      Learners should complete The Launchpad before this course.
+                    </FormDescription>
+                  </div>
+                  <FormControl>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                      disabled={watchCategory === null}
+                    />
+                  </FormControl>
                 </FormItem>
               )}
             />

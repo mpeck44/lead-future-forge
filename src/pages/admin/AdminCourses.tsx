@@ -33,6 +33,8 @@ import { Plus, Search, MoreHorizontal, Pencil, Copy, Trash2, ExternalLink, FileT
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
+type AuditCategory = 'fluency' | 'strategy' | 'action' | 'governance' | 'capacity';
+
 interface CourseWithCounts {
   id: string;
   title: string;
@@ -44,10 +46,20 @@ interface CourseWithCounts {
   is_published: boolean | null;
   featured: boolean | null;
   created_at: string | null;
-  tags: string[] | null;
+  audit_category: AuditCategory | null;
+  role_fit: string[] | null;
+  requires_foundations: boolean;
   module_count: number;
   enrollment_count: number;
 }
+
+const AUDIT_CATEGORY_LABELS: Record<AuditCategory, string> = {
+  fluency: 'Fluency',
+  strategy: 'Strategy',
+  action: 'Action',
+  governance: 'Governance',
+  capacity: 'Capacity',
+};
 
 export default function AdminCourses() {
   const queryClient = useQueryClient();
@@ -110,8 +122,10 @@ export default function AdminCourses() {
           estimated_hours: values.estimated_hours || null,
           is_published: values.is_published,
           featured: values.featured,
-          tags: values.tags || [],
-        } as any)
+          audit_category: values.audit_category,
+          role_fit: values.role_fit || [],
+          requires_foundations: values.requires_foundations,
+        })
         .select()
         .single();
 
@@ -142,8 +156,10 @@ export default function AdminCourses() {
           estimated_hours: values.estimated_hours || null,
           is_published: values.is_published,
           featured: values.featured,
-          tags: values.tags || [],
-        } as any)
+          audit_category: values.audit_category,
+          role_fit: values.role_fit || [],
+          requires_foundations: values.requires_foundations,
+        })
         .eq('id', id)
         .select()
         .single();
@@ -269,15 +285,15 @@ export default function AdminCourses() {
       statusFilter === 'all' ||
       (statusFilter === 'published' && course.is_published) ||
       (statusFilter === 'draft' && !course.is_published);
-    const matchesTag =
+    const matchesCategory =
       tagFilter === 'all' ||
-      (course.tags || []).some((t) => t === tagFilter);
-    return matchesSearch && matchesStatus && matchesTag;
+      (tagFilter === 'none' ? course.audit_category === null : course.audit_category === tagFilter);
+    return matchesSearch && matchesStatus && matchesCategory;
   });
 
-  // Collect all unique tags for the filter dropdown
-  const allUniqueTags = Array.from(
-    new Set((courses || []).flatMap((c) => c.tags || []))
+  // Collect categories present for the filter dropdown
+  const presentCategories = Array.from(
+    new Set((courses || []).map((c) => c.audit_category).filter((v): v is AuditCategory => !!v))
   ).sort();
 
   const formatPrice = (priceInCents: number | null) => {
@@ -335,16 +351,17 @@ export default function AdminCourses() {
               <SelectItem value="draft">Draft</SelectItem>
             </SelectContent>
           </Select>
-          {allUniqueTags.length > 0 && (
+          {presentCategories.length > 0 && (
             <Select value={tagFilter} onValueChange={setTagFilter}>
-              <SelectTrigger className="w-[150px]">
-                <SelectValue placeholder="Tag" />
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Audit category" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Tags</SelectItem>
-                {allUniqueTags.map((tag) => (
-                  <SelectItem key={tag} value={tag}>
-                    {tag}
+                <SelectItem value="all">All Categories</SelectItem>
+                <SelectItem value="none">None (foundational)</SelectItem>
+                {presentCategories.map((cat) => (
+                  <SelectItem key={cat} value={cat}>
+                    {AUDIT_CATEGORY_LABELS[cat]}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -382,18 +399,23 @@ export default function AdminCourses() {
                       <div>
                         <div className="font-medium">{course.title}</div>
                         <div className="text-sm text-muted-foreground">/courses/{course.slug}</div>
-                        {(course.tags || []).length > 0 && (
+                        {(course.audit_category || (course.role_fit && course.role_fit.length > 0) || course.requires_foundations) && (
                           <div className="flex flex-wrap gap-1 mt-1">
-                            {(course.tags || []).slice(0, 3).map((tag) => (
-                              <Badge key={tag} variant="outline" className="text-[10px] px-1.5 py-0">
-                                {tag}
+                            {course.audit_category && (
+                              <Badge variant="outline" className="text-[10px] px-1.5 py-0">
+                                {AUDIT_CATEGORY_LABELS[course.audit_category]}
+                              </Badge>
+                            )}
+                            {course.requires_foundations && (
+                              <Badge variant="outline" className="text-[10px] px-1.5 py-0">
+                                Requires Foundations
+                              </Badge>
+                            )}
+                            {(course.role_fit || []).slice(0, 2).map((r) => (
+                              <Badge key={r} variant="outline" className="text-[10px] px-1.5 py-0 capitalize">
+                                {r.replace(/_/g, ' ')}
                               </Badge>
                             ))}
-                            {(course.tags || []).length > 3 && (
-                              <span className="text-[10px] text-muted-foreground">
-                                +{(course.tags || []).length - 3} more
-                              </span>
-                            )}
                           </div>
                         )}
                       </div>
@@ -492,7 +514,9 @@ export default function AdminCourses() {
                 estimated_hours: editingCourse.estimated_hours || 0,
                 is_published: editingCourse.is_published || false,
                 featured: editingCourse.featured || false,
-                tags: (editingCourse as any).tags || [],
+                audit_category: editingCourse.audit_category,
+                role_fit: editingCourse.role_fit || [],
+                requires_foundations: editingCourse.requires_foundations,
               }
             : undefined
         }

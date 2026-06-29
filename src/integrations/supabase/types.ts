@@ -81,6 +81,9 @@ export type Database = {
       }
       courses: {
         Row: {
+          audit_category:
+            | Database["public"]["Enums"]["app_audit_category"]
+            | null
           created_at: string | null
           description: string | null
           estimated_hours: number | null
@@ -89,12 +92,16 @@ export type Database = {
           is_published: boolean | null
           path_type: string | null
           price: number | null
+          requires_foundations: boolean
+          role_fit: string[]
           slug: string
-          tags: string[] | null
           title: string
           updated_at: string | null
         }
         Insert: {
+          audit_category?:
+            | Database["public"]["Enums"]["app_audit_category"]
+            | null
           created_at?: string | null
           description?: string | null
           estimated_hours?: number | null
@@ -103,12 +110,16 @@ export type Database = {
           is_published?: boolean | null
           path_type?: string | null
           price?: number | null
+          requires_foundations?: boolean
+          role_fit?: string[]
           slug: string
-          tags?: string[] | null
           title: string
           updated_at?: string | null
         }
         Update: {
+          audit_category?:
+            | Database["public"]["Enums"]["app_audit_category"]
+            | null
           created_at?: string | null
           description?: string | null
           estimated_hours?: number | null
@@ -117,8 +128,9 @@ export type Database = {
           is_published?: boolean | null
           path_type?: string | null
           price?: number | null
+          requires_foundations?: boolean
+          role_fit?: string[]
           slug?: string
-          tags?: string[] | null
           title?: string
           updated_at?: string | null
         }
@@ -665,6 +677,12 @@ export type Database = {
       }
     }
     Enums: {
+      app_audit_category:
+        | "fluency"
+        | "strategy"
+        | "action"
+        | "governance"
+        | "capacity"
       app_role: "admin" | "instructor" | "student"
     }
     CompositeTypes: {
@@ -793,6 +811,13 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      app_audit_category: [
+        "fluency",
+        "strategy",
+        "action",
+        "governance",
+        "capacity",
+      ],
       app_role: ["admin", "instructor", "student"],
     },
   },

@@ -1,49 +1,54 @@
-## Rebuild the Artifacts section to match the mockup
+# Replace course tags with structured fields
 
-Rewrite `src/components/landing/DeliverablesSection.tsx` so the section matches the attached mockup. The current version (4 identical white cards) gets replaced with a 3-part layout: a hero "Featured deliverable" card on the left, a clean stacked list of supporting deliverables on the right, and a full-width dark testimonial below. The stray "Photo / browse files" placeholder visible in the screenshot is a mockup artifact and will not exist in the built version.
+## Why
 
-### Layout
+The new journey is deterministic: everyone takes **Foundations** first, the **audit** identifies the lowest of five categories, and that points to the next course. Free-form `tags` (e.g. "Beginner", "AI Literacy", "ISTE Aligned") fight that model — they imply browsing/filtering that no longer exists, and they hide the real routing signal (audit category) in unstructured strings. Tags are also currently empty on every course, so this is a low-risk moment to fix it.
 
-```text
-┌─ eyebrow + headline + subhead (left-aligned, max ~640px) ──┐
-│                                                            │
-├──────────────────────────────────┬─────────────────────────┤
-│ FEATURED DELIVERABLE             │ ▣ AI Governance Framework
-│ 3-Year AI Strategic Roadmap      │   Customized to your…   │
-│                       [Board-ready] ─────────────────────── │
-│  Y1 ████████████░░░  Foundations │ ▣ Pilot Program Design  │
-│  Y2 ████████░░░░░░░  Scaled      │   Scoped, staffed…      │
-│  Y3 █████░░░░░░░░░░  District    │ ───────────────────────  │
-│  ──                              │ ▣ Stakeholder Comms     │
-│  Sequenced, defensible, and yours│   Board, parents, staff…│
-├──────────────────────────────────┴─────────────────────────┤
-│  ░ dark navy band                                           │
-│  "I walked into my board meeting with a roadmap            │
-│   instead of a shrug. That's the difference."              │
-│  Dr. Maria Ellison — Superintendent, suburban district     │
-└────────────────────────────────────────────────────────────┘
-```
+Three typed fields replace tags entirely:
 
-- Two-column grid `lg:grid-cols-[1.05fr_1fr]` with `gap-10`; stacks on mobile.
-- Featured card: white surface, `rounded-xl`, soft shadow, `p-7`. Top row = gold uppercase eyebrow "FEATURED DELIVERABLE" + display headline; right side a small gold pill "Board-ready". Body = three rows (Y1/Y2/Y3) each rendered as `grid-cols-[auto_1fr_auto]` with gold display year label, slim progress bar (gold fill on `bg-foreground/10`, widths 78%/58%/38%), and a muted right-side caption ("Foundations & policy", "Scaled pilots", "District-wide"). A `border-t border-foreground/10` then a muted footer line.
-- Right column: three deliverable rows separated by `border-b border-foreground/10`. Each row = `grid-cols-[auto_1fr]` with a small navy square icon tile (`bg-deep-navy text-gold rounded-md w-10 h-10`) holding a Lucide icon, plus title (`font-display`) and muted body. Icons: `ShieldCheck`, `FlaskConical`, `MessageSquareQuote`.
-- Testimonial band: full-width inside the container, `bg-deep-navy text-background rounded-xl px-10 py-9 mt-12`. Italic Playfair quote, then `Dr. Maria Ellison` in gold + muted role line. No avatar/photo element.
+1. **`audit_category`** — the single audit gap this course closes (`fluency` | `strategy` | `action` | `governance` | `capacity`). Becomes the bridge between audit results and the catalog.
+2. **`role_fit[]`** — which K-12 roles the course is built for (superintendent, principal, director_of_tech, teacher_leader, etc.). The one dimension the pathway can't encode; profile already knows the user's role.
+3. **`requires_foundations`** — boolean gate that replaces the implicit "Beginner" tag with a real prerequisite. Foundations itself is `false`; everything else defaults `true`.
 
-### Content
+## What changes
 
-- Eyebrow: `What you'll walk away with`
-- Headline: `You don't finish with notes. You finish with` *artifacts.* (italic gold last word)
-- Subhead: `Every module produces something you can put in front of your board, your cabinet, or your staff — this week.`
-- Featured: title `3-Year AI Strategic Roadmap`, pill `Board-ready`, footer `Sequenced, defensible, and yours — generated from your district's real policies, people, and risk tolerance.`
-- Right list:
-  - `AI Governance Framework` — `Customized to your district's policies, people, and risk tolerance.`
-  - `Pilot Program Design` — `Scoped, staffed, and measured — success metrics defined before you start.`
-  - `Stakeholder Comms Templates` — `Board, parents, staff — the messages ready before the questions come.`
-- Quote: `"I walked into my board meeting with a roadmap instead of a shrug. That's the difference."` — `Dr. Maria Ellison` — `Superintendent, suburban district (4,800 students)`
+### Database (one migration)
+
+- Add `app_audit_category` enum (`fluency`, `strategy`, `action`, `governance`, `capacity`).
+- Add to `public.courses`:
+  - `audit_category app_audit_category` (nullable — Foundations has none)
+  - `role_fit text[] NOT NULL DEFAULT '{}'`
+  - `requires_foundations boolean NOT NULL DEFAULT true`
+- Drop `tags text[]` from `public.courses` (currently empty on all 4 rows, so no data loss).
+- Backfill the four existing courses:
+  - `foundations` → category `NULL`, `requires_foundations=false`
+  - `fluency` → category `fluency`
+  - `strategy` → category `strategy`
+  - `action` → category `action`
+- Rewrite `public.get_audit_summary` so `recommended_course` is selected from `courses` by `audit_category = ranked.category` (preferring `is_published=true`, tiebreak by `created_at`) instead of the hardcoded `CASE` mapping. Governance still falls through to the strategy course and capacity to the action course **until** dedicated courses exist with those categories — implemented as a `COALESCE` chain in SQL, not hardcoded slugs.
+
+### Code
+
+- **`src/components/admin/CourseFormDialog.tsx`** — remove the `tags` field + `TagInput`. Add:
+  - `audit_category` Select (5 enum options + "None — foundational course")
+  - `role_fit` multi-select (checkbox group using the same K-12 roles already defined for profiles)
+  - `requires_foundations` Switch (defaults on; auto-off only when `audit_category` is null, with a helper line explaining the link)
+  - Zod schema updated; `path_type` options unchanged.
+- **`src/components/admin/TagInput.tsx`** — delete (no other callers; verified by codebase search).
+- **`src/lib/auditQuestions.ts`** — no change; the category enum already matches.
+- **Audit result page** (wherever `get_audit_summary` is consumed) — no API change, the function still returns `recommended_course`. Verify it still renders.
+- **`src/pages/Courses.tsx` / catalog cards** — if any chip currently renders `course.tags`, swap to a small "For: Superintendents, Principals" line from `role_fit` and a "Prerequisite: Foundations" pill when `requires_foundations` is true. (Will confirm exact spots during build.)
 
 ### Out of scope
 
-- No new tokens, fonts, or assets.
-- No changes to other landing sections or Index ordering.
-- No photo/avatar element on the testimonial.
-- No backend, data, or routing changes.
+- No UI for users to filter by category/role — the journey is deterministic, not browse-driven.
+- No changes to `path_type`, pricing, modules, lessons, enrollments, or RLS.
+- No new tokens, fonts, or visual redesign.
+- No migration of historical tag values (none exist).
+
+## Technical notes
+
+- Enum vs text: an enum gives the admin form a closed set, prevents typos in the routing query, and matches the existing `audit_responses.category` CHECK constraint values exactly.
+- `role_fit` stays `text[]` rather than an enum so adding a new role later doesn't require a migration; values are validated client-side against the same role list used in `profiles`.
+- The rewritten `get_audit_summary` keeps its `SECURITY DEFINER` and `auth.uid()` ownership check unchanged.
+- After the migration runs, `src/integrations/supabase/types.ts` regenerates automatically; the form and any tag readers must be updated in the same build step to keep the app compiling.
