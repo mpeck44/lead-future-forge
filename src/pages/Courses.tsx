@@ -340,7 +340,7 @@ const Courses = () => {
                                   asChild 
                                   className="flex-1 font-body"
                                 >
-                                  <Link to={`/course/${course.slug}`}>
+                                  <Link to={`/courses/${course.slug}`}>
                                     Learn More
                                   </Link>
                                 </Button>

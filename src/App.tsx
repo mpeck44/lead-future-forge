@@ -12,6 +12,7 @@ import Dashboard from "./pages/Dashboard";
 import MyCourses from "./pages/MyCourses";
 import Portfolio from "./pages/Portfolio";
 import Courses from "./pages/Courses";
+import PublicCourse from "./pages/PublicCourse";
 import Profile from "./pages/Profile";
 import CourseViewer from "./pages/CourseViewer";
 import NotFound from "./pages/NotFound";
@@ -34,6 +35,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/courses" element={<Courses />} />
+            <Route path="/courses/:slug" element={<PublicCourse />} />
             <Route path="/auth" element={<Auth />} />
             <Route
               path="/dashboard"

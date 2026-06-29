@@ -78,10 +78,13 @@ function buildXml(entries: SitemapEntry[]): string {
 
 (async () => {
   const slugs = await fetchPublishedCourseSlugs();
-  // Course detail pages are auth-gated; we don't emit /course/:slug for crawlers.
-  // Course slugs are still surfaced through /courses (CollectionPage ItemList JSON-LD).
-  void slugs;
-  const xml = buildXml(staticEntries);
+  const courseEntries: SitemapEntry[] = slugs.map((slug) => ({
+    path: `/courses/${slug}`,
+    changefreq: "monthly",
+    priority: "0.8",
+  }));
+  const entries = [...staticEntries, ...courseEntries];
+  const xml = buildXml(entries);
   writeFileSync(resolve("public/sitemap.xml"), xml);
-  console.log(`sitemap.xml written (${staticEntries.length} entries)`);
+  console.log(`sitemap.xml written (${entries.length} entries)`);
 })();
