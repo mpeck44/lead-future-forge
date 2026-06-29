@@ -1,54 +1,52 @@
-# Replace course tags with structured fields
+## Audit Insights in the Admin Console
 
-## Why
+Give you a single place to see who has completed the AI Equity Audit, what they scored, and where the aggregate gaps are across the platform.
 
-The new journey is deterministic: everyone takes **Foundations** first, the **audit** identifies the lowest of five categories, and that points to the next course. Free-form `tags` (e.g. "Beginner", "AI Literacy", "ISTE Aligned") fight that model — they imply browsing/filtering that no longer exists, and they hide the real routing signal (audit category) in unstructured strings. Tags are also currently empty on every course, so this is a low-risk moment to fix it.
+### New admin page: `/admin/audits`
 
-Three typed fields replace tags entirely:
+Linked from the Admin Console nav alongside Courses, Users, etc.
 
-1. **`audit_category`** — the single audit gap this course closes (`fluency` | `strategy` | `action` | `governance` | `capacity`). Becomes the bridge between audit results and the catalog.
-2. **`role_fit[]`** — which K-12 roles the course is built for (superintendent, principal, director_of_tech, teacher_leader, etc.). The one dimension the pathway can't encode; profile already knows the user's role.
-3. **`requires_foundations`** — boolean gate that replaces the implicit "Beginner" tag with a real prerequisite. Foundations itself is `false`; everything else defaults `true`.
+**Top — Summary cards**
+- Total attempts (completed vs. in-progress)
+- Unique users who have taken the audit
+- Average score per category (fluency, strategy, action, governance, capacity)
+- Most common "lowest category" (i.e. where most people need to go next)
 
-## What changes
+**Middle — Category breakdown**
+A simple bar chart of average score per category so you can see at a glance where the cohort is strongest/weakest.
 
-### Database (one migration)
+**Bottom — Attempts table**
+One row per attempt with:
+- Name / email / role / district (from `profiles`)
+- Completed date
+- Score per category (5 small cells)
+- Lowest category + recommended course
+- Row click → detail drawer showing every individual question response and score
 
-- Add `app_audit_category` enum (`fluency`, `strategy`, `action`, `governance`, `capacity`).
-- Add to `public.courses`:
-  - `audit_category app_audit_category` (nullable — Foundations has none)
-  - `role_fit text[] NOT NULL DEFAULT '{}'`
-  - `requires_foundations boolean NOT NULL DEFAULT true`
-- Drop `tags text[]` from `public.courses` (currently empty on all 4 rows, so no data loss).
-- Backfill the four existing courses:
-  - `foundations` → category `NULL`, `requires_foundations=false`
-  - `fluency` → category `fluency`
-  - `strategy` → category `strategy`
-  - `action` → category `action`
-- Rewrite `public.get_audit_summary` so `recommended_course` is selected from `courses` by `audit_category = ranked.category` (preferring `is_published=true`, tiebreak by `created_at`) instead of the hardcoded `CASE` mapping. Governance still falls through to the strategy course and capacity to the action course **until** dedicated courses exist with those categories — implemented as a `COALESCE` chain in SQL, not hardcoded slugs.
+Filters: completed-only toggle, date range, role, district search.
+Export: "Download CSV" of the current filtered view.
 
-### Code
+### How access is secured
 
-- **`src/components/admin/CourseFormDialog.tsx`** — remove the `tags` field + `TagInput`. Add:
-  - `audit_category` Select (5 enum options + "None — foundational course")
-  - `role_fit` multi-select (checkbox group using the same K-12 roles already defined for profiles)
-  - `requires_foundations` Switch (defaults on; auto-off only when `audit_category` is null, with a helper line explaining the link)
-  - Zod schema updated; `path_type` options unchanged.
-- **`src/components/admin/TagInput.tsx`** — delete (no other callers; verified by codebase search).
-- **`src/lib/auditQuestions.ts`** — no change; the category enum already matches.
-- **Audit result page** (wherever `get_audit_summary` is consumed) — no API change, the function still returns `recommended_course`. Verify it still renders.
-- **`src/pages/Courses.tsx` / catalog cards** — if any chip currently renders `course.tags`, swap to a small "For: Superintendents, Principals" line from `role_fit` and a "Prerequisite: Foundations" pill when `requires_foundations` is true. (Will confirm exact spots during build.)
+- New page wrapped in the existing `AdminProtectedRoute` (admin role required).
+- Backend access via a new `SECURITY DEFINER` RPC `get_audit_attempts_admin()` that:
+  - Checks `has_role(auth.uid(), 'admin')` and returns empty otherwise.
+  - Joins `audit_attempts` + `audit_responses` + `profiles` and returns aggregated per-attempt rows plus per-category averages.
+- A second RPC `get_audit_attempt_detail_admin(_attempt_id)` returns the per-question responses for the drawer, with the same admin check.
+- No new direct table policies needed — admins read exclusively through these RPCs, so learner-facing RLS on `audit_attempts` / `audit_responses` stays untouched.
 
-### Out of scope
+### Technical notes
 
-- No UI for users to filter by category/role — the journey is deterministic, not browse-driven.
-- No changes to `path_type`, pricing, modules, lessons, enrollments, or RLS.
-- No new tokens, fonts, or visual redesign.
-- No migration of historical tag values (none exist).
+- Files added:
+  - `src/pages/admin/AdminAudits.tsx` (page + table + filters + CSV export)
+  - `src/components/admin/AuditAttemptDetailDrawer.tsx`
+  - `src/components/admin/AuditCategoryChart.tsx` (uses existing `recharts`)
+- Route registered in `App.tsx`; nav entry added to the admin sidebar/header.
+- Migration adds the two RPCs only — no schema changes to existing tables.
+- CSV export is client-side from the already-loaded rows (no extra endpoint).
 
-## Technical notes
+### Out of scope (can add later)
+- Emailing/notifying you when a new audit is completed.
+- Cohort comparisons across time periods or per-district dashboards.
 
-- Enum vs text: an enum gives the admin form a closed set, prevents typos in the routing query, and matches the existing `audit_responses.category` CHECK constraint values exactly.
-- `role_fit` stays `text[]` rather than an enum so adding a new role later doesn't require a migration; values are validated client-side against the same role list used in `profiles`.
-- The rewritten `get_audit_summary` keeps its `SECURITY DEFINER` and `auth.uid()` ownership check unchanged.
-- After the migration runs, `src/integrations/supabase/types.ts` regenerates automatically; the form and any tag readers must be updated in the same build step to keep the app compiling.
+Want me to build this as described, or adjust the columns/filters first?
