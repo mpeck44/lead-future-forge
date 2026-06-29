@@ -508,6 +508,54 @@ export type Database = {
           },
         ]
       }
+      resources: {
+        Row: {
+          author_name: string
+          body_html: string
+          category: Database["public"]["Enums"]["app_resource_category"]
+          cover_image_url: string | null
+          created_at: string
+          dek: string
+          id: string
+          published_at: string | null
+          read_time_min: number | null
+          slug: string
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          author_name?: string
+          body_html?: string
+          category?: Database["public"]["Enums"]["app_resource_category"]
+          cover_image_url?: string | null
+          created_at?: string
+          dek?: string
+          id?: string
+          published_at?: string | null
+          read_time_min?: number | null
+          slug: string
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          author_name?: string
+          body_html?: string
+          category?: Database["public"]["Enums"]["app_resource_category"]
+          cover_image_url?: string | null
+          created_at?: string
+          dek?: string
+          id?: string
+          published_at?: string | null
+          read_time_min?: number | null
+          slug?: string
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       routing_events: {
         Row: {
           course_key: string | null
@@ -715,6 +763,11 @@ export type Database = {
         | "action"
         | "governance"
         | "capacity"
+      app_resource_category:
+        | "governance"
+        | "strategy"
+        | "classroom"
+        | "leadership"
       app_role: "admin" | "instructor" | "student"
     }
     CompositeTypes: {
@@ -849,6 +902,12 @@ export const Constants = {
         "action",
         "governance",
         "capacity",
+      ],
+      app_resource_category: [
+        "governance",
+        "strategy",
+        "classroom",
+        "leadership",
       ],
       app_role: ["admin", "instructor", "student"],
     },
