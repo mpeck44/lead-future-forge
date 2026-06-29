@@ -648,6 +648,38 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_audit_attempt_detail_admin: {
+        Args: { _attempt_id: string }
+        Returns: {
+          category: string
+          created_at: string
+          item_key: string
+          response_id: string
+          score: number
+        }[]
+      }
+      get_audit_attempts_admin: {
+        Args: never
+        Returns: {
+          action_avg: number
+          attempt_id: string
+          attempt_number: number
+          capacity_avg: number
+          completed_at: string
+          district_name: string
+          email: string
+          fluency_avg: number
+          full_name: string
+          governance_avg: number
+          lowest_category: string
+          recommended_course: string
+          response_count: number
+          role: string
+          started_at: string
+          strategy_avg: number
+          user_id: string
+        }[]
+      }
       get_audit_summary: {
         Args: { _attempt_id: string }
         Returns: {
