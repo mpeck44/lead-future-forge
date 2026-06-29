@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Helmet } from "react-helmet-async";
 import Header from "@/components/Header";
 import HeroV2 from "@/components/landing/HeroV2";
 import ProblemV2 from "@/components/landing/ProblemV2";
