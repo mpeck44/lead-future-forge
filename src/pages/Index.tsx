@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Helmet } from "react-helmet-async";
 import Header from "@/components/Header";
 import HeroV2 from "@/components/landing/HeroV2";
 import ProblemV2 from "@/components/landing/ProblemV2";
@@ -25,6 +26,14 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <Helmet>
+        <title>The Leadership Forge — AI PD for K-12 Leaders</title>
+        <meta name="description" content="Practical AI professional development for K-12 leaders. Build tools, frameworks, and a 3-year roadmap you can use in your district." />
+        <link rel="canonical" href="https://lead-future-forge.lovable.app/" />
+        <meta property="og:title" content="The Leadership Forge — AI PD for K-12 Leaders" />
+        <meta property="og:description" content="Practical AI professional development for K-12 leaders. Build tools, frameworks, and a 3-year roadmap you can use in your district." />
+        <meta property="og:url" content="https://lead-future-forge.lovable.app/" />
+      </Helmet>
       <Header />
       <main id="main">
         <HeroV2 onWaitlist={() => openWaitlist("hero")} />

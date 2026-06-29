@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import Header from '@/components/Header';
@@ -144,6 +145,30 @@ const Courses = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <Helmet>
+        <title>Course Catalog — The Leadership Forge</title>
+        <meta name="description" content="Browse AI professional development courses for K-12 leaders: Foundations, Fluency, Strategy, and Action tracks." />
+        <link rel="canonical" href="https://lead-future-forge.lovable.app/courses" />
+        <meta property="og:title" content="Course Catalog — The Leadership Forge" />
+        <meta property="og:description" content="Browse AI professional development courses for K-12 leaders." />
+        <meta property="og:url" content="https://lead-future-forge.lovable.app/courses" />
+        <script type="application/ld+json">{JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "CollectionPage",
+          "name": "Course Catalog",
+          "url": "https://lead-future-forge.lovable.app/courses",
+          "isPartOf": { "@type": "WebSite", "name": "The Leadership Forge", "url": "https://lead-future-forge.lovable.app/" },
+          "mainEntity": {
+            "@type": "ItemList",
+            "itemListElement": courses.map((c, i) => ({
+              "@type": "ListItem",
+              "position": i + 1,
+              "name": c.title,
+              "url": `https://lead-future-forge.lovable.app/course/${c.slug}`
+            }))
+          }
+        })}</script>
+      </Helmet>
       <Header />
       <main className="pt-20 lg:pt-24">
         {/* Hero Section */}

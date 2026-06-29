@@ -1,0 +1,11 @@
+# The Leadership Forge
+
+> Practical AI professional development for K-12 leaders navigating AI transformation. Built by a practicing K-12 Director of Technology.
+
+The Leadership Forge helps district leaders build the tools, frameworks, and 3-year roadmap they need to lead AI adoption — without academic theory or vendor pitches. Courses ladder from AI Foundations through an Equity Audit into Fluency, Strategy, and Action tracks.
+
+## Pages
+
+- [Home](/): Overview of the program, the three course "doors", and the pathway from Foundations to Action.
+- [Courses](/courses): Catalog of professional development courses for K-12 leaders.
+- [Sign in](/auth): Sign in or create an account.
