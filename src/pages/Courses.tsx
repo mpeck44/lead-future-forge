@@ -240,15 +240,10 @@ const Courses = () => {
                                   {course.path_type}
                                 </Badge>
                               )}
-                              {(course.tags || []).slice(0, 2).map((tag) => (
-                                <Badge key={tag} variant="outline" className="font-body text-xs">
-                                  {tag}
+                              {course.requires_foundations && (
+                                <Badge variant="outline" className="font-body text-xs">
+                                  Requires Foundations
                                 </Badge>
-                              ))}
-                              {(course.tags || []).length > 2 && (
-                                <span className="text-xs text-muted-foreground self-center">
-                                  +{(course.tags || []).length - 2}
-                                </span>
                               )}
                             </div>
                             <span className="font-display font-bold text-primary">
