@@ -20,6 +20,7 @@ import AdminCourses from "./pages/admin/AdminCourses";
 import AdminCourseContent from "./pages/admin/AdminCourseContent";
 import AdminUsers from "./pages/admin/AdminUsers";
 import AdminWaitlist from "./pages/admin/AdminWaitlist";
+import AdminAudits from "./pages/admin/AdminAudits";
 
 const queryClient = new QueryClient();
 
@@ -104,6 +105,14 @@ const App = () => (
               element={
                 <AdminProtectedRoute>
                   <AdminUsers />
+                </AdminProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/audits"
+              element={
+                <AdminProtectedRoute>
+                  <AdminAudits />
                 </AdminProtectedRoute>
               }
             />
