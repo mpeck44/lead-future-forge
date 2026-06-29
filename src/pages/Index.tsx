@@ -27,11 +27,11 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <Helmet>
-        <title>The Leadership Forge — AI PD for K-12 Leaders</title>
-        <meta name="description" content="Practical AI professional development for K-12 leaders. Build tools, frameworks, and a 3-year roadmap you can use in your district." />
+        <title>K-12 AI Leadership PD — District AI Strategy & Governance | The Leadership Forge</title>
+        <meta name="description" content="K-12 AI leadership PD for superintendents, principals, and district leaders. Build an AI governance framework, district AI strategy, and 3-year roadmap." />
         <link rel="canonical" href="https://lead-future-forge.lovable.app/" />
-        <meta property="og:title" content="The Leadership Forge — AI PD for K-12 Leaders" />
-        <meta property="og:description" content="Practical AI professional development for K-12 leaders. Build tools, frameworks, and a 3-year roadmap you can use in your district." />
+        <meta property="og:title" content="K-12 AI Leadership PD — The Leadership Forge" />
+        <meta property="og:description" content="K-12 AI leadership PD: build a governance framework, district AI strategy, and 3-year roadmap. By a practicing K-12 Director of Technology." />
         <meta property="og:url" content="https://lead-future-forge.lovable.app/" />
         <meta property="og:image" content="https://lead-future-forge.lovable.app/og-image.jpg" />
         <script type="application/ld+json">{JSON.stringify({
