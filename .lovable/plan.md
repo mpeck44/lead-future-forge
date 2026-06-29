@@ -1,74 +1,108 @@
 
-# Public course pages + build-time prerendering
+# Resources Hub + SEO Polish
 
-## Goal
+Three things, sequenced from biggest to smallest. The resources hub is the real build; the other two are quick polish to do alongside.
 
-Get crawler-visible HTML for the marketing surface without leaving the Vite + React SPA. Two pieces:
+---
 
-1. **Public course detail pages** at `/courses/:slug` — separate from the auth-gated `/course/:slug` learner viewer.
-2. **Build-time prerender** that runs the SPA in headless Chromium during `vite build` and writes fully-rendered `index.html` files into `dist/` for every public route. Crawlers receive HTML; users still hydrate into the SPA.
+## 1. Resources hub (the main work)
 
-This is the closest equivalent to SSG available on this stack. True SSR is not available on Lovable hosting.
+A DB-backed blog/resources surface so you can publish repurposed LinkedIn/personal-blog content from inside the admin console, with full SEO treatment.
 
-## Scope of public routes to prerender
+### Public surface
 
-- `/` (already exists)
-- `/courses` (already exists)
-- `/courses/foundations` (new)
-- `/courses/fluency` (new)
-- `/courses/strategy` (new)
-- `/courses/action` (new)
+- **`/resources`** — index page. Hero strip + filter chips by category + grid of post cards (cover image, category, title, dek, published date, read time). Newest first. Filter is client-side query param (`?category=governance`).
+- **`/resources/:slug`** — detail page. Title, byline (Mike Peck), published date, read time, cover image, category chip, sanitized rich-text body, and a "Related posts" rail (3 most recent in same category, excluding current).
+- Both routes are public (no auth), like `/courses/:slug`.
 
-The authenticated viewer stays at `/course/:slug` (singular) — unchanged. Public marketing stays at `/courses/:slug` (plural). No collision.
+### Admin surface
 
-## New public course page — content
+- **`/admin/resources`** — list view: table of posts with status (draft/published), category, published date, last edited; New / Edit / Delete actions.
+- **`/admin/resources/:id`** — editor: reuses the existing `RichTextEditor` (so you get the Google-Docs paste cleanup, image upload to `lesson-images`, headings, lists, etc.). Fields: title, slug (auto from title, editable), category, dek/excerpt, cover image, body, status (draft/published), published_at (defaults to first-publish time).
+- Sidebar link added under existing Admin nav.
 
-Each `/courses/:slug` page renders:
+### SEO surface (per post)
 
-- Hero: course title, one-line promise, "What you'll build" outcome line, CTA to enroll (or join waitlist if signed out).
-- Audience / role fit (from `role_fit`).
-- Module outline: list of module titles with one-line descriptions. No lesson content exposed.
-- FAQ block (3–4 Qs per course).
-- JSON-LD: `Course` schema + `BreadcrumbList`.
-- Per-route `<Helmet>` for title, description, canonical, og:*.
+- `<Helmet>` with title, description (from dek), self-canonical, og:title/description/url/type=article, og:image (cover).
+- JSON-LD: `Article` (headline, author=Mike Peck `Person`, datePublished, dateModified, image) + `BreadcrumbList` (Home → Resources → Post).
+- `/resources` index gets `CollectionPage` + `BreadcrumbList`.
+- Sitemap generator extended to fetch all `published = true` posts and add `/resources/:slug` entries with `lastmod = updated_at`. `/resources` itself added as a static entry.
+- `public/llms.txt` gets a "Resources" section that the generator populates from the DB (titles + URLs + one-line dek).
 
-Data is read at build time via a tiny Node script that queries the public `courses` + `modules` tables with the anon key (RLS already allows public reads of published courses/modules). Pages also re-query at runtime so updates are reflected for live visitors between deploys.
-
-## Prerender mechanism
-
-Use `vite-plugin-prerender` (or the lighter `vite-plugin-prerender-spa`, Puppeteer-based) configured in `vite.config.ts`:
+### Data model
 
 ```text
-build → SPA bundles to dist/ → plugin spins up headless Chromium →
-visits each route on a local static server → writes the rendered
-HTML to dist/<route>/index.html → Lovable hosting serves the static
-HTML; React hydrates on load.
+resources
+  id              uuid PK
+  slug            text unique
+  title           text
+  dek             text          -- short excerpt, used for description meta + card
+  body_html       text          -- sanitized rich-text output
+  cover_image_url text          -- nullable; from lesson-images bucket
+  category        app_resource_category  -- enum
+  status          text          -- 'draft' | 'published'
+  published_at    timestamptz   -- set on first publish
+  read_time_min   int           -- nullable; auto-computed on save
+  author_name     text default 'Mike Peck'
+  created_at, updated_at
 ```
 
-Routes list is generated dynamically: static routes hard-coded, course routes pulled from the DB at build time so new courses auto-prerender.
+Enum `app_resource_category`: `governance`, `strategy`, `classroom`, `leadership`. (Easy to extend later.)
 
-Helmet output is captured into each prerendered file's `<head>`, so per-route title/description/canonical/og:* and JSON-LD ship as static HTML — fixing the social-preview crawler limitation noted in the head-meta guidance.
+RLS:
+- `SELECT` to anon + authenticated where `status = 'published'`.
+- All-access policy for admins via `has_role(auth.uid(), 'admin')`.
+- GRANTs: SELECT to anon + authenticated; ALL to service_role; INSERT/UPDATE/DELETE to authenticated (gated by admin policy).
 
-## Sitemap + llms.txt
+Canonical handling: every post self-canonicals to `/resources/:slug`. (You picked "site is the canonical source.") No `canonical_url` override column — we can add one later if you ever decide to syndicate inbound.
 
-`scripts/generate-sitemap.ts` (already wired to predev/prebuild) gets extended to:
+### Cross-linking
 
-- Pull course slugs from the DB.
-- Emit `/`, `/courses`, and `/courses/:slug` entries with `lastmod`.
-- Append the same course URLs to `public/llms.txt` under a new "Courses" section.
+- Landing page: small "From the Resources" strip (3 most recent published) between Deliverables and Pricing. Optional — flag if you want it skipped on v1.
+- Course public pages (`/courses/:slug`): a "Related reading" block pulling recent posts whose category matches the course's `audit_category` (loose mapping).
 
-## What stays out of scope
+---
 
-- No changes to the authenticated `/course/:slug` viewer or any in-app behavior.
-- No `/resources` content hub yet — easy to add later using the same prerender pipeline.
-- No dynamic-rendering / bot-sniffing fallback. Prerender covers it.
-- No framework migration (Next, Remix, TanStack Start are not supported on Lovable).
+## 2. `EducationalOrganization` schema
 
-## Technical notes
+Add `EducationalOrganization` JSON-LD to `index.html` alongside the existing `Organization` block. Same fields (name, url, logo, sameAs to LinkedIn) plus `description` framing LeaderForge as a K-12 leadership education provider. ~10 lines.
 
-- New files: `src/pages/PublicCourse.tsx`, `src/pages/PublicCourses.tsx` (may reuse existing `Courses.tsx` if it's already public), route entries in `src/App.tsx`.
-- `vite.config.ts`: add prerender plugin, configure routes via an async loader that hits the DB with the anon key.
-- `scripts/generate-sitemap.ts`: add DB-backed course slug loader.
-- Build time will grow by a few seconds per route (headless Chromium navigation). Acceptable for the route count.
-- Prerender uses the published origin `https://lead-future-forge.lovable.app` for canonical/og:url.
-- Caveat to flag to the user: the in-preview dev server still serves the SPA shell directly — prerendered HTML only appears in production builds / the published site. The first published deploy after this change is where the SEO benefit lands.
+---
+
+## 3. Meta description tuning
+
+Targeted rewrite on six pages, working in the keyword set you've been targeting ("K-12 AI leadership", "district AI strategy", "AI governance for schools", "superintendent AI", "school district AI"). Each description ≤160 chars, action-oriented, specific:
+
+- `/` (Index)
+- `/courses` (catalog)
+- `/courses/foundations`
+- `/courses/fluency`
+- `/courses/strategy`
+- `/courses/action`
+
+Also retighten `<title>` on the four course pages to lead with the keyword phrase rather than the course's marketing name (e.g. "K-12 AI Strategy Course — Chart the Course | LeaderForge").
+
+---
+
+## Technical details
+
+- **Migration**: one migration creates the `app_resource_category` enum + `resources` table + GRANTs + RLS policies + `updated_at` trigger. No data backfill.
+- **Read time**: server-side trigger or client-side compute on save (~200 wpm against stripped text). Doing it on save keeps it cheap; recompute on every update.
+- **Sanitization**: reuse the existing DOMPurify wrapper used by lesson rendering (allows YouTube iframes, images, headings, lists, code).
+- **Cover images**: upload through the existing image uploader into the `lesson-images` bucket (already public). Same path conventions.
+- **Sitemap**: extend `scripts/generate-sitemap.ts` to also `SELECT slug, updated_at FROM resources WHERE status = 'published'`. The `predev`/`prebuild` hooks already run it.
+- **`llms.txt`**: convert to a generated file (`scripts/generate-llms.ts`) wired into the same `predev`/`prebuild` hooks, so resource posts get appended automatically. Keeps the manual sections (instructor bio, courses, audit categories) as a template literal in the script.
+- **Routes**: register `/resources`, `/resources/:slug`, `/admin/resources`, `/admin/resources/:id` in `src/App.tsx`. Admin routes wrapped in the existing `AdminProtectedRoute`.
+- **JSON-LD authoring**: posts can carry inline `<script type="application/ld+json">` blocks in body content if needed for FAQs, but the page-level `Article` is auto-generated from row fields.
+- **Caveats from prior context**: SSR isn't available on Lovable, so per-post `og:image` won't be picked up by non-JS social crawlers (LinkedIn/Slack/Facebook) — they'll fall back to the sitewide og:image. Googlebot + Bingbot + LLM crawlers execute JS and will see everything correctly. This is the same limitation we hit on course pages.
+
+---
+
+## What I'm not doing in this plan
+
+- Comments, likes, newsletter signup, RSS feed. (Easy follow-ups if you want them.)
+- Multi-author support. Author is hardcoded to Mike Peck.
+- Scheduled publishing. Status is binary draft/published; `published_at` set when status flips to published.
+- Canonical-URL override field for syndication. You picked self-canonical; we can add the column later in one migration without touching post data.
+
+Want me to also seed 1–2 starter posts (e.g. a hello-world + one repurposed piece you paste in) as part of the build, or leave the table empty and you'll publish from the admin?

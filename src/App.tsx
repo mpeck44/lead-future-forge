@@ -22,6 +22,10 @@ import AdminCourseContent from "./pages/admin/AdminCourseContent";
 import AdminUsers from "./pages/admin/AdminUsers";
 import AdminWaitlist from "./pages/admin/AdminWaitlist";
 import AdminAudits from "./pages/admin/AdminAudits";
+import AdminResources from "./pages/admin/AdminResources";
+import AdminResourceEdit from "./pages/admin/AdminResourceEdit";
+import Resources from "./pages/Resources";
+import ResourceDetail from "./pages/ResourceDetail";
 
 const queryClient = new QueryClient();
 
@@ -36,6 +40,8 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/courses" element={<Courses />} />
             <Route path="/courses/:slug" element={<PublicCourse />} />
+            <Route path="/resources" element={<Resources />} />
+            <Route path="/resources/:slug" element={<ResourceDetail />} />
             <Route path="/auth" element={<Auth />} />
             <Route
               path="/dashboard"
@@ -115,6 +121,22 @@ const App = () => (
               element={
                 <AdminProtectedRoute>
                   <AdminAudits />
+                </AdminProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/resources"
+              element={
+                <AdminProtectedRoute>
+                  <AdminResources />
+                </AdminProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/resources/:id"
+              element={
+                <AdminProtectedRoute>
+                  <AdminResourceEdit />
                 </AdminProtectedRoute>
               }
             />
