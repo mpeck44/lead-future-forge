@@ -285,15 +285,15 @@ export default function AdminCourses() {
       statusFilter === 'all' ||
       (statusFilter === 'published' && course.is_published) ||
       (statusFilter === 'draft' && !course.is_published);
-    const matchesTag =
+    const matchesCategory =
       tagFilter === 'all' ||
-      (course.tags || []).some((t) => t === tagFilter);
-    return matchesSearch && matchesStatus && matchesTag;
+      (tagFilter === 'none' ? course.audit_category === null : course.audit_category === tagFilter);
+    return matchesSearch && matchesStatus && matchesCategory;
   });
 
-  // Collect all unique tags for the filter dropdown
-  const allUniqueTags = Array.from(
-    new Set((courses || []).flatMap((c) => c.tags || []))
+  // Collect categories present for the filter dropdown
+  const presentCategories = Array.from(
+    new Set((courses || []).map((c) => c.audit_category).filter((v): v is AuditCategory => !!v))
   ).sort();
 
   const formatPrice = (priceInCents: number | null) => {
