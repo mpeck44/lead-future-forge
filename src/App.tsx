@@ -22,6 +22,10 @@ import AdminCourseContent from "./pages/admin/AdminCourseContent";
 import AdminUsers from "./pages/admin/AdminUsers";
 import AdminWaitlist from "./pages/admin/AdminWaitlist";
 import AdminAudits from "./pages/admin/AdminAudits";
+import AdminResources from "./pages/admin/AdminResources";
+import AdminResourceEdit from "./pages/admin/AdminResourceEdit";
+import Resources from "./pages/Resources";
+import ResourceDetail from "./pages/ResourceDetail";
 
 const queryClient = new QueryClient();
 
