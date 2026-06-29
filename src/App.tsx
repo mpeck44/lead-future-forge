@@ -109,6 +109,14 @@ const App = () => (
               }
             />
             <Route
+              path="/admin/audits"
+              element={
+                <AdminProtectedRoute>
+                  <AdminAudits />
+                </AdminProtectedRoute>
+              }
+            />
+            <Route
               path="/admin/courses/:courseId/content"
               element={
                 <AdminProtectedRoute>
