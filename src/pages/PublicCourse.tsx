@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowRight, Clock, Award, Users, CheckCircle2, BookOpen } from "lucide-react";
-import { roleOptions } from "@/lib/roleOptions";
+import { ROLE_OPTIONS } from "@/lib/roleOptions";
 
 interface Course {
   id: string;
@@ -56,7 +56,7 @@ const COURSE_FAQS: Record<string, { q: string; a: string }[]> = {
 const SITE_URL = "https://lead-future-forge.lovable.app";
 
 const formatRole = (role: string) =>
-  roleOptions.find((r) => r.value === role)?.label || role.replace(/_/g, " ");
+  ROLE_OPTIONS.find((r) => r.value === role)?.label || role.replace(/_/g, " ");
 
 const PublicCourse = () => {
   const { slug } = useParams<{ slug: string }>();
