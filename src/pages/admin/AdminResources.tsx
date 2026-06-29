@@ -211,7 +211,7 @@ export default function AdminResources() {
         onConfirm={() => deleting && deleteMutation.mutate(deleting.id)}
         title="Delete resource?"
         description={`"${deleting?.title}" will be permanently deleted.`}
-        loading={deleteMutation.isPending}
+        isLoading={deleteMutation.isPending}
       />
     </AdminLayout>
   );
