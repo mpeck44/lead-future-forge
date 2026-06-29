@@ -17,6 +17,7 @@ import {
 const adminNavItems = [
   { title: 'Dashboard', url: '/admin', icon: LayoutDashboard },
   { title: 'Courses', url: '/admin/courses', icon: BookOpen },
+  { title: 'Resources', url: '/admin/resources', icon: FileText },
   { title: 'Audits', url: '/admin/audits', icon: ClipboardCheck },
   { title: 'Waitlist', url: '/admin/waitlist', icon: ClipboardList },
   { title: 'Users', url: '/admin/users', icon: Users },
