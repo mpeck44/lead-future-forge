@@ -146,11 +146,11 @@ const Courses = () => {
   return (
     <div className="min-h-screen bg-background">
       <Helmet>
-        <title>Course Catalog — The Leadership Forge</title>
-        <meta name="description" content="Browse AI professional development courses for K-12 leaders: Foundations, Fluency, Strategy, and Action tracks." />
+        <title>K-12 AI Leadership Courses — Catalog | The Leadership Forge</title>
+        <meta name="description" content="K-12 AI courses for district leaders: AI foundations, fluency, district AI strategy roadmap, and pilot design. Built around artifacts you use in your district." />
         <link rel="canonical" href="https://lead-future-forge.lovable.app/courses" />
-        <meta property="og:title" content="Course Catalog — The Leadership Forge" />
-        <meta property="og:description" content="Browse AI professional development courses for K-12 leaders." />
+        <meta property="og:title" content="K-12 AI Leadership Courses — Catalog" />
+        <meta property="og:description" content="AI foundations, fluency, district AI strategy, and pilot design courses for K-12 leaders." />
         <meta property="og:url" content="https://lead-future-forge.lovable.app/courses" />
         <meta property="og:image" content="https://lead-future-forge.lovable.app/og-image.jpg" />
         <script type="application/ld+json">{JSON.stringify({
