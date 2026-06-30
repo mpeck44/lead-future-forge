@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -247,6 +248,13 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
+      <Helmet>
+        <title>Sign In — EdLeaderForge</title>
+        <meta name="description" content="Sign in or create your EdLeaderForge account to access AI leadership courses built for K-12 administrators." />
+        <meta property="og:title" content="Sign In — EdLeaderForge" />
+        <meta property="og:description" content="Access AI leadership courses built for K-12 administrators." />
+        <link rel="canonical" href="https://edleaderforge.com/auth" />
+      </Helmet>
       <div className="w-full max-w-md">
         {/* Logo and back link */}
         <div className="text-center mb-8">

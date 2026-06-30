@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import Header from '@/components/Header';
@@ -316,6 +317,14 @@ const Portfolio = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <Helmet>
+        <title>My Portfolio — EdLeaderForge</title>
+        <meta name="description" content="Your library of AI leadership work products — policies, frameworks, and plans you can deploy in your district tomorrow." />
+        <meta name="robots" content="noindex,follow" />
+        <meta property="og:title" content="My Portfolio — EdLeaderForge" />
+        <meta property="og:description" content="Your library of AI leadership deliverables ready to use in your district." />
+        <link rel="canonical" href="https://edleaderforge.com/portfolio" />
+      </Helmet>
       <Header />
       <main className="pt-20 lg:pt-24">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
