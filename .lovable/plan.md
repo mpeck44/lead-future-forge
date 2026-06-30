@@ -1,37 +1,23 @@
-Plan: Add a combined Privacy Policy & Terms of Service page
+## Diagnosis
 
-Goal: Publish the user's provided Privacy Policy and Terms of Service on a single public page at /privacy-terms, link it from the footer, and make it crawlable.
+Both files are live and return HTTP 200 — no code fix is needed:
 
-Changes to make
+- `https://edleaderforge.com/sitemap.xml` → 200 OK
+- `https://edleaderforge.com/llms.txt` → 200 OK
+- `https://edleaderforge.com/robots.txt` → 200 OK (already references the sitemap)
 
-1. New public page: src/pages/PrivacyTerms.tsx
-   - Route: /privacy-terms
-   - Use the exact copy provided by the user for both Privacy Policy and Terms of Service.
-   - Replace the placeholder [your email address] with contact@peckeducation.com (user confirmed).
-   - Structure the page with two semantic <article> sections: "Privacy Policy" and "Terms of Service", each with id anchors (#privacy-policy, #terms-of-service).
-   - Add a small sticky/in-page table of contents so users can jump between the two documents.
-   - Render lists as semantic <ul> / <ol> items using JSX (no dangerouslySetInnerHTML).
-   - Use existing design tokens (font-display, font-body, bg-background, text-foreground, text-muted-foreground, etc.) and match the Courses page public layout: Header + main content + FooterV2.
-   - Add Helmet SEO: title, description, canonical, og:url, og:title, og:description, and WebPage JSON-LD pointing to https://edleaderforge.com/privacy-terms.
+The 404 is the same property-mismatch pattern we hit before. Google fetches the sitemap **relative to the Search Console property it was submitted under**. If you submitted it under the `www.edleaderforge.com` property (or the old `lead-future-forge.lovable.app` property), Google tries to fetch from that host. `www.edleaderforge.com/sitemap.xml` 302-redirects to the apex — and Search Console treats cross-host redirects on a sitemap URL as inaccessible (effectively a 404 in its UI).
 
-2. Routing: src/App.tsx
-   - Add a public route: <Route path="/privacy-terms" element={<PrivacyTerms />} /> above the catch-all route.
+A quick note on naming: the files are `sitemap.xml` and `llms.txt` (not `.xml`). There is no `llms.xml` and no `robots.xml` — those exact names would 404.
 
-3. Footer link: src/components/landing/FooterV2.tsx
-   - Add a "Privacy & Terms" link in the footer link list pointing to /privacy-terms.
-   - Also add a matching link in the legacy src/components/Footer.tsx if it is still used on other public routes.
+## Fix (no code changes)
 
-4. Sitemap: scripts/generate-sitemap.ts
-   - Add { path: "/privacy-terms", changefreq: "yearly", priority: "0.3" } to staticEntries so the page is discoverable by crawlers.
+1. In Search Console, open the **`https://edleaderforge.com`** property (the apex, URL‑prefix property — not the `www` one and not the old `lovable.app` one).
+2. Go to **Sitemaps**, remove any failing entries pointing at the wrong host.
+3. Submit just the path: `sitemap.xml`
+4. Optional: if you also want LLM discoverability tools that read `llms.txt` to find it via Search Console, no submission is needed — `llms.txt` isn't a sitemap format, so don't submit it as one. It's already linked from the site and live at `/llms.txt`.
+5. If you want both `edleaderforge.com` and `www.edleaderforge.com` tracked, add a separate property for `www` and either submit a sitemap whose URLs use the `www` host, or just rely on the 301/302 redirect to apex and don't submit a sitemap under `www`.
 
-5. Verification
-   - Run the build/typecheck to ensure no TS/JS errors.
-   - Check that the route renders correctly at /privacy-terms and that footer links navigate there.
-   - Confirm the sitemap generator still completes and public/sitemap.xml is updated.
+## Optional verification
 
-Out of scope
-   - No backend changes (no tables, no RLS, no RPC).
-   - No legal review of the provided copy; the user's supplied text will be used verbatim.
-   - No new navigation bar links unless asked.
-
-Estimated size: small/medium — one new page + two footer tweaks + one route + one sitemap entry.
+After resubmitting, click "See index coverage" in Search Console. Status should move from "Couldn't fetch" to "Success" within a few minutes to a few hours.
