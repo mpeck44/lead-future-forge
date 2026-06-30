@@ -341,7 +341,7 @@ const Courses = () => {
                                   className="flex-1 font-body"
                                 >
                                   <Link to={`/courses/${course.slug}`}>
-                                    Learn More
+                                    View course details
                                   </Link>
                                 </Button>
                                 <Button 
