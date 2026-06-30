@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 const links = [
   { label: "Which one is you?", href: "#doors" },
   { label: "Pathway", href: "#pathway" },
@@ -5,7 +7,6 @@ const links = [
   { label: "FAQ", href: "#faq" },
   { label: "Privacy & Terms", href: "/privacy-terms" },
 ];
-
 
 const FooterV2 = () => (
   <footer className="bg-navy text-white/60 py-[2.8rem] text-[0.86rem]">
@@ -17,13 +18,25 @@ const FooterV2 = () => (
         <p className="mt-1">Built by a practicing K-12 Director of Technology. A PEKK Education program.</p>
       </div>
       <ul className="flex flex-wrap gap-[1.6rem] list-none">
-        {links.map((l) => (
-          <li key={l.href}>
-            <a href={l.href} className="hover:text-[hsl(43_72%_66%)] transition-colors">
-              {l.label}
-            </a>
-          </li>
-        ))}
+        {links.map((l) => {
+          const isInternal = l.href.startsWith("/");
+          return (
+            <li key={l.href}>
+              {isInternal ? (
+                <Link
+                  to={l.href}
+                  className="hover:text-[hsl(43_72%_66%)] transition-colors"
+                >
+                  {l.label}
+                </Link>
+              ) : (
+                <a href={l.href} className="hover:text-[hsl(43_72%_66%)] transition-colors">
+                  {l.label}
+                </a>
+              )}
+            </li>
+          );
+        })}
       </ul>
       <div className="md:text-right">© 2026 PEKK Education LLC</div>
     </div>
