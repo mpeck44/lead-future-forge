@@ -38,8 +38,8 @@ const Footer = () => {
                 </a>
               </li>
               <li>
-                <a href="#" className="font-body text-white/50 hover:text-burnt-orange transition-colors">
-                  Privacy
+                <a href="/privacy-terms" className="font-body text-white/50 hover:text-burnt-orange transition-colors">
+                  Privacy &amp; Terms
                 </a>
               </li>
             </ul>
@@ -74,8 +74,8 @@ const Footer = () => {
         <div className="mt-12 pt-8 border-t border-white/10 flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="font-body text-sm text-white/40">© {currentYear} The Leadership Forge. All rights reserved.</p>
           <div className="flex gap-6">
-            <a href="#" className="font-body text-sm text-white/40 hover:text-burnt-orange transition-colors">
-              Privacy
+            <a href="/privacy-terms" className="font-body text-sm text-white/40 hover:text-burnt-orange transition-colors">
+              Privacy &amp; Terms
             </a>
           </div>
         </div>

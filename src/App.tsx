@@ -26,6 +26,8 @@ import AdminResources from "./pages/admin/AdminResources";
 import AdminResourceEdit from "./pages/admin/AdminResourceEdit";
 import Resources from "./pages/Resources";
 import ResourceDetail from "./pages/ResourceDetail";
+import PrivacyTerms from "./pages/PrivacyTerms";
+
 
 const queryClient = new QueryClient();
 
@@ -42,6 +44,7 @@ const App = () => (
             <Route path="/courses/:slug" element={<PublicCourse />} />
             <Route path="/resources" element={<Resources />} />
             <Route path="/resources/:slug" element={<ResourceDetail />} />
+            <Route path="/privacy-terms" element={<PrivacyTerms />} />
             <Route path="/auth" element={<Auth />} />
             <Route
               path="/dashboard"

@@ -3,7 +3,9 @@ const links = [
   { label: "Pathway", href: "#pathway" },
   { label: "Waitlist", href: "#pricing" },
   { label: "FAQ", href: "#faq" },
+  { label: "Privacy & Terms", href: "/privacy-terms" },
 ];
+
 
 const FooterV2 = () => (
   <footer className="bg-navy text-white/60 py-[2.8rem] text-[0.86rem]">
