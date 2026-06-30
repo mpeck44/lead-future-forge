@@ -281,6 +281,14 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
+      <Helmet>
+        <title>Your Dashboard — EdLeaderForge</title>
+        <meta name="description" content="Track your AI leadership progress, continue your courses, and access your portfolio of district-ready deliverables." />
+        <meta name="robots" content="noindex,follow" />
+        <meta property="og:title" content="Your Dashboard — EdLeaderForge" />
+        <meta property="og:description" content="Continue your AI leadership courses and review your portfolio." />
+        <link rel="canonical" href="https://edleaderforge.com/dashboard" />
+      </Helmet>
       <Header />
       <main className="pt-16 lg:pt-20 flex-1">
         <DashboardHero
