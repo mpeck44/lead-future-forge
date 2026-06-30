@@ -18,4 +18,4 @@ Disallow: /my-courses
 Disallow: /portfolio
 Disallow: /profile
 
-Sitemap: https://lead-future-forge.lovable.app/sitemap.xml
+Sitemap: https://edleaderforge.com/sitemap.xml

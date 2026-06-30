@@ -51,11 +51,11 @@ After completion, the audit produces a per-category score and a single recommend
 
 ## Pages
 
-- [Home](https://lead-future-forge.lovable.app/): Program overview, the three course doors, and the Foundations → Audit → Track pathway.
-- [Courses](https://lead-future-forge.lovable.app/courses): Course catalog with descriptions, hours, and prerequisites.
-- [The Launchpad (Foundations)](https://lead-future-forge.lovable.app/courses/foundations): Orientation + AI Equity Audit. No prerequisites.
-- [Command the Tools (Fluency)](https://lead-future-forge.lovable.app/courses/fluency): Hands-on AI fluency for K-12 leaders. Requires Foundations.
-- [Chart the Course (Strategy)](https://lead-future-forge.lovable.app/courses/strategy): 3-year AI strategic roadmap. Requires Foundations.
-- [Ship It (Action)](https://lead-future-forge.lovable.app/courses/action): Pilot design, launch plan, and change management. Requires Foundations.
-- [Resources](https://lead-future-forge.lovable.app/resources): Articles on K-12 AI governance, district strategy, classroom practice, and leadership — written by a practicing K-12 Director of Technology.
-- [Sign in](https://lead-future-forge.lovable.app/auth): Sign in or create an account.
+- [Home](https://edleaderforge.com/): Program overview, the three course doors, and the Foundations → Audit → Track pathway.
+- [Courses](https://edleaderforge.com/courses): Course catalog with descriptions, hours, and prerequisites.
+- [The Launchpad (Foundations)](https://edleaderforge.com/courses/foundations): Orientation + AI Equity Audit. No prerequisites.
+- [Command the Tools (Fluency)](https://edleaderforge.com/courses/fluency): Hands-on AI fluency for K-12 leaders. Requires Foundations.
+- [Chart the Course (Strategy)](https://edleaderforge.com/courses/strategy): 3-year AI strategic roadmap. Requires Foundations.
+- [Ship It (Action)](https://edleaderforge.com/courses/action): Pilot design, launch plan, and change management. Requires Foundations.
+- [Resources](https://edleaderforge.com/resources): Articles on K-12 AI governance, district strategy, classroom practice, and leadership — written by a practicing K-12 Director of Technology.
+- [Sign in](https://edleaderforge.com/auth): Sign in or create an account.

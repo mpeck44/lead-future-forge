@@ -4,7 +4,7 @@
 import { writeFileSync, readFileSync, existsSync } from "fs";
 import { resolve } from "path";
 
-const BASE_URL = "https://lead-future-forge.lovable.app";
+const BASE_URL = "https://edleaderforge.com";
 
 interface SitemapEntry {
   path: string;

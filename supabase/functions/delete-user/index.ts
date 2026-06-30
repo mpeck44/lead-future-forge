@@ -1,6 +1,6 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const allowedOrigin = Deno.env.get("ALLOWED_ORIGIN") ?? "https://lead-future-forge.lovable.app";
+const allowedOrigin = Deno.env.get("ALLOWED_ORIGIN") ?? "https://edleaderforge.com";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": allowedOrigin,
