@@ -53,7 +53,7 @@ const COURSE_FAQS: Record<string, { q: string; a: string }[]> = {
   ],
 };
 
-const SITE_URL = "https://lead-future-forge.lovable.app";
+const SITE_URL = "https://edleaderforge.com";
 
 const COURSE_SEO: Record<string, { title: string; description: string }> = {
   foundations: {

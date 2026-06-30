@@ -36,7 +36,7 @@ interface RelatedRow {
   read_time_min: number | null;
 }
 
-const SITE_URL = "https://lead-future-forge.lovable.app";
+const SITE_URL = "https://edleaderforge.com";
 
 const CATEGORY_LABELS: Record<Category, string> = {
   governance: "Governance",

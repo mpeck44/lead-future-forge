@@ -29,11 +29,11 @@ const Index = () => {
       <Helmet>
         <title>K-12 AI Leadership PD — District AI Strategy & Governance | The Leadership Forge</title>
         <meta name="description" content="K-12 AI leadership PD for superintendents, principals, and district leaders. Build an AI governance framework, district AI strategy, and 3-year roadmap." />
-        <link rel="canonical" href="https://lead-future-forge.lovable.app/" />
+        <link rel="canonical" href="https://edleaderforge.com/" />
         <meta property="og:title" content="K-12 AI Leadership PD — The Leadership Forge" />
         <meta property="og:description" content="K-12 AI leadership PD: build a governance framework, district AI strategy, and 3-year roadmap. By a practicing K-12 Director of Technology." />
-        <meta property="og:url" content="https://lead-future-forge.lovable.app/" />
-        <meta property="og:image" content="https://lead-future-forge.lovable.app/og-image.jpg" />
+        <meta property="og:url" content="https://edleaderforge.com/" />
+        <meta property="og:image" content="https://edleaderforge.com/og-image.jpg" />
         <script type="application/ld+json">{JSON.stringify({
           "@context": "https://schema.org",
           "@type": "Person",
@@ -43,7 +43,7 @@ const Index = () => {
           "worksFor": {
             "@type": "Organization",
             "name": "The Leadership Forge",
-            "url": "https://lead-future-forge.lovable.app/"
+            "url": "https://edleaderforge.com/"
           },
           "knowsAbout": [
             "K-12 educational technology",

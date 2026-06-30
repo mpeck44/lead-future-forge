@@ -148,24 +148,24 @@ const Courses = () => {
       <Helmet>
         <title>K-12 AI Leadership Courses — Catalog | The Leadership Forge</title>
         <meta name="description" content="K-12 AI courses for district leaders: AI foundations, fluency, district AI strategy roadmap, and pilot design. Built around artifacts you use in your district." />
-        <link rel="canonical" href="https://lead-future-forge.lovable.app/courses" />
+        <link rel="canonical" href="https://edleaderforge.com/courses" />
         <meta property="og:title" content="K-12 AI Leadership Courses — Catalog" />
         <meta property="og:description" content="AI foundations, fluency, district AI strategy, and pilot design courses for K-12 leaders." />
-        <meta property="og:url" content="https://lead-future-forge.lovable.app/courses" />
-        <meta property="og:image" content="https://lead-future-forge.lovable.app/og-image.jpg" />
+        <meta property="og:url" content="https://edleaderforge.com/courses" />
+        <meta property="og:image" content="https://edleaderforge.com/og-image.jpg" />
         <script type="application/ld+json">{JSON.stringify({
           "@context": "https://schema.org",
           "@type": "CollectionPage",
           "name": "Course Catalog",
-          "url": "https://lead-future-forge.lovable.app/courses",
-          "isPartOf": { "@type": "WebSite", "name": "The Leadership Forge", "url": "https://lead-future-forge.lovable.app/" },
+          "url": "https://edleaderforge.com/courses",
+          "isPartOf": { "@type": "WebSite", "name": "The Leadership Forge", "url": "https://edleaderforge.com/" },
           "mainEntity": {
             "@type": "ItemList",
             "itemListElement": courses.map((c, i) => ({
               "@type": "ListItem",
               "position": i + 1,
               "name": c.title,
-              "url": `https://lead-future-forge.lovable.app/course/${c.slug}`
+              "url": `https://edleaderforge.com/course/${c.slug}`
             }))
           }
         })}</script>

@@ -1,42 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://lead-future-forge.lovable.app/</loc>
+    <loc>https://edleaderforge.com/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://lead-future-forge.lovable.app/courses</loc>
+    <loc>https://edleaderforge.com/courses</loc>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://lead-future-forge.lovable.app/resources</loc>
+    <loc>https://edleaderforge.com/resources</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://lead-future-forge.lovable.app/auth</loc>
+    <loc>https://edleaderforge.com/auth</loc>
     <changefreq>monthly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://lead-future-forge.lovable.app/courses/action</loc>
+    <loc>https://edleaderforge.com/courses/action</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://lead-future-forge.lovable.app/courses/fluency</loc>
+    <loc>https://edleaderforge.com/courses/fluency</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://lead-future-forge.lovable.app/courses/strategy</loc>
+    <loc>https://edleaderforge.com/courses/strategy</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://lead-future-forge.lovable.app/courses/foundations</loc>
+    <loc>https://edleaderforge.com/courses/foundations</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
