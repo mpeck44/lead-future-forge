@@ -15,7 +15,7 @@ const FooterV2 = () => (
         <div className="font-display text-[1.05rem] text-white">
           Leadership <em className="not-italic italic text-gold">Forge</em>
         </div>
-        <p className="mt-1">Built by a practicing K-12 Director of Technology. A PEKK Education program.</p>
+        <p className="mt-1">Built by a practicing K-12 Director of Technology. A Peck Education program.</p>
       </div>
       <ul className="flex flex-wrap gap-[1.6rem] list-none">
         {links.map((l) => {
@@ -38,7 +38,7 @@ const FooterV2 = () => (
           );
         })}
       </ul>
-      <div className="md:text-right">© 2026 PEKK Education LLC</div>
+      <div className="md:text-right">© 2026 Peck Education LLC</div>
     </div>
   </footer>
 );
