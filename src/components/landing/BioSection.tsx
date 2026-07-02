@@ -31,7 +31,7 @@ const BioSection = () => (
               Role
             </span>
             <p className="text-foreground/65 max-w-[560px]">
-              Built by a practicing K-12 Director of Technology at Pen Argyl Area School District. I lead AI integration in a working district every day — the policies, the pilots, the board questions, the staff concerns.
+              Built by a practicing K-12 Director of Technology in Pennsylvania. I lead AI integration in a working district every day: the policies, the pilots, the board questions, the staff concerns.
             </p>
           </div>
           <div className="rv rv-d1 mb-[1.7rem]">
@@ -40,7 +40,7 @@ const BioSection = () => (
               Experience
             </span>
             <p className="text-foreground/65 max-w-[560px]">
-              I've run AI leadership workshops with the Chester County IU, working with dozens of districts on exactly the problems this platform is built to solve.
+              Worked with dozens of districts on exactly the problems this platform is built to solve.
             </p>
           </div>
           <div className="rv rv-d2">
@@ -49,7 +49,7 @@ const BioSection = () => (
               Philosophy
             </span>
             <p className="font-display italic font-medium text-[clamp(1.3rem,2.4vw,1.7rem)] leading-[1.35] text-foreground border-l-[3px] border-gold pl-[1.3rem] mt-[1.1rem] max-w-[560px]">
-              "I built what I wish existed when I started this work."
+              "I build practical tools educational leaders can put into practice today."
             </p>
           </div>
         </div>
