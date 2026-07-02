@@ -1,3 +1,5 @@
+import mikeHeadshot from "@/assets/mike-peck-headshot.jpg.asset.json";
+
 const BioSection = () => (
   <section id="bio" className="py-[5.5rem] md:py-[7.5rem] bg-white">
     <div className="w-[min(1120px,100%-2.5rem)] mx-auto">
@@ -12,8 +14,14 @@ const BioSection = () => (
       </div>
 
       <div className="grid gap-[2.6rem] md:gap-16 grid-cols-1 md:grid-cols-[340px_1fr] items-start">
-        <div className="rv aspect-[4/5] rounded-lg bg-gradient-to-br from-[hsl(217_33%_17%)] to-navy flex items-center justify-center text-white/60 text-[0.85rem] tracking-[0.12em] uppercase border border-foreground/10 max-w-[340px]">
-          Photo
+        <div className="rv aspect-[4/5] rounded-lg overflow-hidden border border-foreground/10 max-w-[340px]">
+          <img
+            src={mikeHeadshot.url}
+            alt="Mike Peck, K-12 Director of Technology and founder of The Leadership Forge"
+            className="w-full h-full object-cover grayscale"
+            width={340}
+            height={425}
+          />
         </div>
 
         <div>
