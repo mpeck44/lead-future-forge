@@ -24,6 +24,11 @@ const Footer = () => {
             <h4 className="font-display font-semibold text-lg mb-4">Quick Links</h4>
             <ul className="space-y-3">
               <li>
+                <Link to="/resources" className="font-body text-white/50 hover:text-burnt-orange transition-colors">
+                  Resources
+                </Link>
+              </li>
+              <li>
                 <a href="#about" className="font-body text-white/50 hover:text-burnt-orange transition-colors">
                   About
                 </a>
