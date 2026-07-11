@@ -33,10 +33,11 @@ const HeroV2 = ({ onWaitlist }: Props) => {
                 </em>
               </span>
             </h1>
-            <p className="rv rv-d2 text-[clamp(1.05rem,1.5vw,1.18rem)] text-white/60 max-w-[40ch] mb-9 font-body leading-relaxed">
-              The professional-development system that moves school leaders from
-              AI-curious to AI-strategic — with board-ready deliverables you'll
-              use Monday morning.
+            <p className="rv rv-d2 text-[clamp(1.05rem,1.5vw,1.18rem)] text-white/60 max-w-[42ch] mb-9 font-body leading-relaxed">
+              K-12 AI leadership development for principals, superintendents,
+              and school administrators — build your district AI policy,
+              strategy, and 3-year roadmap with board-ready deliverables
+              you'll use Monday morning.
             </p>
 
             <div className="rv rv-d3 flex flex-wrap gap-3 mb-10">

@@ -60,12 +60,12 @@ const Resources = () => {
   const visible = activeCategory ? posts.filter((p) => p.category === activeCategory) : posts;
   const url = `${SITE_URL}/resources`;
   const description =
-    "Practical articles on K-12 AI leadership, district AI strategy, AI governance, and classroom AI from a practicing K-12 Director of Technology.";
+    "Practical articles on school district AI policy, AI for principals and superintendents, K-12 AI governance, and district AI strategy — from a practicing K-12 Director of Technology.";
 
   const collectionJsonLd = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    name: "Resources — The Leadership Forge",
+    name: "K-12 AI Leadership Resources — The Leadership Forge",
     description,
     url,
   };
@@ -82,11 +82,11 @@ const Resources = () => {
   return (
     <div className="min-h-screen bg-background">
       <Helmet>
-        <title>Resources — K-12 AI Leadership Articles | The Leadership Forge</title>
+        <title>K-12 AI Leadership Resources: District AI Policy & Strategy | The Leadership Forge</title>
         <meta name="description" content={description} />
         <link rel="canonical" href={url} />
         <meta property="og:type" content="website" />
-        <meta property="og:title" content="Resources — K-12 AI Leadership" />
+        <meta property="og:title" content="K-12 AI Leadership Resources — District AI Policy & Strategy" />
         <meta property="og:description" content={description} />
         <meta property="og:url" content={url} />
         <meta property="og:image" content={`${SITE_URL}/og-image.jpg`} />
@@ -102,9 +102,13 @@ const Resources = () => {
               <span className="mx-2">/</span>
               <span className="text-foreground">Resources</span>
             </nav>
-            <h1 className="font-display text-4xl lg:text-5xl font-bold mb-4">Resources</h1>
+            <h1 className="font-display text-4xl lg:text-5xl font-bold mb-4">
+              K-12 AI Leadership Resources
+            </h1>
             <p className="font-body text-lg text-muted-foreground max-w-2xl">
-              Field notes on AI governance, district strategy, classroom practice, and the decisions actually sitting on a K-12 leader's desk.
+              Field notes on school district AI policy, AI for principals and
+              superintendents, K-12 AI governance, and the district AI strategy
+              decisions actually sitting on a leader's desk.
             </p>
           </div>
         </section>
