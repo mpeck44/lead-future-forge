@@ -320,6 +320,62 @@ export type Database = {
           },
         ]
       }
+      orders: {
+        Row: {
+          amount_cents: number
+          coupon_code_used: string | null
+          course_id: string
+          created_at: string
+          currency: string
+          environment: string
+          id: string
+          receipt_url: string | null
+          status: string
+          stripe_payment_intent_id: string | null
+          stripe_session_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount_cents: number
+          coupon_code_used?: string | null
+          course_id: string
+          created_at?: string
+          currency?: string
+          environment?: string
+          id?: string
+          receipt_url?: string | null
+          status?: string
+          stripe_payment_intent_id?: string | null
+          stripe_session_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount_cents?: number
+          coupon_code_used?: string | null
+          course_id?: string
+          created_at?: string
+          currency?: string
+          environment?: string
+          id?: string
+          receipt_url?: string | null
+          status?: string
+          stripe_payment_intent_id?: string | null
+          stripe_session_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orders_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       portfolio_items: {
         Row: {
           completed_at: string | null
@@ -389,6 +445,47 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      products: {
+        Row: {
+          active: boolean
+          amount_cents: number
+          course_id: string
+          created_at: string
+          currency: string
+          id: string
+          stripe_price_lookup_key: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          amount_cents: number
+          course_id: string
+          created_at?: string
+          currency?: string
+          id?: string
+          stripe_price_lookup_key: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          amount_cents?: number
+          course_id?: string
+          created_at?: string
+          currency?: string
+          id?: string
+          stripe_price_lookup_key?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "products_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: true
+            referencedRelation: "courses"
             referencedColumns: ["id"]
           },
         ]
