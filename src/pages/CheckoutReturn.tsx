@@ -75,18 +75,28 @@ const CheckoutReturn = () => {
                 <CheckCircle2 className="h-14 w-14 text-primary mx-auto mb-4" />
                 <h1 className="font-display text-3xl font-bold mb-3">You're enrolled</h1>
                 <p className="font-body text-muted-foreground mb-6">
-                  {info?.course_title
-                    ? `Access to ${info.course_title} is unlocked.`
-                    : "Access to your course is unlocked."}{" "}
+                  {info?.bundle_key
+                    ? "Access to all three bundle courses is unlocked."
+                    : info?.course_title
+                      ? `Access to ${info.course_title} is unlocked.`
+                      : "Access to your course is unlocked."}{" "}
                   A receipt is on its way to your inbox.
                 </p>
                 <div className="flex flex-wrap justify-center gap-3">
-                  {info?.course_slug && (
+                  {info?.bundle_key ? (
                     <Button asChild size="lg">
-                      <Link to={`/course/${info.course_slug}`}>
-                        Start the course <ArrowRight className="ml-2 h-4 w-4" />
+                      <Link to="/my-courses">
+                        Go to my courses <ArrowRight className="ml-2 h-4 w-4" />
                       </Link>
                     </Button>
+                  ) : (
+                    info?.course_slug && (
+                      <Button asChild size="lg">
+                        <Link to={`/course/${info.course_slug}`}>
+                          Start the course <ArrowRight className="ml-2 h-4 w-4" />
+                        </Link>
+                      </Button>
+                    )
                   )}
                   {info?.receipt_url && (
                     <Button asChild variant="outline" size="lg">
