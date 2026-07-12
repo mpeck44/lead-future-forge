@@ -115,19 +115,38 @@ const PublicCourse = () => {
         return;
       }
       setCourse(courseData as Course);
-      const { data: modData } = await supabase
-        .from("modules")
-        .select("id, title, description, sequence_order")
-        .eq("course_id", courseData.id)
-        .order("sequence_order");
+      const [modRes, prodRes, enrollRes] = await Promise.all([
+        supabase
+          .from("modules")
+          .select("id, title, description, sequence_order")
+          .eq("course_id", courseData.id)
+          .order("sequence_order"),
+        supabase
+          .from("products")
+          .select("amount_cents, currency")
+          .eq("course_id", courseData.id)
+          .eq("active", true)
+          .maybeSingle(),
+        user
+          ? supabase
+              .from("enrollments")
+              .select("id")
+              .eq("user_id", user.id)
+              .eq("course_id", courseData.id)
+              .eq("status", "active")
+              .maybeSingle()
+          : Promise.resolve({ data: null } as any),
+      ]);
       if (cancelled) return;
-      setModules((modData as Module[]) || []);
+      setModules((modRes.data as Module[]) || []);
+      setProduct((prodRes.data as any) || null);
+      setAlreadyEnrolled(!!enrollRes?.data);
       setLoading(false);
     })();
     return () => {
       cancelled = true;
     };
-  }, [slug]);
+  }, [slug, user]);
 
   if (notFound) {
     return (
