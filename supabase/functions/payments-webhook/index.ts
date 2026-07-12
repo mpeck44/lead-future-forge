@@ -1,5 +1,6 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { type StripeEnv, verifyWebhook, createStripeClient } from "../_shared/stripe.ts";
+import { getBundle } from "../_shared/bundles.ts";
 
 let _supabase: ReturnType<typeof createClient> | null = null;
 function getSupabase() {
@@ -12,34 +13,34 @@ function getSupabase() {
   return _supabase;
 }
 
+async function fetchReceiptUrl(session: any, env: StripeEnv): Promise<string | null> {
+  try {
+    if (!session.payment_intent) return null;
+    const stripe = createStripeClient(env);
+    const pi = await stripe.paymentIntents.retrieve(session.payment_intent, {
+      expand: ["latest_charge"],
+    });
+    const charge = (pi as any).latest_charge;
+    if (charge && typeof charge === "object") return charge.receipt_url ?? null;
+  } catch (e) {
+    console.warn("Could not retrieve receipt url:", e);
+  }
+  return null;
+}
+
 async function handleCheckoutCompleted(session: any, env: StripeEnv) {
   const userId = session.metadata?.userId;
   const courseId = session.metadata?.courseId;
-  if (!userId || !courseId) {
+  const bundleKey = session.metadata?.bundleKey;
+  if (!userId || (!courseId && !bundleKey)) {
     console.error("checkout.session.completed missing metadata", session.id);
     return;
   }
 
   const sb = getSupabase();
+  const receiptUrl = await fetchReceiptUrl(session, env);
 
-  // Retrieve receipt URL (best-effort)
-  let receiptUrl: string | null = null;
-  try {
-    const stripe = createStripeClient(env);
-    if (session.payment_intent) {
-      const pi = await stripe.paymentIntents.retrieve(session.payment_intent, {
-        expand: ["latest_charge"],
-      });
-      const charge = (pi as any).latest_charge;
-      if (charge && typeof charge === "object") {
-        receiptUrl = charge.receipt_url ?? null;
-      }
-    }
-  } catch (e) {
-    console.warn("Could not retrieve receipt url:", e);
-  }
-
-  // Update order → paid
+  // Mark order paid regardless of course/bundle type.
   const { error: orderErr } = await sb
     .from("orders")
     .update({
@@ -51,7 +52,39 @@ async function handleCheckoutCompleted(session: any, env: StripeEnv) {
     .eq("stripe_session_id", session.id);
   if (orderErr) console.error("Order update failed:", orderErr);
 
-  // Upsert enrollment (idempotent)
+  if (bundleKey) {
+    const bundle = getBundle(bundleKey);
+    if (!bundle) {
+      console.error("Unknown bundle in webhook:", bundleKey);
+      return;
+    }
+    const { data: bundleCourses, error: courseErr } = await sb
+      .from("courses")
+      .select("id")
+      .in("slug", bundle.courseSlugs);
+    if (courseErr || !bundleCourses?.length) {
+      console.error("Failed to resolve bundle courses:", courseErr);
+      return;
+    }
+    const total = session.amount_total ?? bundle.priceCents;
+    const perCourse = Math.floor(total / bundleCourses.length);
+
+    for (const c of bundleCourses) {
+      const { error: enrollErr } = await sb.from("enrollments").upsert(
+        {
+          user_id: userId,
+          course_id: c.id,
+          status: "active",
+          amount_paid: perCourse,
+        },
+        { onConflict: "user_id,course_id" },
+      );
+      if (enrollErr) console.error("Bundle enrollment upsert failed:", enrollErr);
+    }
+    return;
+  }
+
+  // Single course
   const { error: enrollErr } = await sb.from("enrollments").upsert(
     {
       user_id: userId,

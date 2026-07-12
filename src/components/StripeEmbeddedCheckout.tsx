@@ -3,15 +3,21 @@ import { getStripe, getStripeEnvironment } from "@/lib/stripe";
 import { supabase } from "@/integrations/supabase/client";
 
 interface Props {
-  courseId: string;
+  courseId?: string;
+  bundleKey?: string;
   returnUrl: string;
 }
 
-export function StripeEmbeddedCheckoutView({ courseId, returnUrl }: Props) {
+export function StripeEmbeddedCheckoutView({ courseId, bundleKey, returnUrl }: Props) {
   const fetchClientSecret = async (): Promise<string> => {
-    const { data, error } = await supabase.functions.invoke("create-checkout", {
-      body: { courseId, returnUrl, environment: getStripeEnvironment() },
-    });
+    const body: Record<string, unknown> = {
+      returnUrl,
+      environment: getStripeEnvironment(),
+    };
+    if (bundleKey) body.bundleKey = bundleKey;
+    else body.courseId = courseId;
+
+    const { data, error } = await supabase.functions.invoke("create-checkout", { body });
     if (error || !data?.clientSecret) {
       const msg = data?.error || error?.message || "Failed to start checkout";
       throw new Error(msg);
