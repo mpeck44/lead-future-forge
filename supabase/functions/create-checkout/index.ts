@@ -109,9 +109,9 @@ Deno.serve(async (req) => {
       metadata: {
         userId: user.id,
         courseId,
-        managed_payments: "true",
+        managed_payments: "false",
       },
-      managed_payments: { enabled: true },
+      automatic_tax: { enabled: true },
     } as any);
 
     // Log a pending order row
