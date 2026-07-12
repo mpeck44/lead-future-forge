@@ -12,6 +12,7 @@ interface OrderInfo {
   status: string;
   course_slug: string | null;
   course_title: string | null;
+  bundle_key: string | null;
   receipt_url: string | null;
 }
 
@@ -29,7 +30,7 @@ const CheckoutReturn = () => {
     const poll = async () => {
       const { data } = await supabase
         .from("orders")
-        .select("status, receipt_url, courses(slug, title)")
+        .select("status, receipt_url, bundle_key, courses(slug, title)")
         .eq("stripe_session_id", sessionId)
         .maybeSingle();
 
@@ -39,6 +40,7 @@ const CheckoutReturn = () => {
           status: data.status as string,
           course_slug: (data.courses as any)?.slug ?? null,
           course_title: (data.courses as any)?.title ?? null,
+          bundle_key: (data.bundle_key as string) ?? null,
           receipt_url: (data.receipt_url as string) ?? null,
         });
         if (data.status === "paid") return;
@@ -73,18 +75,28 @@ const CheckoutReturn = () => {
                 <CheckCircle2 className="h-14 w-14 text-primary mx-auto mb-4" />
                 <h1 className="font-display text-3xl font-bold mb-3">You're enrolled</h1>
                 <p className="font-body text-muted-foreground mb-6">
-                  {info?.course_title
-                    ? `Access to ${info.course_title} is unlocked.`
-                    : "Access to your course is unlocked."}{" "}
+                  {info?.bundle_key
+                    ? "Access to all three bundle courses is unlocked."
+                    : info?.course_title
+                      ? `Access to ${info.course_title} is unlocked.`
+                      : "Access to your course is unlocked."}{" "}
                   A receipt is on its way to your inbox.
                 </p>
                 <div className="flex flex-wrap justify-center gap-3">
-                  {info?.course_slug && (
+                  {info?.bundle_key ? (
                     <Button asChild size="lg">
-                      <Link to={`/course/${info.course_slug}`}>
-                        Start the course <ArrowRight className="ml-2 h-4 w-4" />
+                      <Link to="/my-courses">
+                        Go to my courses <ArrowRight className="ml-2 h-4 w-4" />
                       </Link>
                     </Button>
+                  ) : (
+                    info?.course_slug && (
+                      <Button asChild size="lg">
+                        <Link to={`/course/${info.course_slug}`}>
+                          Start the course <ArrowRight className="ml-2 h-4 w-4" />
+                        </Link>
+                      </Button>
+                    )
                   )}
                   {info?.receipt_url && (
                     <Button asChild variant="outline" size="lg">

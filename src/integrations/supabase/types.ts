@@ -323,8 +323,9 @@ export type Database = {
       orders: {
         Row: {
           amount_cents: number
+          bundle_key: string | null
           coupon_code_used: string | null
-          course_id: string
+          course_id: string | null
           created_at: string
           currency: string
           environment: string
@@ -338,8 +339,9 @@ export type Database = {
         }
         Insert: {
           amount_cents: number
+          bundle_key?: string | null
           coupon_code_used?: string | null
-          course_id: string
+          course_id?: string | null
           created_at?: string
           currency?: string
           environment?: string
@@ -353,8 +355,9 @@ export type Database = {
         }
         Update: {
           amount_cents?: number
+          bundle_key?: string | null
           coupon_code_used?: string | null
-          course_id?: string
+          course_id?: string | null
           created_at?: string
           currency?: string
           environment?: string

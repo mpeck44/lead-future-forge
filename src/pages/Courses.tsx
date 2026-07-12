@@ -250,6 +250,26 @@ const Courses = () => {
                     {filteredCourses.length} course{filteredCourses.length !== 1 ? 's' : ''} available
                   </p>
                 </div>
+
+                {!searchQuery && (
+                  <Card className="mb-6 border-primary/40 bg-primary/5">
+                    <CardContent className="p-6 flex flex-wrap items-center justify-between gap-4">
+                      <div>
+                        <div className="mb-1 inline-block rounded-full bg-primary/15 px-2 py-0.5 font-body text-xs text-primary">
+                          Best value — save $40
+                        </div>
+                        <h3 className="font-display text-xl font-semibold">Complete Path — $197</h3>
+                        <p className="font-body text-sm text-muted-foreground max-w-2xl">
+                          Fluency + Strategy + Action, bundled. The full leadership arc from daily fluency to shipped pilots.
+                        </p>
+                      </div>
+                      <Button asChild>
+                        <Link to="/bundle">See the bundle <ArrowRight className="ml-2 h-4 w-4" /></Link>
+                      </Button>
+                    </CardContent>
+                  </Card>
+                )}
+
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {filteredCourses.map((course) => {

@@ -362,6 +362,19 @@ const PublicCourse = () => {
                 <Link to="/courses">See all courses</Link>
               </Button>
             </div>
+            {["fluency", "strategy", "action"].includes(course.slug) && !alreadyEnrolled && (
+              <div className="mt-6 rounded-lg border border-primary/30 bg-primary/5 p-4 flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <div className="font-display font-semibold">Want the complete path?</div>
+                  <div className="font-body text-sm text-muted-foreground">
+                    Bundle Fluency + Strategy + Action for $197 — save $40 vs. buying separately.
+                  </div>
+                </div>
+                <Button asChild variant="secondary">
+                  <Link to="/bundle">See the bundle</Link>
+                </Button>
+              </div>
+            )}
           </div>
         </section>
 
