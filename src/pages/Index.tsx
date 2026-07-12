@@ -3,6 +3,7 @@ import { Helmet } from "react-helmet-async";
 import Header from "@/components/Header";
 import HeroV2 from "@/components/landing/HeroV2";
 import ProblemV2 from "@/components/landing/ProblemV2";
+import WhyNotChatGPTSection from "@/components/landing/WhyNotChatGPTSection";
 import DoorsSection from "@/components/landing/DoorsSection";
 import PathwaySection from "@/components/landing/PathwaySection";
 import DeliverablesSection from "@/components/landing/DeliverablesSection";
@@ -104,10 +105,11 @@ const Index = () => {
       <main id="main">
         <HeroV2 onWaitlist={() => openWaitlist("hero")} />
         <ProblemV2 />
+        <WhyNotChatGPTSection />
+        <BioSection />
         <DoorsSection onAudit={() => openWaitlist("readiness-audit")} />
         <PathwaySection />
         <DeliverablesSection />
-        <BioSection />
         <TestimonialsV2 />
         <PricingWaitlist />
         <FaqSection />

@@ -1,79 +1,68 @@
-## What Semrush found (US database)
+## Landing page: strengthen positioning
 
-Your current ranking query "district leadership strategy for ai" only has ~10 searches/mo — real, but tiny. The good news: several **sibling phrases in the same cluster** have real volume and low difficulty, meaning a new site like yours can realistically compete.
+Two changes to `src/pages/Index.tsx` section order and content.
 
-### The target cluster
+### 1. New section: "Why not just ask ChatGPT?"
 
-| Keyword | Volume/mo | Difficulty | Why it matters |
-|---|---|---|---|
-| ai for principals | 90 | 2/100 very easy | High-intent, matches your audience exactly |
-| school district ai policy | 70 | 24/100 easy | Direct match to Mike's governance work |
-| ai policy for schools | 70 | 31/100 possible | Same intent, broader phrasing |
-| ai for school administrators | 70 | 4/100 very easy | Wide-open |
-| ai professional development for teachers | 70 | 32/100 possible | Adjacent to your courses |
-| ai in schools | 2,900 | (competitive) | Aspirational — use as supporting phrase |
-| ai in k-12 education | 170 | 56/100 difficult | Long-term |
+Create `src/components/landing/WhyNotChatGPTSection.tsx` — a full-width objection-handler block styled to match the site (navy background, gold accent rule, Playfair headline, Inter body). Content:
 
-Combined, this cluster has ~500+ monthly searches with mostly single/low-double-digit difficulty scores — very reachable for a new authoritative site.
+- Eyebrow: **The objection everyone thinks but doesn't say**
+- Headline: **"Why not just ask ChatGPT?"**
+- Body (Mike's voice, first-person):
+  > AI can draft your policy in an afternoon. It can't tell you which clause fails in a board meeting, which stakeholder quietly kills your pilot, or what breaks in month three.
+  >
+  > The hard part was never generating answers. It's knowing which questions to ask.
+  >
+  > That's what I teach.
+- Signature line: small gold rule + "— Mike Peck, K-12 Director of Technology"
 
-### The insight
+Placement: directly after `ProblemV2` and before the (new) authority block — the objection lands right after the pain is named, before the person is introduced.
 
-Google is already showing you (position 38) for a low-volume phrase. To grow, we need pages built specifically for the higher-value sibling phrases, using consistent terminology so Google sees you as a topical authority on **K-12 AI leadership, policy, and district strategy** — not just one accidental phrase.
+### 2. Restructure the bio into an "authority / demand evidence" block, moved up
 
----
+Rebuild `BioSection.tsx` (or add a new `AuthoritySection.tsx` and retire `BioSection`) around proof of external demand rather than résumé shape.
 
-## The plan
+New structure:
 
-### 1. Optimize the homepage (`/`) for the cluster
+- Eyebrow: **Why people are already coming to me**
+- Headline: **Built by a practitioner other leaders are already seeking out.**
+- Left column: Mike's headshot (keep existing image, keep grayscale treatment).
+- Right column: four short proof cards, each a one-line claim + one-line detail. Not bullets — small labeled blocks with gold micro-eyebrows:
 
-Rewrite title, meta description, H1, and hero subhead to naturally include:
-- "K-12 AI leadership"
-- "district AI strategy"
-- "school AI policy"
-- "for superintendents, principals, and directors of technology"
+  1. **Teaching** — Currently teaching emerging-technology courses to doctoral students at Delaware Valley University.
+  2. **Speaking** — Sought out for regional panels and keynotes on AI in K-12.
+  3. **Convening** — Founded a K-12 AI leadership advisory group; organizing in-person events for district leaders.
+  4. **Building** — Designs and runs custom AI systems in a working district — not theory, current practice.
 
-Keep Mike's voice. No keyword stuffing — the goal is that these phrases appear once each in prominent semantic locations.
+- Closing pull-quote (keep the existing philosophy line): *"I build practical tools educational leaders can put into practice today."*
 
-### 2. Optimize `/resources` landing page
+Move this section **up the page** in `Index.tsx`. New order:
 
-Update title/meta/H1 and intro to target "school district AI policy" and "AI for school administrators" as secondary phrases. Currently the H1 is just "Resources" — too generic to rank.
+```text
+HeroV2
+ProblemV2
+WhyNotChatGPTSection        ← new
+AuthoritySection            ← moved from position 6 to position 4
+DoorsSection
+PathwaySection
+DeliverablesSection
+TestimonialsV2
+PricingWaitlist
+FaqSection
+```
 
-### 3. Draft 3 new resource articles (highest-ROI targets)
+Rationale: buyer sees pain → objection defused → the person who can solve it → then the offer. Person appears while attention is still high, framed as demand-evidence not résumé.
 
-Each targets one low-difficulty, higher-volume keyword:
+### Technical details
 
-- **"AI for Principals: A Practical Playbook"** → targets *ai for principals* (KD 2, vol 90)
-- **"How to Write a School District AI Policy"** → targets *school district ai policy* (KD 24, vol 70) + *ai policy for schools*
-- **"AI for School Administrators: What to Do First"** → targets *ai for school administrators* (KD 4, vol 70)
+- New file: `src/components/landing/WhyNotChatGPTSection.tsx`.
+- Rewrite: `src/components/landing/BioSection.tsx` → rename export or replace with `AuthoritySection.tsx` (keep import path stable by editing `BioSection.tsx` in place to minimize churn).
+- Edit: `src/pages/Index.tsx` — insert `WhyNotChatGPTSection`, move authority section above `DoorsSection`.
+- Reuse existing tokens: `bg-navy`, `text-gold`, `hsl(40_72%_30%)` eyebrows, Playfair `font-display`, Inter `font-body`, `rv` reveal classes. No new colors, no new fonts.
+- No copy changes to Hero, Problem, Doors, Pathway, Deliverables, Testimonials, Pricing, FAQ in this pass.
+- No backend, routing, or SEO metadata changes.
 
-Mike drafts the content; I scaffold the resource records (title, dek, slug, category, cover placeholder, publish-ready structure) and can insert them via the admin flow, or draft the copy from his outlines.
+### Out of scope for this change
 
-### 4. Internal linking
-
-- Homepage → link to each of the 3 new articles by their target phrase
-- `/courses` pages → link to the article most relevant to each course path
-- Each new article → link to the relevant course
-
-Internal links pass authority and tell Google these phrases are important on your site.
-
-### 5. Re-run the SEO scan after changes
-
-Confirm titles/descriptions/schema are healthy on updated pages before requesting re-indexing in Search Console.
-
----
-
-## Technical details
-
-- Homepage copy lives in `src/components/landing/HeroV2.tsx` and `src/pages/Index.tsx` (Helmet block)
-- Resources landing metadata is in `src/pages/Resources.tsx` (title, description, H1, intro paragraph)
-- New articles are Supabase `resources` rows — I'll draft them as SQL inserts (or via the admin UI). Sitemap picks them up automatically on next build via `scripts/generate-sitemap.ts`
-- Internal links: minor edits to `Footer.tsx`, `Hero.tsx`, and the course page components
-
----
-
-## What I need from you
-
-1. Approve this plan and I'll start with **step 1 (homepage) + step 2 (/resources landing)** — those ship in one pass and don't require you writing new content
-2. For step 3, do you want me to (a) draft full first-pass article copy for you to edit, or (b) scaffold empty publish-ready records so you can write them in the admin?
-
-Once approved, expected turnaround: steps 1–2 same session, step 4 same session, step 3 depends on your answer above.
+- Rewriting testimonials, pricing, or FAQ.
+- Adding new images or logos for Delaware Valley University / panels (text-only proof for now; can add logos in a later pass once permissions are confirmed).
