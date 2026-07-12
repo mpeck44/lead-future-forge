@@ -105,10 +105,11 @@ const Index = () => {
       <main id="main">
         <HeroV2 onWaitlist={() => openWaitlist("hero")} />
         <ProblemV2 />
+        <WhyNotChatGPTSection />
+        <BioSection />
         <DoorsSection onAudit={() => openWaitlist("readiness-audit")} />
         <PathwaySection />
         <DeliverablesSection />
-        <BioSection />
         <TestimonialsV2 />
         <PricingWaitlist />
         <FaqSection />
