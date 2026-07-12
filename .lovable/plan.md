@@ -1,49 +1,40 @@
-## Bundle checkout — $197 for all three paid courses
+## Courses page reorg
 
-### Scope
-Add a "Complete Path — $197" bundle that enrolls the buyer in Fluency, Strategy, and Action in a single Stripe checkout. Reuses the existing embedded checkout + webhook plumbing.
+Two frontend-only changes to `src/pages/Courses.tsx`. No backend, no schema.
 
-### 1. Stripe product
-- Register a new product via the Payments tool:
-  - `product_id: course_bundle`, `price_id: course_bundle_onetime`, amount `19700 usd`
-  - `tax_code: txcd_10000000` (matches individual courses)
-  - Syncs to live automatically on next publish.
+### 1. Remove the internal path badges
+- Delete the `Badge` that renders `course.path_type` ("Accelerator Path", "1", "2", "3") from the course card header.
+- Keep the "Requires Foundations" badge — that one is meaningful to users.
+- Leave `path_type` in the query/select for now (used elsewhere and for sort logic below); just stop rendering it.
 
-### 2. Database
-Small schema tweak so orders can represent a bundle (which has no single `course_id`):
+### 2. Reorder cards: Foundations on top, then a row of three
 
-```sql
-ALTER TABLE public.orders ALTER COLUMN course_id DROP NOT NULL;
-ALTER TABLE public.orders ADD COLUMN bundle_key text;
-ALTER TABLE public.orders ADD CONSTRAINT orders_course_or_bundle
-  CHECK (course_id IS NOT NULL OR bundle_key IS NOT NULL);
+Layout when no search query is active:
+
+```text
+[ Complete Path — $197 bundle banner ]           (unchanged)
+
+[ ───────── Foundations (full-width card) ─────────── ]
+
+[ Fluency ]   [ Strategy ]   [ Action ]
 ```
 
-No new products/bundles table — the bundle definition (lookup key + course slugs) lives in one shared constants file used by the edge function and the client.
+Details:
+- Classify each course by slug (canonical) with a fallback to `audit_category` / `path_type`:
+  - Foundations → slug contains `foundations`
+  - Fluency → `audit_category === 'fluency'` or slug contains `fluency`
+  - Strategy → `audit_category === 'strategy'` or slug contains `strategy`
+  - Action → `audit_category === 'action'` or slug contains `action`
+  - Anything else → "Other" bucket, rendered in a normal 3-col grid below the pathway trio (safety net for future courses).
+- Render Foundations as a single full-width card (`md:col-span-3` inside the same grid, or a standalone card above the trio). Use the existing `Card` component and copy — just widen it and keep the same enroll / view-details actions.
+- Render Fluency, Strategy, Action in that fixed order in a `grid-cols-1 md:grid-cols-3` row underneath. Missing entries collapse gracefully (e.g. if Strategy isn't published yet, the row shows two cards).
+- When the user types a search query, fall back to the current flat filtered grid — pathway structure only shows for the unfiltered catalog view.
+- Course count label ("N courses available") stays as-is.
 
-### 3. Edge function: `create-checkout`
-Extend the existing function to accept either `{ courseId }` or `{ bundleKey: "complete_path" }`:
-- For bundle: skip the products-table lookup, resolve the Stripe price via `lookup_keys: ["course_bundle_onetime"]`, look up the three course IDs from `courses` by slug, and reject if the user already has an active enrollment in any of them.
-- Pass `metadata.bundleKey` on the Session (and no `courseId`).
-- Insert an `orders` row with `bundle_key = "complete_path"`, `course_id = NULL`, amount `19700`.
+### Out of scope
+- No connector lines / tree SVG (rejected option).
+- No changes to individual course pages, bundle page, or the CTA section.
+- No DB migration; `path_type` column stays.
 
-### 4. Edge function: `payments-webhook`
-In `handleCheckoutCompleted`, if `session.metadata.bundleKey` is present:
-- Upsert three `enrollments` rows (one per course in the bundle), splitting `amount_total` evenly for `amount_paid` bookkeeping.
-- Update the `orders` row to `paid` as today (matched by `stripe_session_id`).
-
-### 5. Frontend
-- New route `/bundle` → `BundleCheckout.tsx`: marketing blurb, "$197 — save $40 vs. buying separately", and the embedded checkout mounted via `StripeEmbeddedCheckoutView`.
-- Extend `StripeEmbeddedCheckoutView` props to accept `bundleKey` as an alternative to `courseId` and forward it to the edge function.
-- Add a "Get the complete path — $197" card to `Courses.tsx` and a secondary CTA row on each paid `PublicCourse` page linking to `/bundle`.
-- `CheckoutReturn.tsx`: when the order has `bundle_key` and no single course, show "You're enrolled in all three courses" with a link to `/my-courses` instead of a single "Start the course" button.
-
-### 6. Test plan
-- Buy bundle with `4242 4242 4242 4242` in sandbox → return page shows all-three success → three `enrollments` rows created → `orders.status = paid`.
-- Attempting to buy the bundle while already enrolled in any of the three is rejected with a clear message.
-- Individual $79 checkout still works unchanged.
-
-### Technical notes
-- Bundle config module: `supabase/functions/_shared/bundles.ts` (edge) + `src/lib/bundles.ts` (client) — same `{ key, lookupKey, courseSlugs, priceCents }` shape.
-- No changes to `products` table; the bundle is intentionally not represented there since its `course_id` is 1-to-many.
-- Discount math: 3 × $79 = $237, bundle $197 → save $40. Used in copy only.
+### Files touched
+- `src/pages/Courses.tsx` — remove badge, add classification + new render structure for the unfiltered view.
