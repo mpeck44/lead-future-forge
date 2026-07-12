@@ -387,115 +387,29 @@ const Courses = () => {
                   </Card>
                 )}
 
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {filteredCourses.map((course) => {
-                    const isEnrolled = enrolledCourseIds.has(course.id);
-                    const isEnrolling = enrollingId === course.id;
-
-                    return (
-                      <Card key={course.id} className="flex flex-col hover:shadow-lg transition-shadow">
-                        <CardHeader className="pb-3">
-                          <div className="flex items-start justify-between gap-2 mb-2">
-                            <div className="flex flex-wrap gap-1">
-                              {course.path_type && (
-                                <Badge variant="secondary" className="font-body text-xs">
-                                  {course.path_type}
-                                </Badge>
-                              )}
-                              {course.requires_foundations && (
-                                <Badge variant="outline" className="font-body text-xs">
-                                  Requires Foundations
-                                </Badge>
-                              )}
-                            </div>
-                            <span className="font-display font-bold text-primary">
-                              {formatPrice(course.price)}
-                            </span>
-                          </div>
-                          <CardTitle className="font-display text-xl leading-tight">
-                            {course.title}
-                          </CardTitle>
-                        </CardHeader>
-                        <CardContent className="flex-1 flex flex-col">
-                          {/* Structured course info in practitioner voice */}
-                          <div className="space-y-2 mb-4 text-sm">
-                            {course.description && (
-                              <p className="font-body text-muted-foreground line-clamp-2">
-                                {course.description}
-                              </p>
-                            )}
-                            <div className="space-y-1 pt-2 border-t border-border/50">
-                              <p className="font-body text-foreground">
-                                <span className="font-medium">What you'll build:</span> Documents and tools you can use next week
-                              </p>
-                              {course.estimated_hours && (
-                                <p className="font-body text-muted-foreground">
-                                  <span className="font-medium text-foreground">Time investment:</span> {course.estimated_hours} hours of focused work
-                                </p>
-                              )}
-                              <p className="font-body text-muted-foreground">
-                                <span className="font-medium text-foreground">Who this is for:</span> Leaders who need practical tools, not theory
-                              </p>
-                            </div>
-                            <p className="font-body text-xs text-primary italic pt-2">
-                              This isn't comprehensive. It's practical.
-                            </p>
-                          </div>
-                          
-                          {/* Course Meta */}
-                          <div className="flex flex-wrap gap-4 text-xs text-muted-foreground mb-6">
-                            {course.estimated_hours && (
-                              <div className="flex items-center gap-1">
-                                <Clock className="h-3 w-3" />
-                                <span className="font-body">{course.estimated_hours} hours</span>
-                              </div>
-                            )}
-                            <div className="flex items-center gap-1">
-                              <Users className="h-3 w-3" />
-                              <span className="font-body">Self-paced</span>
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <Award className="h-3 w-3" />
-                              <span className="font-body">Certificate</span>
-                            </div>
-                          </div>
-
-                          {/* Action Button */}
-                          <div className="mt-auto">
-                            {isEnrolled ? (
-                              <Button asChild className="w-full font-body">
-                                <Link to={`/course/${course.slug}`}>
-                                  Continue Learning
-                                  <ArrowRight className="ml-2 h-4 w-4" />
-                                </Link>
-                              </Button>
-                            ) : (
-                              <div className="flex gap-2">
-                                <Button 
-                                  variant="outline" 
-                                  asChild 
-                                  className="flex-1 font-body"
-                                >
-                                  <Link to={`/courses/${course.slug}`}>
-                                    View course details
-                                  </Link>
-                                </Button>
-                                <Button 
-                                  onClick={() => handleEnroll(course.id)}
-                                  disabled={isEnrolling}
-                                  className="flex-1 font-body"
-                                >
-                                  {isEnrolling ? 'Enrolling...' : 'Enroll Now'}
-                                </Button>
-                              </div>
-                            )}
-                          </div>
-                        </CardContent>
-                      </Card>
-                    );
-                  })}
-                </div>
+                {useStructuredLayout ? (
+                  <div className="space-y-6">
+                    {foundationsCourse && (
+                      <div className="grid grid-cols-1">
+                        {renderCourseCard(foundationsCourse)}
+                      </div>
+                    )}
+                    {pathwayTrio.length > 0 && (
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        {pathwayTrio.map(renderCourseCard)}
+                      </div>
+                    )}
+                    {otherCourses.length > 0 && (
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {otherCourses.map(renderCourseCard)}
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {filteredCourses.map(renderCourseCard)}
+                  </div>
+                )}
               </>
             )}
           </div>
