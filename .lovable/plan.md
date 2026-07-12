@@ -1,68 +1,121 @@
-## Landing page: strengthen positioning
 
-Two changes to `src/pages/Index.tsx` section order and content.
+# Platform Operations Build — Payments, Email, Access Control
 
-### 1. New section: "Why not just ask ChatGPT?"
+Scope: turn the site from a marketing/course-viewer into a real revenue-generating platform. Split into 4 phases so we can ship and test each before stacking the next.
 
-Create `src/components/landing/WhyNotChatGPTSection.tsx` — a full-width objection-handler block styled to match the site (navy background, gold accent rule, Playfair headline, Inter body). Content:
+---
 
-- Eyebrow: **The objection everyone thinks but doesn't say**
-- Headline: **"Why not just ask ChatGPT?"**
-- Body (Mike's voice, first-person):
-  > AI can draft your policy in an afternoon. It can't tell you which clause fails in a board meeting, which stakeholder quietly kills your pilot, or what breaks in month three.
-  >
-  > The hard part was never generating answers. It's knowing which questions to ask.
-  >
-  > That's what I teach.
-- Signature line: small gold rule + "— Mike Peck, K-12 Director of Technology"
+## Phase 1 — Payment foundation (Stripe checkout for paid courses)
 
-Placement: directly after `ProblemV2` and before the (new) authority block — the objection lands right after the pain is named, before the person is introduced.
+**Goal:** users can buy Command / Strategy / Implementation courses with a card. Foundations stays free.
 
-### 2. Restructure the bio into an "authority / demand evidence" block, moved up
+Backend (Lovable Cloud + Stripe seamless):
+1. Enable Stripe via `payments--enable_stripe_payments` (managed, no BYOK). Set full-compliance handling as default since it's US-based digital courses.
+2. New tables:
+   - `products` — one row per paid course, links `course_id` → Stripe product/price IDs, amount, currency.
+   - `orders` — `id`, `user_id`, `course_id`, `stripe_session_id`, `amount_paid`, `status` (pending/paid/refunded), `receipt_url`, `coupon_code_used`, `created_at`.
+3. Edge functions:
+   - `create-checkout` — authenticated, takes `course_id` + optional `coupon_code`, returns Stripe Checkout URL.
+   - `stripe-webhook` — verifies signature, on `checkout.session.completed` creates `orders` row + `enrollments` row + fires enrollment email.
+4. UI:
+   - `PublicCourse.tsx` — for paid courses, "Enroll Now" becomes "Buy — $X" opening Stripe Checkout. Free courses (Foundations) keep current flow.
+   - New `/checkout/success?session_id=...` page — verifies order, shows receipt link, CTA to start course.
+   - Guard: `CourseViewer` already checks enrollment, so gating happens automatically once `enrollments` row is written.
 
-Rebuild `BioSection.tsx` (or add a new `AuthoritySection.tsx` and retire `BioSection`) around proof of external demand rather than résumé shape.
+Copy: keep Foundations free everywhere. Add price display on `Courses.tsx` cards (already formats price — will just have real numbers).
 
-New structure:
+**You'll need to do:** provide prices per paid course after Stripe is enabled; I'll create the products via `batch_create_product`.
 
-- Eyebrow: **Why people are already coming to me**
-- Headline: **Built by a practitioner other leaders are already seeking out.**
-- Left column: Mike's headshot (keep existing image, keep grayscale treatment).
-- Right column: four short proof cards, each a one-line claim + one-line detail. Not bullets — small labeled blocks with gold micro-eyebrows:
+---
 
-  1. **Teaching** — Currently teaching emerging-technology courses to doctoral students at Delaware Valley University.
-  2. **Speaking** — Sought out for regional panels and keynotes on AI in K-12.
-  3. **Convening** — Founded a K-12 AI leadership advisory group; organizing in-person events for district leaders.
-  4. **Building** — Designs and runs custom AI systems in a working district — not theory, current practice.
+## Phase 2 — Access control (coupon codes + magic-link invites)
 
-- Closing pull-quote (keep the existing philosophy line): *"I build practical tools educational leaders can put into practice today."*
+Backend:
+1. `coupon_codes` table — `code` (unique), `discount_type` ('percent'|'fixed'), `discount_value`, `course_id` (nullable = any paid course), `max_redemptions`, `redemptions_count`, `expires_at`, `created_by`, `active`.
+2. `enrollment_invites` table — `id`, `email`, `course_id`, `token` (uuid), `status` ('pending'|'redeemed'|'expired'), `expires_at`, `created_by`, `redeemed_by_user_id`.
+3. Edge functions:
+   - `validate-coupon` — checks code, applies to Stripe session (`coupon` param); 100%-off codes skip Stripe entirely and enroll directly.
+   - `create-invite` — admin-only, generates token, sends invite email with `/invite/:token` link.
+   - `redeem-invite` — accepts token, requires auth (redirects to /auth if not logged in preserving token), enrolls user, marks redeemed.
+4. Admin UI additions:
+   - `/admin/coupons` — list + create form (code, % or $, course, max uses, expiry). Copy-to-clipboard.
+   - `/admin/invites` — send single-email invite form + table of pending/redeemed.
+5. Checkout UI: coupon input field on the Buy step; instant validate feedback.
+6. New public route `/invite/:token` — validates + enrolls.
 
-Move this section **up the page** in `Index.tsx`. New order:
+---
+
+## Phase 3 — Automated emails
+
+Prereq: `email_domain--setup_email_infra` (if not already), `scaffold_auth_email_templates`, `scaffold_transactional_email`. Uses Lovable Emails (no Resend/etc.).
+
+Templates to build in Forge brand (Navy #0F172A, Gold #d4af37, Playfair headings, Inter body, white body bg):
+
+1. **Auth emails** (branded via `scaffold_auth_email_templates`):
+   - Signup confirmation
+   - Password reset
+   - Magic link
+2. **Enrollment confirmation + receipt** (`enrollment-confirmation`):
+   - Triggered by `stripe-webhook` after paid enrollment AND by free/coupon enrollment path.
+   - Includes course title, amount paid ("$0.00 — comp" if coupon), Stripe receipt URL, "Start course" CTA to `/course/:slug`.
+3. **District PO invoice acknowledgment** (`po-request-received`) — Phase 4.
+4. **Course completion + certificate** (`course-completion`):
+   - Triggered when `user_progress` shows all lessons complete for a course.
+   - New edge function `issue-certificate` generates a signed PDF (name + course + date + Mike's signature block) into `certificates` storage bucket (private, signed URL).
+   - Email links to certificate download.
+
+Trigger wiring: DB trigger on `user_progress` completion → calls `issue-certificate` via `pg_net` → certificate row created → `send-transactional-email` invoked.
+
+---
+
+## Phase 4 — District PO / invoice purchase path
+
+Backend:
+1. `po_requests` table — `id`, `course_id`, `district_name`, `billing_contact_name`, `billing_contact_email`, `seats_requested`, `billing_address`, `notes`, `status` ('new'|'invoiced'|'paid'|'fulfilled'|'declined'), `admin_notes`, `invoice_url`, `created_at`.
+2. `seat_grants` table — when admin marks PO paid, generates N single-use codes tied to that PO for staff redemption (reuses Phase 2 coupon/invite plumbing under the hood, or dedicated `seat_codes` table if cleaner — will use `enrollment_invites` extended with `po_request_id`).
+3. Edge functions:
+   - `submit-po-request` — public, rate-limited, sends acknowledgment email to buyer + notification email to Mike.
+   - `fulfill-po-request` — admin, generates seat codes, emails buyer the redemption list + CSV.
+
+UI:
+1. On paid `PublicCourse.tsx`: "Purchasing for a district?" link → `/purchase-order/:slug` form.
+2. `/purchase-order/:slug` — captures district info + seats, submits.
+3. `/admin/po-requests` — inbox: list, view, update status, upload invoice PDF, trigger fulfillment.
+
+---
+
+## Sequencing & checkpoints
 
 ```text
-HeroV2
-ProblemV2
-WhyNotChatGPTSection        ← new
-AuthoritySection            ← moved from position 6 to position 4
-DoorsSection
-PathwaySection
-DeliverablesSection
-TestimonialsV2
-PricingWaitlist
-FaqSection
+Phase 1 (Stripe checkout)       → test with $1 product before real prices
+   ↓
+Phase 3a (auth + enrollment emails only)  → so buyers get receipts immediately
+   ↓
+Phase 2 (coupons + invites)     → now you can comp people cleanly
+   ↓
+Phase 3b (certificate email)    → after first paid students exist
+   ↓
+Phase 4 (district PO path)      → last; needs everything above
 ```
 
-Rationale: buyer sees pain → objection defused → the person who can solve it → then the offer. Person appears while attention is still high, framed as demand-evidence not résumé.
+Rationale: don't take live money until receipts land in inboxes; don't build certificates until real completions happen; PO path piggybacks on invite plumbing so build it last.
 
-### Technical details
+---
 
-- New file: `src/components/landing/WhyNotChatGPTSection.tsx`.
-- Rewrite: `src/components/landing/BioSection.tsx` → rename export or replace with `AuthoritySection.tsx` (keep import path stable by editing `BioSection.tsx` in place to minimize churn).
-- Edit: `src/pages/Index.tsx` — insert `WhyNotChatGPTSection`, move authority section above `DoorsSection`.
-- Reuse existing tokens: `bg-navy`, `text-gold`, `hsl(40_72%_30%)` eyebrows, Playfair `font-display`, Inter `font-body`, `rv` reveal classes. No new colors, no new fonts.
-- No copy changes to Hero, Problem, Doors, Pathway, Deliverables, Testimonials, Pricing, FAQ in this pass.
-- No backend, routing, or SEO metadata changes.
+## Additional operational suggestions (NOT in this plan — flag for later)
 
-### Out of scope for this change
+Not building these now, but noting so we don't paint into a corner:
+- Abandoned-checkout recovery email (Stripe supports natively via Checkout — can flip on).
+- Foundations → paid pathway drip (post-completion nurture email 3 days later).
+- Waitlist → launch email (auto-notify `waitlist_leads` when a course flips to `is_published=true`).
+- Admin revenue dashboard (revenue by course, coupon redemption stats, PO pipeline).
+- Refund flow in admin (Stripe refund API + `orders.status='refunded'` + revoke enrollment).
+- Invoice PDF (separate from Stripe receipt — needed for district reimbursement).
 
-- Rewriting testimonials, pricing, or FAQ.
-- Adding new images or logos for Delaware Valley University / panels (text-only proof for now; can add logos in a later pass once permissions are confirmed).
+Say the word after Phase 4 and I'll fold any/all of these in.
+
+---
+
+## Confirm to start
+
+If this shape looks right, approve and I'll begin **Phase 1 only**. I'll pause at the end of Phase 1 for you to test a real card before we move to Phase 2.
