@@ -12,6 +12,7 @@ interface OrderInfo {
   status: string;
   course_slug: string | null;
   course_title: string | null;
+  bundle_key: string | null;
   receipt_url: string | null;
 }
 
@@ -29,7 +30,7 @@ const CheckoutReturn = () => {
     const poll = async () => {
       const { data } = await supabase
         .from("orders")
-        .select("status, receipt_url, courses(slug, title)")
+        .select("status, receipt_url, bundle_key, courses(slug, title)")
         .eq("stripe_session_id", sessionId)
         .maybeSingle();
 
@@ -39,6 +40,7 @@ const CheckoutReturn = () => {
           status: data.status as string,
           course_slug: (data.courses as any)?.slug ?? null,
           course_title: (data.courses as any)?.title ?? null,
+          bundle_key: (data.bundle_key as string) ?? null,
           receipt_url: (data.receipt_url as string) ?? null,
         });
         if (data.status === "paid") return;
