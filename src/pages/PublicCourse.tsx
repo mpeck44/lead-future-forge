@@ -8,8 +8,12 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowRight, Clock, Award, Users, CheckCircle2, BookOpen } from "lucide-react";
+import { ArrowRight, Clock, Award, Users, CheckCircle2, BookOpen, X } from "lucide-react";
 import { ROLE_OPTIONS } from "@/lib/roleOptions";
+import { StripeEmbeddedCheckoutView } from "@/components/StripeEmbeddedCheckout";
+import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
+import { paymentsConfigured } from "@/lib/stripe";
+import { toast } from "sonner";
 
 interface Course {
   id: string;
