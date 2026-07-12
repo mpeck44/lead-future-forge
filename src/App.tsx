@@ -27,6 +27,7 @@ import AdminResourceEdit from "./pages/admin/AdminResourceEdit";
 import Resources from "./pages/Resources";
 import ResourceDetail from "./pages/ResourceDetail";
 import PrivacyTerms from "./pages/PrivacyTerms";
+import CheckoutReturn from "./pages/CheckoutReturn";
 
 
 const queryClient = new QueryClient();
@@ -45,6 +46,7 @@ const App = () => (
             <Route path="/resources" element={<Resources />} />
             <Route path="/resources/:slug" element={<ResourceDetail />} />
             <Route path="/privacy-terms" element={<PrivacyTerms />} />
+            <Route path="/checkout/return" element={<CheckoutReturn />} />
             <Route path="/auth" element={<Auth />} />
             <Route
               path="/dashboard"

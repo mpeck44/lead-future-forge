@@ -8,8 +8,12 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowRight, Clock, Award, Users, CheckCircle2, BookOpen } from "lucide-react";
+import { ArrowRight, Clock, Award, Users, CheckCircle2, BookOpen, X } from "lucide-react";
 import { ROLE_OPTIONS } from "@/lib/roleOptions";
+import { StripeEmbeddedCheckoutView } from "@/components/StripeEmbeddedCheckout";
+import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
+import { paymentsConfigured } from "@/lib/stripe";
+import { toast } from "sonner";
 
 interface Course {
   id: string;
@@ -89,6 +93,9 @@ const PublicCourse = () => {
   const [modules, setModules] = useState<Module[]>([]);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+  const [product, setProduct] = useState<{ amount_cents: number; currency: string } | null>(null);
+  const [alreadyEnrolled, setAlreadyEnrolled] = useState(false);
+  const [checkoutOpen, setCheckoutOpen] = useState(false);
 
   useEffect(() => {
     if (!slug) return;
@@ -108,19 +115,38 @@ const PublicCourse = () => {
         return;
       }
       setCourse(courseData as Course);
-      const { data: modData } = await supabase
-        .from("modules")
-        .select("id, title, description, sequence_order")
-        .eq("course_id", courseData.id)
-        .order("sequence_order");
+      const [modRes, prodRes, enrollRes] = await Promise.all([
+        supabase
+          .from("modules")
+          .select("id, title, description, sequence_order")
+          .eq("course_id", courseData.id)
+          .order("sequence_order"),
+        supabase
+          .from("products")
+          .select("amount_cents, currency")
+          .eq("course_id", courseData.id)
+          .eq("active", true)
+          .maybeSingle(),
+        user
+          ? supabase
+              .from("enrollments")
+              .select("id")
+              .eq("user_id", user.id)
+              .eq("course_id", courseData.id)
+              .eq("status", "active")
+              .maybeSingle()
+          : Promise.resolve({ data: null } as any),
+      ]);
       if (cancelled) return;
-      setModules((modData as Module[]) || []);
+      setModules((modRes.data as Module[]) || []);
+      setProduct((prodRes.data as any) || null);
+      setAlreadyEnrolled(!!enrollRes?.data);
       setLoading(false);
     })();
     return () => {
       cancelled = true;
     };
-  }, [slug]);
+  }, [slug, user]);
 
   if (notFound) {
     return (
@@ -203,8 +229,53 @@ const PublicCourse = () => {
       }
     : null;
 
-  const ctaHref = user ? `/course/${course.slug}` : "/auth";
-  const ctaLabel = user ? "Go to course" : "Sign in to enroll";
+  const isPaid = !!product && product.amount_cents > 0;
+  const priceLabel = product
+    ? new Intl.NumberFormat("en-US", { style: "currency", currency: product.currency.toUpperCase(), maximumFractionDigits: 0 }).format(product.amount_cents / 100)
+    : null;
+
+  const handlePrimaryCta = async () => {
+    if (!user) {
+      // Preserve intent to return to this course after auth
+      navigate(`/auth?redirect=${encodeURIComponent(`/courses/${course.slug}`)}`);
+      return;
+    }
+    if (alreadyEnrolled) {
+      navigate(`/course/${course.slug}`);
+      return;
+    }
+    if (isPaid) {
+      if (!paymentsConfigured()) {
+        toast.error("Checkout isn't available yet. Please contact us to enroll.");
+        return;
+      }
+      setCheckoutOpen(true);
+      return;
+    }
+    // Free course — enroll directly
+    try {
+      const { error } = await supabase.from("enrollments").insert({
+        user_id: user.id,
+        course_id: course.id,
+        status: "active",
+        amount_paid: 0,
+      });
+      if (error && error.code !== "23505") throw error;
+      setAlreadyEnrolled(true);
+      toast.success("You're enrolled.");
+      navigate(`/course/${course.slug}`);
+    } catch (e) {
+      toast.error("Could not enroll. Please try again.");
+    }
+  };
+
+  const primaryLabel = !user
+    ? "Sign in to enroll"
+    : alreadyEnrolled
+      ? "Go to course"
+      : isPaid
+        ? `Enroll — ${priceLabel}`
+        : "Enroll free";
 
   return (
     <div className="min-h-screen bg-background">
@@ -221,7 +292,35 @@ const PublicCourse = () => {
         <script type="application/ld+json">{JSON.stringify(breadcrumbJsonLd)}</script>
         {faqJsonLd && <script type="application/ld+json">{JSON.stringify(faqJsonLd)}</script>}
       </Helmet>
+      <PaymentTestModeBanner />
       <Header />
+      {checkoutOpen && course && (
+        <div
+          className="fixed inset-0 z-[100] bg-black/60 flex items-start justify-center overflow-y-auto p-4 pt-10"
+          role="dialog"
+          aria-modal="true"
+        >
+          <div className="bg-background rounded-lg max-w-3xl w-full shadow-2xl">
+            <div className="flex items-center justify-between p-4 border-b">
+              <div>
+                <div className="font-display text-lg font-semibold">Enroll in {course.title}</div>
+                <div className="font-body text-sm text-muted-foreground">
+                  Secure checkout powered by Stripe
+                </div>
+              </div>
+              <Button variant="ghost" size="icon" onClick={() => setCheckoutOpen(false)} aria-label="Close checkout">
+                <X className="h-5 w-5" />
+              </Button>
+            </div>
+            <div className="p-4">
+              <StripeEmbeddedCheckoutView
+                courseId={course.id}
+                returnUrl={`${window.location.origin}/checkout/return?session_id={CHECKOUT_SESSION_ID}`}
+              />
+            </div>
+          </div>
+        </div>
+      )}
       <main className="pt-20 lg:pt-24">
         {/* Hero */}
         <section className="bg-gradient-to-br from-primary/5 via-background to-accent/5 py-12 lg:py-16">
@@ -256,8 +355,8 @@ const PublicCourse = () => {
               <span className="flex items-center gap-1"><Award className="h-4 w-4" />Certificate</span>
             </div>
             <div className="flex flex-wrap gap-3">
-              <Button asChild size="lg">
-                <Link to={ctaHref}>{ctaLabel}<ArrowRight className="ml-2 h-4 w-4" /></Link>
+              <Button size="lg" onClick={handlePrimaryCta}>
+                {primaryLabel}<ArrowRight className="ml-2 h-4 w-4" />
               </Button>
               <Button asChild size="lg" variant="outline">
                 <Link to="/courses">See all courses</Link>
@@ -345,8 +444,8 @@ const PublicCourse = () => {
               <p className="font-body text-primary-foreground/80 mb-6">
                 Stop reading about AI. Start building tools you can actually use.
               </p>
-              <Button variant="secondary" size="lg" asChild>
-                <Link to={ctaHref}>{ctaLabel}<ArrowRight className="ml-2 h-4 w-4" /></Link>
+              <Button variant="secondary" size="lg" onClick={handlePrimaryCta}>
+                {primaryLabel}<ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </Card>
           </div>
