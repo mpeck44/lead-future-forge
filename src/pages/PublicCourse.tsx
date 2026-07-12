@@ -416,8 +416,8 @@ const PublicCourse = () => {
               <p className="font-body text-primary-foreground/80 mb-6">
                 Stop reading about AI. Start building tools you can actually use.
               </p>
-              <Button variant="secondary" size="lg" asChild>
-                <Link to={ctaHref}>{ctaLabel}<ArrowRight className="ml-2 h-4 w-4" /></Link>
+              <Button variant="secondary" size="lg" onClick={handlePrimaryCta}>
+                {primaryLabel}<ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </Card>
           </div>
