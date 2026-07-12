@@ -46,6 +46,7 @@ const App = () => (
             <Route path="/resources" element={<Resources />} />
             <Route path="/resources/:slug" element={<ResourceDetail />} />
             <Route path="/privacy-terms" element={<PrivacyTerms />} />
+            <Route path="/checkout/return" element={<CheckoutReturn />} />
             <Route path="/auth" element={<Auth />} />
             <Route
               path="/dashboard"
