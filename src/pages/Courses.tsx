@@ -143,6 +143,123 @@ const Courses = () => {
     return `$${(price / 100).toFixed(0)}`;
   };
 
+  // Classify a course into a pathway bucket for the ordered layout.
+  const classify = (course: Course): 'foundations' | 'fluency' | 'strategy' | 'action' | 'other' => {
+    const slug = (course.slug || '').toLowerCase();
+    if (slug.includes('foundations')) return 'foundations';
+    if (course.audit_category === 'fluency' || slug.includes('fluency')) return 'fluency';
+    if (course.audit_category === 'strategy' || slug.includes('strategy')) return 'strategy';
+    if (course.audit_category === 'action' || slug.includes('action')) return 'action';
+    return 'other';
+  };
+
+  const foundationsCourse = filteredCourses.find(c => classify(c) === 'foundations') || null;
+  const fluencyCourse = filteredCourses.find(c => classify(c) === 'fluency') || null;
+  const strategyCourse = filteredCourses.find(c => classify(c) === 'strategy') || null;
+  const actionCourse = filteredCourses.find(c => classify(c) === 'action') || null;
+  const pathwayTrio = [fluencyCourse, strategyCourse, actionCourse].filter(Boolean) as Course[];
+  const otherCourses = filteredCourses.filter(c => classify(c) === 'other');
+  const useStructuredLayout = !searchQuery;
+
+  const renderCourseCard = (course: Course) => {
+    const isEnrolled = enrolledCourseIds.has(course.id);
+    const isEnrolling = enrollingId === course.id;
+
+    return (
+      <Card key={course.id} className="flex flex-col hover:shadow-lg transition-shadow">
+        <CardHeader className="pb-3">
+          <div className="flex items-start justify-between gap-2 mb-2">
+            <div className="flex flex-wrap gap-1">
+              {course.requires_foundations && (
+                <Badge variant="outline" className="font-body text-xs">
+                  Requires Foundations
+                </Badge>
+              )}
+            </div>
+            <span className="font-display font-bold text-primary">
+              {formatPrice(course.price)}
+            </span>
+          </div>
+          <CardTitle className="font-display text-xl leading-tight">
+            {course.title}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="flex-1 flex flex-col">
+          <div className="space-y-2 mb-4 text-sm">
+            {course.description && (
+              <p className="font-body text-muted-foreground line-clamp-2">
+                {course.description}
+              </p>
+            )}
+            <div className="space-y-1 pt-2 border-t border-border/50">
+              <p className="font-body text-foreground">
+                <span className="font-medium">What you'll build:</span> Documents and tools you can use next week
+              </p>
+              {course.estimated_hours && (
+                <p className="font-body text-muted-foreground">
+                  <span className="font-medium text-foreground">Time investment:</span> {course.estimated_hours} hours of focused work
+                </p>
+              )}
+              <p className="font-body text-muted-foreground">
+                <span className="font-medium text-foreground">Who this is for:</span> Leaders who need practical tools, not theory
+              </p>
+            </div>
+            <p className="font-body text-xs text-primary italic pt-2">
+              This isn't comprehensive. It's practical.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap gap-4 text-xs text-muted-foreground mb-6">
+            {course.estimated_hours && (
+              <div className="flex items-center gap-1">
+                <Clock className="h-3 w-3" />
+                <span className="font-body">{course.estimated_hours} hours</span>
+              </div>
+            )}
+            <div className="flex items-center gap-1">
+              <Users className="h-3 w-3" />
+              <span className="font-body">Self-paced</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <Award className="h-3 w-3" />
+              <span className="font-body">Certificate</span>
+            </div>
+          </div>
+
+          <div className="mt-auto">
+            {isEnrolled ? (
+              <Button asChild className="w-full font-body">
+                <Link to={`/course/${course.slug}`}>
+                  Continue Learning
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+            ) : (
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  asChild
+                  className="flex-1 font-body"
+                >
+                  <Link to={`/courses/${course.slug}`}>
+                    View course details
+                  </Link>
+                </Button>
+                <Button
+                  onClick={() => handleEnroll(course.id)}
+                  disabled={isEnrolling}
+                  className="flex-1 font-body"
+                >
+                  {isEnrolling ? 'Enrolling...' : 'Enroll Now'}
+                </Button>
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Helmet>
