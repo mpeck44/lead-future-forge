@@ -327,8 +327,8 @@ const PublicCourse = () => {
               <span className="flex items-center gap-1"><Award className="h-4 w-4" />Certificate</span>
             </div>
             <div className="flex flex-wrap gap-3">
-              <Button asChild size="lg">
-                <Link to={ctaHref}>{ctaLabel}<ArrowRight className="ml-2 h-4 w-4" /></Link>
+              <Button size="lg" onClick={handlePrimaryCta}>
+                {primaryLabel}<ArrowRight className="ml-2 h-4 w-4" />
               </Button>
               <Button asChild size="lg" variant="outline">
                 <Link to="/courses">See all courses</Link>
