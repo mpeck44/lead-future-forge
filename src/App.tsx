@@ -27,6 +27,7 @@ import AdminResourceEdit from "./pages/admin/AdminResourceEdit";
 import Resources from "./pages/Resources";
 import ResourceDetail from "./pages/ResourceDetail";
 import PrivacyTerms from "./pages/PrivacyTerms";
+import CheckoutReturn from "./pages/CheckoutReturn";
 
 
 const queryClient = new QueryClient();
