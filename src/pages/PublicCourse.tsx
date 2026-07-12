@@ -229,8 +229,53 @@ const PublicCourse = () => {
       }
     : null;
 
-  const ctaHref = user ? `/course/${course.slug}` : "/auth";
-  const ctaLabel = user ? "Go to course" : "Sign in to enroll";
+  const isPaid = !!product && product.amount_cents > 0;
+  const priceLabel = product
+    ? new Intl.NumberFormat("en-US", { style: "currency", currency: product.currency.toUpperCase(), maximumFractionDigits: 0 }).format(product.amount_cents / 100)
+    : null;
+
+  const handlePrimaryCta = async () => {
+    if (!user) {
+      // Preserve intent to return to this course after auth
+      navigate(`/auth?redirect=${encodeURIComponent(`/courses/${course.slug}`)}`);
+      return;
+    }
+    if (alreadyEnrolled) {
+      navigate(`/course/${course.slug}`);
+      return;
+    }
+    if (isPaid) {
+      if (!paymentsConfigured()) {
+        toast.error("Checkout isn't available yet. Please contact us to enroll.");
+        return;
+      }
+      setCheckoutOpen(true);
+      return;
+    }
+    // Free course — enroll directly
+    try {
+      const { error } = await supabase.from("enrollments").insert({
+        user_id: user.id,
+        course_id: course.id,
+        status: "active",
+        amount_paid: 0,
+      });
+      if (error && error.code !== "23505") throw error;
+      setAlreadyEnrolled(true);
+      toast.success("You're enrolled.");
+      navigate(`/course/${course.slug}`);
+    } catch (e) {
+      toast.error("Could not enroll. Please try again.");
+    }
+  };
+
+  const primaryLabel = !user
+    ? "Sign in to enroll"
+    : alreadyEnrolled
+      ? "Go to course"
+      : isPaid
+        ? `Enroll — ${priceLabel}`
+        : "Enroll free";
 
   return (
     <div className="min-h-screen bg-background">
