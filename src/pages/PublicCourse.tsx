@@ -93,6 +93,9 @@ const PublicCourse = () => {
   const [modules, setModules] = useState<Module[]>([]);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+  const [product, setProduct] = useState<{ amount_cents: number; currency: string } | null>(null);
+  const [alreadyEnrolled, setAlreadyEnrolled] = useState(false);
+  const [checkoutOpen, setCheckoutOpen] = useState(false);
 
   useEffect(() => {
     if (!slug) return;
