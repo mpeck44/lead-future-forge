@@ -10,13 +10,6 @@ const HeroV2 = ({ onWaitlist }: Props) => {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
   };
 
-  const districts = [
-    "Pen Argyl ASD",
-    "Chester County IU",
-    "Bethlehem Area",
-    "Easton ASD",
-  ];
-
   return (
     <section className="relative overflow-hidden bg-navy text-white/85 pt-[7.5rem] md:pt-[8.5rem] hero-horizon-glow">
       <div className="relative w-[min(1200px,100%-2.5rem)] mx-auto">
@@ -96,22 +89,6 @@ const HeroV2 = ({ onWaitlist }: Props) => {
           </div>
         </div>
 
-        {/* Districts strip */}
-        <div className="border-t border-white/10 py-6 flex flex-col md:flex-row md:items-center gap-4 md:gap-10">
-          <span className="text-[0.72rem] uppercase tracking-[0.16em] text-white/40 font-body whitespace-nowrap">
-            Trusted in districts across PA & beyond
-          </span>
-          <ul className="flex flex-wrap items-center gap-x-8 gap-y-2 list-none">
-            {districts.map((d) => (
-              <li
-                key={d}
-                className="font-display text-base lg:text-lg text-white/55"
-              >
-                {d}
-              </li>
-            ))}
-          </ul>
-        </div>
       </div>
     </section>
   );
