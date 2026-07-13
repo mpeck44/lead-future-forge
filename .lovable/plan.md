@@ -1,59 +1,47 @@
 
-# Hero: honest proof + inverted CTAs
+# Hero: real audit screenshot + inverted CTAs
 
-Two focused changes. No business logic, no backend.
+Uploaded screenshot #4 (baseline + recommended course card) becomes the hero visual. No public audit build required.
 
-## 1. Replace the fabricated app mockup with a real audit-results screenshot
+## 1. Prepare the hero image
 
-**Problem.** The current `HeroAppPreview.tsx` invents a user ("Welcome back, Dr. Ellison"), fakes 72% progress, and leads with a "3-Year AI Roadmap.pdf — board-ready" card. That simulates traction we don't have and foregrounds the exact deliverable a frontier model can already generate, which invites the "why not just ChatGPT" objection in the hero.
+- Crop the uploaded screenshot to just the content column — drop the left "Foundations" sidebar and the top "My Courses / Foundations / 60%" chrome. Result: the "AI Equity Audit / Your AI Equity Audit baseline" heading, the 5-bar card, and the "Recommended next course → Go to Fluency" card.
+- Scrub identifiers before upload: change "Attempt #2" → remove the "Attempt #N" line entirely (or replace with a neutral subhead — I'll pick the cleaner of the two visually). No other text edits.
+- Upload via `lovable-assets` to `src/assets/hero-audit-results.png.asset.json`. Commit only the pointer.
 
-**Fix.** Replace it with a real screenshot of the **audit results screen** — actual readiness score, gap breakdown, and course routing recommendation — captured from a real run with real inputs.
+## 2. Rewrite `HeroAppPreview.tsx`
 
-**How this lands in code:**
+Replace the fabricated dashboard/artifact cards with the real screenshot inside the existing off-white browser chrome bar:
 
-- I'll run the readiness audit end-to-end myself against the running preview (Playwright), fill it with plausible real inputs (no staging), and screenshot the results screen at 1280×1800.
-- Save that PNG under `src/assets/hero-audit-results.png` and upload via `lovable-assets` → commit only the `.asset.json` pointer.
-- Rewrite `src/components/landing/HeroAppPreview.tsx` to render:
-  - The same off-white browser chrome bar (`app.leadershipforge.org`) so it still reads as "the product".
-  - The screenshot as an `<img>` inside the chrome, `w-full h-auto`, soft shadow, `alt="AI readiness audit results — score, gap breakdown, and recommended course path"`.
-  - No fake progress bars, no fake user, no artifact card, no "Artifact saved" toast — all deleted.
-- If the audit-results page has any personally identifying text from my run, I'll re-run with a neutral display name (e.g. "Sample District") before the final capture.
+- Keep the chrome bar (`app.edleaderforge.com` — match the custom domain in memory, not the placeholder URL).
+- Render the screenshot as `<img src={heroAuditAsset.url} alt="AI readiness audit results — score across five categories with a recommended course path" className="w-full h-auto" />` inside a soft-shadow rounded container.
+- Delete: fake "Welcome back" user, 72% progress bar, "3-Year AI Roadmap.pdf" card, "Artifact saved" toast, chrome-bar gold dot indicators.
 
-**Out of scope for this change:** redesigning the audit results page itself. If the current results screen doesn't visually hold up as a hero asset (e.g. too sparse), I'll flag it and we'll decide separately whether to polish that page — I won't silently restyle it to make the screenshot look better.
+## 3. Invert hero CTAs in `HeroV2.tsx`
 
-## 2. Invert the hero CTAs in `HeroV2.tsx`
+- **Primary (gold):** `Get your AI readiness score` → triggers `onWaitlist("readiness-audit")` (same handler as today's secondary). Helper line under button in `text-white/50 text-[0.78rem]`: "Takes 5 minutes · see your district's baseline and recommended path".
+- **Secondary (outline):** `See courses and pricing →` → scrolls to `#doors`.
+- Headline, subhead, and stats strip unchanged.
 
-Swap primary/secondary. The audit is the highest-converting moment (personalized diagnosis + course routing + founder pricing), so it earns primary.
+Honesty note: the primary CTA currently opens the waitlist modal, not a live public audit. That's a known gap — flagged for a follow-up, not this change. The screenshot itself is real, so the hero no longer fabricates traction.
 
-- **Primary (gold, same styling as today):** `Get your AI readiness score` — triggers `onWaitlist` (which opens the audit modal, same handler as today's secondary). Small helper line directly under the button in `text-white/50 text-[0.78rem]`: "Takes 5 minutes · no email required to see your score" (exact copy TBD — I'll keep it to one short line and preserve the 5-minute promise).
-- **Secondary (outline, same styling as today's outline):** `See courses and pricing →` — scrolls to `#doors` (what today's primary does).
+## 4. Prices visible on `#doors`
 
-Everything else in the hero (headline, subhead, stats strip, layout grid) stays as-is.
+Open `DoorsSection.tsx`. If each course card's price isn't already directly under the course title (above any body copy), move it there. No price changes, no `/bundle` changes. If prices are already prominent, no-op.
 
-## 3. Prices visible without scrolling on the courses/pricing target
-
-The secondary CTA now promises "pricing," so the `#doors` section it lands on must show prices above the fold of that section — not require another scroll.
-
-I'll open `src/components/landing/DoorsSection.tsx` and check whether each course card already shows its price near the top of the card. If prices are currently lower in the card or hidden behind a "Learn more" click:
-
-- Move the price (and any strikethrough / founder price) into the card header area, directly under the course title.
-- No changes to the actual prices or to `/bundle` — this is purely surfacing existing numbers.
-
-If prices are already prominent, this step is a no-op and I'll say so.
-
-## 4. Files touched
+## 5. Files touched
 
 ```text
-src/components/landing/HeroAppPreview.tsx    rewrite (real screenshot, no fake UI)
-src/assets/hero-audit-results.png.asset.json new (CDN pointer for the real capture)
+src/assets/hero-audit-results.png.asset.json  new (CDN pointer from uploaded screenshot)
+src/components/landing/HeroAppPreview.tsx     rewrite (real screenshot, no fake UI)
 src/components/landing/HeroV2.tsx             swap primary/secondary CTAs + helper line
-src/components/landing/DoorsSection.tsx       only if prices aren't already prominent
+src/components/landing/DoorsSection.tsx       conditional: move price under title
 ```
 
-`StickyBuyBar.tsx` and its mount in `Index.tsx` stay exactly as they are.
+`StickyBuyBar.tsx` and its mount in `Index.tsx` unchanged.
 
 ## Out of scope
 
-- No copy changes to the headline, subhead, or stats.
-- No changes to `/bundle`, Stripe wiring, or the audit questions/logic.
-- No redesign of the audit results page itself (flag-only if it doesn't screenshot well).
+- Building the public audit page (primary CTA still opens waitlist modal — flagged, separate work).
+- Copy changes to headline, subhead, stats.
+- `/bundle`, Stripe, audit questions/logic, or audit results page redesign.
