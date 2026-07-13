@@ -33,20 +33,25 @@ const HeroV2 = ({ onWaitlist }: Props) => {
               you'll use Monday morning.
             </p>
 
-            <div className="rv rv-d3 flex flex-wrap gap-3 mb-10">
-              <Button
-                onClick={() => scrollTo("doors")}
-                className="gold-hover bg-gold text-navy hover:bg-gold font-body font-semibold px-7 py-6 text-base rounded-[10px]"
-              >
-                Explore the courses →
-              </Button>
-              <Button
-                variant="outline"
-                onClick={onWaitlist}
-                className="border-[1.5px] border-white/20 bg-transparent text-white hover:bg-transparent hover:text-gold hover:border-gold font-body font-semibold px-7 py-6 text-base rounded-[10px]"
-              >
-                Take the 5-min readiness audit
-              </Button>
+            <div className="rv rv-d3 mb-10">
+              <div className="flex flex-wrap gap-3">
+                <Button
+                  onClick={onWaitlist}
+                  className="gold-hover bg-gold text-navy hover:bg-gold font-body font-semibold px-7 py-6 text-base rounded-[10px]"
+                >
+                  Get your AI readiness score →
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => scrollTo("doors")}
+                  className="border-[1.5px] border-white/20 bg-transparent text-white hover:bg-transparent hover:text-gold hover:border-gold font-body font-semibold px-7 py-6 text-base rounded-[10px]"
+                >
+                  See courses and pricing →
+                </Button>
+              </div>
+              <p className="text-[0.78rem] text-white/50 font-body mt-3">
+                Takes 5 minutes · see your district's baseline and recommended path
+              </p>
             </div>
 
             {/* Stats */}

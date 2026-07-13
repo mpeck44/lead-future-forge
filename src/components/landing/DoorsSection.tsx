@@ -180,13 +180,21 @@ const DoorsSection = ({ onAudit }: Props) => {
                   {d.quote}
                 </h3>
                 <p className="text-foreground/65 text-[0.97rem] mb-[1.4rem]">{d.promiseShort}</p>
-                <div className="flex items-baseline gap-[0.55rem] flex-wrap border-t border-foreground/10 pt-[1.1rem]">
-                  <small className="text-[0.68rem] font-semibold tracking-[0.13em] uppercase text-foreground/65">
-                    Routes to
-                  </small>
-                  <span className="font-semibold text-[hsl(40_72%_30%)] text-[0.98rem] inline-flex items-center gap-[0.4rem]">
-                    {d.route} <ArrowRight className="h-4 w-4" />
-                  </span>
+                <div className="border-t border-foreground/10 pt-[1.1rem] space-y-[0.55rem]">
+                  <div className="flex items-baseline gap-[0.55rem] flex-wrap">
+                    <small className="text-[0.68rem] font-semibold tracking-[0.13em] uppercase text-foreground/65">
+                      Routes to
+                    </small>
+                    <span className="font-semibold text-[hsl(40_72%_30%)] text-[0.98rem] inline-flex items-center gap-[0.4rem]">
+                      {d.route} <ArrowRight className="h-4 w-4" />
+                    </span>
+                  </div>
+                  <div className="flex items-baseline gap-[0.55rem] flex-wrap">
+                    <span className="font-display font-semibold text-foreground text-[1.35rem] leading-none">
+                      $75
+                    </span>
+                    <span className="text-foreground/60 text-[0.85rem]">· {d.time}</span>
+                  </div>
                 </div>
               </button>
 
