@@ -13,6 +13,7 @@ import PricingWaitlist from "@/components/landing/PricingWaitlist";
 import FaqSection from "@/components/landing/FaqSection";
 import FooterV2 from "@/components/landing/FooterV2";
 import WaitlistModal from "@/components/WaitlistModal";
+import StickyBuyBar from "@/components/landing/StickyBuyBar";
 import { useReveal } from "@/hooks/useReveal";
 
 const Index = () => {
@@ -116,6 +117,7 @@ const Index = () => {
       </main>
       <FooterV2 />
       <WaitlistModal open={waitlistOpen} onOpenChange={setWaitlistOpen} source={waitlistSource} />
+      <StickyBuyBar />
     </div>
   );
 };
