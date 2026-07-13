@@ -117,6 +117,7 @@ const Index = () => {
       </main>
       <FooterV2 />
       <WaitlistModal open={waitlistOpen} onOpenChange={setWaitlistOpen} source={waitlistSource} />
+      <StickyBuyBar />
     </div>
   );
 };
