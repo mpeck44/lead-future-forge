@@ -468,7 +468,7 @@ const Courses = () => {
                       </div>
                     )}
                     {pathwayTrio.length > 0 && (
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      <div id="pathway-trio" className="grid grid-cols-1 md:grid-cols-3 gap-6 scroll-mt-24">
                         {pathwayTrio.map(renderCourseCard)}
                       </div>
                     )}
