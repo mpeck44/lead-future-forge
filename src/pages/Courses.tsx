@@ -143,6 +143,30 @@ const Courses = () => {
     return `$${(price / 100).toFixed(0)}`;
   };
 
+  // Per-slug distinct deliverable and audience copy. Keys must match DB slugs.
+  const COURSE_COPY: Record<string, { deliverable: string; audience: string }> = {
+    foundations: {
+      deliverable:
+        'AI Landscape & District Readiness Baseline — maturity scorecard, risk/opportunity matrix',
+      audience: 'District leaders establishing a shared AI baseline before committing resources',
+    },
+    fluency: {
+      deliverable:
+        'AI Communication & Stakeholder Plan — templates, coordination map, 5-day action plan',
+      audience: 'Principals and directors judged on execution, not slideware',
+    },
+    strategy: {
+      deliverable:
+        '3-Year AI Strategic Roadmap — governance matrix, portfolio priorities, board-ready deck',
+      audience: 'Superintendents and cabinet-level leaders carrying the strategic AI question',
+    },
+    action: {
+      deliverable:
+        '90-Day Pilot Launch Plan — milestones, pilot playbook, responsible-use checklist',
+      audience: 'Leaders holding an adopted plan that needs to actually move',
+    },
+  };
+
   // Classify a course into a pathway bucket for the ordered layout.
   const classify = (course: Course): 'foundations' | 'fluency' | 'strategy' | 'action' | 'other' => {
     const slug = (course.slug || '').toLowerCase();
@@ -164,19 +188,27 @@ const Courses = () => {
   const renderCourseCard = (course: Course) => {
     const isEnrolled = enrolledCourseIds.has(course.id);
     const isEnrolling = enrollingId === course.id;
+    const copy = COURSE_COPY[course.slug];
+    const hours = course.estimated_hours ?? null;
 
     return (
-      <Card key={course.id} className="flex flex-col hover:shadow-lg transition-shadow">
+      <Card
+        key={course.id}
+        className="flex flex-col bg-white border border-border/60 shadow-sm hover:shadow-md transition-shadow"
+      >
         <CardHeader className="pb-3">
           <div className="flex items-start justify-between gap-2 mb-2">
             <div className="flex flex-wrap gap-1">
               {course.requires_foundations && (
-                <Badge variant="outline" className="font-body text-xs">
-                  Requires Foundations
+                <Badge
+                  variant="outline"
+                  className="font-body text-xs border-foreground/20 text-foreground/70 bg-transparent"
+                >
+                  Builds on Foundations
                 </Badge>
               )}
             </div>
-            <span className="font-display font-bold text-primary">
+            <span className="font-display font-bold text-foreground">
               {formatPrice(course.price)}
             </span>
           </div>
@@ -193,27 +225,26 @@ const Courses = () => {
             )}
             <div className="space-y-1 pt-2 border-t border-border/50">
               <p className="font-body text-foreground">
-                <span className="font-medium">What you'll build:</span> Documents and tools you can use next week
+                <span className="font-medium">What you'll build:</span>{' '}
+                {copy?.deliverable ?? 'Documents and tools you can use next week'}
               </p>
-              {course.estimated_hours && (
+              {hours && (
                 <p className="font-body text-muted-foreground">
-                  <span className="font-medium text-foreground">Time investment:</span> {course.estimated_hours} hours of focused work
+                  <span className="font-medium text-foreground">Time investment:</span> {hours} hours of focused work
                 </p>
               )}
               <p className="font-body text-muted-foreground">
-                <span className="font-medium text-foreground">Who this is for:</span> Leaders who need practical tools, not theory
+                <span className="font-medium text-foreground">Who this is for:</span>{' '}
+                {copy?.audience ?? 'Leaders who need practical tools, not theory'}
               </p>
             </div>
-            <p className="font-body text-xs text-primary italic pt-2">
-              This isn't comprehensive. It's practical.
-            </p>
           </div>
 
           <div className="flex flex-wrap gap-4 text-xs text-muted-foreground mb-6">
-            {course.estimated_hours && (
+            {hours && (
               <div className="flex items-center gap-1">
                 <Clock className="h-3 w-3" />
-                <span className="font-body">{course.estimated_hours} hours</span>
+                <span className="font-body">{hours} hours</span>
               </div>
             )}
             <div className="flex items-center gap-1">
@@ -239,7 +270,7 @@ const Courses = () => {
                 <Button
                   variant="outline"
                   asChild
-                  className="flex-1 font-body"
+                  className="flex-1 font-body border-foreground/25 bg-transparent text-foreground hover:bg-transparent hover:text-foreground hover:border-foreground/50"
                 >
                   <Link to={`/courses/${course.slug}`}>
                     View course details
