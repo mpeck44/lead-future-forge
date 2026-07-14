@@ -473,7 +473,7 @@ const Courses = () => {
                 </div>
 
                 {!searchQuery && (
-                  <Card className="mb-8 bg-navy text-white border-0 shadow-lg">
+                  <Card id="bundle" className="mb-8 bg-navy text-white border-0 shadow-lg scroll-mt-24">
                     <CardContent className="p-8 lg:p-10">
                       <div className="grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] gap-8 items-start">
                         <div>
