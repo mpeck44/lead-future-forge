@@ -252,11 +252,13 @@ const Courses = () => {
     const isEnrolling = enrollingId === course.id;
     const copy = COURSE_COPY[course.slug];
     const hours = course.estimated_hours ?? null;
+    const isPaid = !!course.price && course.price > 0;
 
     return (
       <Card
         key={course.id}
-        className="flex flex-col bg-white border border-border/60 shadow-sm hover:shadow-md transition-shadow"
+        id={course.slug}
+        className="flex flex-col bg-white border border-border/60 shadow-sm hover:shadow-md transition-shadow scroll-mt-24"
       >
         <CardHeader className="pb-3">
           <div className="flex items-start justify-between gap-2 mb-2">
@@ -338,13 +340,22 @@ const Courses = () => {
                     View course details
                   </Link>
                 </Button>
-                <Button
-                  onClick={() => handleEnroll(course.id)}
-                  disabled={isEnrolling}
-                  className="flex-1 font-body"
-                >
-                  {isEnrolling ? 'Enrolling...' : 'Enroll Now'}
-                </Button>
+                {isPaid ? (
+                  <Button
+                    onClick={() => handleBuyCourse(course)}
+                    className="flex-1 font-body"
+                  >
+                    Buy {formatPrice(course.price)}
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={() => handleEnroll(course.id)}
+                    disabled={isEnrolling}
+                    className="flex-1 font-body"
+                  >
+                    {isEnrolling ? 'Enrolling...' : 'Enroll for free'}
+                  </Button>
+                )}
               </div>
             )}
           </div>
