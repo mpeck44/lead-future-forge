@@ -27,7 +27,7 @@ const faqs = [
   },
   {
     q: "What if I'm completely new to AI?",
-    a: ["Start with The Launchpad — a short orientation that establishes the shared language everything else builds on. No technical background is required anywhere in the pathway. This is leadership development, not technical training."],
+    a: ["Start with Foundations — a short orientation that establishes the shared language everything else builds on. No technical background is required anywhere in the pathway. This is leadership development, not technical training."],
   },
 ];
 

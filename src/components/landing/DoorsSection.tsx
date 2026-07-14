@@ -263,7 +263,7 @@ const DoorsSection = ({ onAudit }: Props) => {
         <div className="rv mt-[3rem] pt-[1.4rem] border-t border-foreground/10 text-center">
           <p className="text-foreground/60 text-[0.92rem]">
             <span className="text-[0.68rem] font-semibold tracking-[0.14em] uppercase text-[hsl(40_72%_30%)] mr-2">
-              The Launchpad
+              Foundations
             </span>
             Every path starts with a 20-minute baseline. You'll leave it with your district's AI Equity Audit score.
           </p>

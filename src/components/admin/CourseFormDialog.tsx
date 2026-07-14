@@ -333,7 +333,7 @@ export function CourseFormDialog({
                   <div className="space-y-0.5">
                     <FormLabel>Requires Foundations</FormLabel>
                     <FormDescription>
-                      Learners should complete The Launchpad before this course.
+                      Learners should complete Foundations before this course.
                     </FormDescription>
                   </div>
                   <FormControl>

@@ -36,7 +36,7 @@ interface Module {
 
 const COURSE_FAQS: Record<string, { q: string; a: string }[]> = {
   foundations: [
-    { q: "Do I need any AI background to start?", a: "No. The Launchpad assumes zero technical or AI background. It establishes the shared language every other course in the pathway builds on." },
+    { q: "Do I need any AI background to start?", a: "No. Foundations assumes zero technical or AI background. It establishes the shared language every other course in the pathway builds on." },
     { q: "How long will it take?", a: "Roughly four hours of focused work, broken into short modules. Most leaders finish in two weeks at a module every few days." },
     { q: "What do I leave with?", a: "A completed AI Equity Audit, a personal readiness profile, and a recommended next course matched to your district's largest gap." },
   ],
