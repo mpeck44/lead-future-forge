@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 import HeroAppPreview from "./HeroAppPreview";
 
 interface Props {
@@ -42,11 +43,11 @@ const HeroV2 = ({ onWaitlist }: Props) => {
                   Get your AI readiness score →
                 </Button>
                 <Button
+                  asChild
                   variant="outline"
-                  onClick={() => scrollTo("doors")}
                   className="border-[1.5px] border-white/20 bg-transparent text-white hover:bg-transparent hover:text-gold hover:border-gold font-body font-semibold px-7 py-6 text-base rounded-[10px]"
                 >
-                  See courses and pricing →
+                  <Link to="/courses">See courses and pricing →</Link>
                 </Button>
               </div>
               <p className="text-[0.78rem] text-white/50 font-body mt-3">

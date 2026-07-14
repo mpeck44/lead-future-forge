@@ -66,16 +66,16 @@ const StickyBuyBar = () => {
             <span className="font-display font-bold text-gold text-base sm:text-lg leading-none">
               $197
             </span>
-            <a
-              href="#doors"
+            <Link
+              to="/courses#pathway-trio"
               className="hidden sm:inline font-body text-xs text-white/60 hover:text-gold ml-2"
             >
               Compare courses
-            </a>
+            </Link>
           </div>
         </div>
         <Link
-          to="/bundle"
+          to="/courses#bundle"
           className="gold-hover inline-flex items-center gap-1.5 rounded-[10px] bg-gold px-4 py-2.5 font-body font-semibold text-navy text-sm whitespace-nowrap"
         >
           Buy the bundle

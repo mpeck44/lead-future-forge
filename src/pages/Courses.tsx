@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
@@ -8,18 +8,23 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { 
-  BookOpen, 
-  Clock, 
-  Users, 
-  Award, 
+import {
+  BookOpen,
+  Clock,
+  Users,
+  Award,
   Search,
   ArrowRight,
-  CheckCircle2
+  CheckCircle2,
+  X,
 } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
 import { logRoutingEvent } from '@/lib/analytics/logRoutingEvent';
+import { StripeEmbeddedCheckoutView } from '@/components/StripeEmbeddedCheckout';
+import { PaymentTestModeBanner } from '@/components/PaymentTestModeBanner';
+import { paymentsConfigured } from '@/lib/stripe';
+import { COMPLETE_PATH } from '@/lib/bundles';
 
 interface Course {
   id: string;
@@ -37,11 +42,18 @@ interface Course {
 const Courses = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [courses, setCourses] = useState<Course[]>([]);
   const [enrolledCourseIds, setEnrolledCourseIds] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [enrollingId, setEnrollingId] = useState<string | null>(null);
+  const [checkout, setCheckout] = useState<
+    | { mode: 'bundle' }
+    | { mode: 'course'; courseId: string; courseTitle: string }
+    | null
+  >(null);
+  const hashScrolledRef = useRef(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -132,6 +144,56 @@ const Courses = () => {
     }
   };
 
+  const handleBuyCourse = (course: Course) => {
+    if (!user) {
+      navigate(`/auth?redirect=/courses%23${course.slug}`);
+      return;
+    }
+    if (!paymentsConfigured()) {
+      toast.error('Payments are not configured yet. Please check back shortly.');
+      return;
+    }
+    setCheckout({ mode: 'course', courseId: course.id, courseTitle: course.title });
+  };
+
+  const handleBuyBundle = () => {
+    if (!user) {
+      navigate('/auth?redirect=/courses%23bundle');
+      return;
+    }
+    if (!paymentsConfigured()) {
+      toast.error('Payments are not configured yet. Please check back shortly.');
+      return;
+    }
+    const ownsAny = Array.from(enrolledCourseIds).some((id) => {
+      const slug = courses.find((c) => c.id === id)?.slug;
+      return slug ? COMPLETE_PATH.courseSlugs.includes(slug) : false;
+    });
+    if (ownsAny) {
+      toast.error(
+        'You already own one of the bundle courses — buy the remaining ones individually.',
+      );
+      return;
+    }
+    setCheckout({ mode: 'bundle' });
+  };
+
+  // Scroll to the hash target once courses have rendered.
+  useEffect(() => {
+    if (loading || hashScrolledRef.current) return;
+    const hash = location.hash?.slice(1);
+    if (!hash) return;
+    // Defer to next tick so DOM has painted the card list.
+    const id = requestAnimationFrame(() => {
+      const el = document.getElementById(hash);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        hashScrolledRef.current = true;
+      }
+    });
+    return () => cancelAnimationFrame(id);
+  }, [loading, location.hash]);
+
   const filteredCourses = courses.filter(course =>
     course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     course.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -190,11 +252,13 @@ const Courses = () => {
     const isEnrolling = enrollingId === course.id;
     const copy = COURSE_COPY[course.slug];
     const hours = course.estimated_hours ?? null;
+    const isPaid = !!course.price && course.price > 0;
 
     return (
       <Card
         key={course.id}
-        className="flex flex-col bg-white border border-border/60 shadow-sm hover:shadow-md transition-shadow"
+        id={course.slug}
+        className="flex flex-col bg-white border border-border/60 shadow-sm hover:shadow-md transition-shadow scroll-mt-24"
       >
         <CardHeader className="pb-3">
           <div className="flex items-start justify-between gap-2 mb-2">
@@ -276,13 +340,22 @@ const Courses = () => {
                     View course details
                   </Link>
                 </Button>
-                <Button
-                  onClick={() => handleEnroll(course.id)}
-                  disabled={isEnrolling}
-                  className="flex-1 font-body"
-                >
-                  {isEnrolling ? 'Enrolling...' : 'Enroll Now'}
-                </Button>
+                {isPaid ? (
+                  <Button
+                    onClick={() => handleBuyCourse(course)}
+                    className="flex-1 font-body"
+                  >
+                    Buy {formatPrice(course.price)}
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={() => handleEnroll(course.id)}
+                    disabled={isEnrolling}
+                    className="flex-1 font-body"
+                  >
+                    {isEnrolling ? 'Enrolling...' : 'Enroll for free'}
+                  </Button>
+                )}
               </div>
             )}
           </div>
@@ -318,7 +391,48 @@ const Courses = () => {
           }
         })}</script>
       </Helmet>
+      <PaymentTestModeBanner />
       <Header />
+
+      {checkout && (
+        <div
+          className="fixed inset-0 z-[100] bg-black/60 flex items-start justify-center overflow-y-auto p-4 pt-10"
+          role="dialog"
+          aria-modal="true"
+        >
+          <div className="bg-background rounded-lg max-w-3xl w-full shadow-2xl">
+            <div className="flex items-center justify-between p-4 border-b">
+              <div>
+                <div className="font-display text-lg font-semibold">
+                  {checkout.mode === 'bundle'
+                    ? 'Buy the Complete Path'
+                    : `Buy ${checkout.courseTitle}`}
+                </div>
+                <div className="font-body text-sm text-muted-foreground">
+                  Secure checkout powered by Stripe
+                </div>
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setCheckout(null)}
+                aria-label="Close checkout"
+              >
+                <X className="h-5 w-5" />
+              </Button>
+            </div>
+            <div className="p-4">
+              <StripeEmbeddedCheckoutView
+                {...(checkout.mode === 'bundle'
+                  ? { bundleKey: COMPLETE_PATH.key }
+                  : { courseId: checkout.courseId })}
+                returnUrl={`${window.location.origin}/checkout/return?session_id={CHECKOUT_SESSION_ID}`}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
       <main className="pt-20 lg:pt-24">
         {/* Hero Section */}
         <section className="bg-gradient-to-br from-primary/5 via-background to-accent/5 py-12 lg:py-16">
@@ -400,7 +514,7 @@ const Courses = () => {
                 </div>
 
                 {!searchQuery && (
-                  <Card className="mb-8 bg-navy text-white border-0 shadow-lg">
+                  <Card id="bundle" className="mb-8 bg-navy text-white border-0 shadow-lg scroll-mt-24">
                     <CardContent className="p-8 lg:p-10">
                       <div className="grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] gap-8 items-start">
                         <div>
@@ -439,13 +553,11 @@ const Courses = () => {
                             </div>
                           </div>
                           <Button
-                            asChild
+                            onClick={handleBuyBundle}
                             className="gold-hover bg-gold text-navy hover:bg-gold font-body font-semibold py-6 text-base"
                           >
-                            <Link to="/bundle">
-                              Get the bundle
-                              <ArrowRight className="ml-2 h-4 w-4" />
-                            </Link>
+                            Get the bundle
+                            <ArrowRight className="ml-2 h-4 w-4" />
                           </Button>
                           <Button
                             asChild

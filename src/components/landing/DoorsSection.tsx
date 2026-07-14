@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/accordion";
 
 interface Props {
-  onAudit: () => void;
+  onAudit?: () => void;
 }
 
 type Build = { title: string; desc: string };
@@ -146,7 +146,7 @@ const doors: Door[] = [
   },
 ];
 
-const DoorsSection = ({ onAudit }: Props) => {
+const DoorsSection = (_props: Props) => {
   const navigate = useNavigate();
   return (
     <section id="doors" className="py-[5.5rem] md:py-[7.5rem] bg-white">
@@ -172,7 +172,7 @@ const DoorsSection = ({ onAudit }: Props) => {
               className={`door-card rv rv-d${Math.min(i + 1, 3)} text-left flex flex-col bg-background border border-foreground/10 rounded-lg p-[1.7rem] pt-[2.1rem] shadow-[0_1px_2px_rgba(11,22,38,.05),0_8px_28px_rgba(11,22,38,.08)] hover:shadow-[0_2px_4px_rgba(11,22,38,.06),0_18px_44px_rgba(11,22,38,.16)] hover:border-[hsl(46_65%_52%/0.55)] transition-all duration-200`}
             >
               <button
-                onClick={() => navigate(`/courses/${d.slug}`)}
+                onClick={() => navigate(`/courses#${d.slug}`)}
                 className="text-left"
               >
                 <span className="font-display text-[2.6rem] leading-none text-gold mb-[0.4rem] block">"</span>
@@ -250,13 +250,13 @@ const DoorsSection = ({ onAudit }: Props) => {
 
         <p className="rv mt-[2.6rem] text-center text-foreground/65 text-[0.97rem]">
           Not sure where you are?{" "}
-          <button onClick={onAudit} className="text-[hsl(40_72%_30%)] font-semibold underline underline-offset-4">
-            Take the 5-minute AI Readiness &amp; Equity Audit
+          <button
+            onClick={() => navigate("/courses/foundations")}
+            className="text-[hsl(40_72%_30%)] font-semibold underline underline-offset-4"
+          >
+            Get your AI readiness score with the free Foundations course
           </button>{" "}
           — it recommends the right door.
-          <span className="block text-[0.83rem] mt-[0.3rem] text-foreground/65">
-            Launching with our beta. Waitlist members get it first.
-          </span>
         </p>
 
         {/* Launchpad prerequisite — quiet divider band below the routing section */}
