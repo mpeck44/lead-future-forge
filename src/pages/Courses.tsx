@@ -391,7 +391,48 @@ const Courses = () => {
           }
         })}</script>
       </Helmet>
+      <PaymentTestModeBanner />
       <Header />
+
+      {checkout && (
+        <div
+          className="fixed inset-0 z-[100] bg-black/60 flex items-start justify-center overflow-y-auto p-4 pt-10"
+          role="dialog"
+          aria-modal="true"
+        >
+          <div className="bg-background rounded-lg max-w-3xl w-full shadow-2xl">
+            <div className="flex items-center justify-between p-4 border-b">
+              <div>
+                <div className="font-display text-lg font-semibold">
+                  {checkout.mode === 'bundle'
+                    ? 'Buy the Complete Path'
+                    : `Buy ${checkout.courseTitle}`}
+                </div>
+                <div className="font-body text-sm text-muted-foreground">
+                  Secure checkout powered by Stripe
+                </div>
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setCheckout(null)}
+                aria-label="Close checkout"
+              >
+                <X className="h-5 w-5" />
+              </Button>
+            </div>
+            <div className="p-4">
+              <StripeEmbeddedCheckoutView
+                {...(checkout.mode === 'bundle'
+                  ? { bundleKey: COMPLETE_PATH.key }
+                  : { courseId: checkout.courseId })}
+                returnUrl={`${window.location.origin}/checkout/return?session_id={CHECKOUT_SESSION_ID}`}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
       <main className="pt-20 lg:pt-24">
         {/* Hero Section */}
         <section className="bg-gradient-to-br from-primary/5 via-background to-accent/5 py-12 lg:py-16">
