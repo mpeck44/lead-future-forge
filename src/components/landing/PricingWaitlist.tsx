@@ -49,7 +49,7 @@ const PricingWaitlist = () => {
         </h2>
 
         <div className="rv font-display font-semibold text-white leading-none mt-[1.1rem] mb-[0.3rem] text-[clamp(3.4rem,8vw,5rem)]">
-          <sup className="text-[0.38em] -top-[1.1em] relative text-[hsl(43_72%_66%)]">$</sup>75
+          <sup className="text-[0.38em] -top-[1.1em] relative text-[hsl(43_72%_66%)]">$</sup>79
         </div>
         <p className="text-white/60 text-base mb-[0.9rem]">per course</p>
         <div className="inline-block text-[0.92rem] text-[hsl(43_72%_66%)] border border-[hsl(46_65%_52%/0.4)] rounded-full px-[1.05rem] py-[0.4rem] mb-[2.8rem]">
