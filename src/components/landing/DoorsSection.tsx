@@ -34,7 +34,7 @@ const doors: Door[] = [
         <strong className="text-foreground font-semibold">Build real fluency</strong> through practice, not theory.
       </>
     ),
-    route: "Command the Tools",
+    route: "Fluency",
     slug: "fluency",
     situation:
       "Your teachers are using a dozen AI tools right now. You approved three of them.",
@@ -71,7 +71,7 @@ const doors: Door[] = [
         </strong>
       </>
     ),
-    route: "Chart the Course",
+    route: "Strategy",
     slug: "strategy",
     situation:
       'If your board asked tonight — "where are we on AI?" — could you point to a plan, or just to activity?',
@@ -110,7 +110,7 @@ const doors: Door[] = [
         gaps, resistance management, and scale/stop decisions.
       </>
     ),
-    route: "Ship It",
+    route: "Action",
     slug: "action",
     situation: "The policy passed in the spring. It's fall. Nothing in your buildings has changed.",
     promise:

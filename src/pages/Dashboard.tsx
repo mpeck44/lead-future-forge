@@ -29,10 +29,10 @@ interface Enrollment {
 
 // Pathway slug → display config
 const PATHWAY: { slug: string; title: string; tag: string }[] = [
-  { slug: "foundations", title: "The Launchpad", tag: "Foundations" },
-  { slug: "fluency", title: "Command the Tools", tag: "Fluency" },
-  { slug: "strategy", title: "Chart the Course", tag: "Strategy" },
-  { slug: "action", title: "Ship It", tag: "Action" },
+  { slug: "foundations", title: "Foundations", tag: "Start here" },
+  { slug: "fluency", title: "Fluency", tag: "Course 1" },
+  { slug: "strategy", title: "Strategy", tag: "Course 2" },
+  { slug: "action", title: "Action", tag: "Course 3" },
 ];
 
 const Dashboard = () => {

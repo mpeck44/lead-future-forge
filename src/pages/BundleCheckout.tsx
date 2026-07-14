@@ -19,17 +19,17 @@ const SITE_URL = "https://www.edleaderforge.com";
 const BUNDLE_COURSES = [
   {
     slug: "fluency",
-    title: "Build Fluency",
+    title: "Fluency",
     blurb: "Confident, daily use of AI tools for leadership work — communication, planning, stakeholder engagement.",
   },
   {
     slug: "strategy",
-    title: "Chart the Course",
+    title: "Strategy",
     blurb: "Leave with a 3-year AI strategic roadmap structured for your board.",
   },
   {
     slug: "action",
-    title: "Ship It",
+    title: "Action",
     blurb: "Design and launch AI pilots with measurable outcomes and an implementation plan.",
   },
 ];
