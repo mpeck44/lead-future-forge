@@ -400,20 +400,62 @@ const Courses = () => {
                 </div>
 
                 {!searchQuery && (
-                  <Card className="mb-6 border-primary/40 bg-primary/5">
-                    <CardContent className="p-6 flex flex-wrap items-center justify-between gap-4">
-                      <div>
-                        <div className="mb-1 inline-block rounded-full bg-primary/15 px-2 py-0.5 font-body text-xs text-primary">
-                          Best value — save $40
+                  <Card className="mb-8 bg-navy text-white border-0 shadow-lg">
+                    <CardContent className="p-8 lg:p-10">
+                      <div className="grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] gap-8 items-start">
+                        <div>
+                          <div className="mb-3 inline-block rounded-full border border-gold/40 bg-transparent px-3 py-1 font-body text-[0.7rem] font-semibold tracking-[0.14em] uppercase text-gold">
+                            Complete Path — Best value
+                          </div>
+                          <h3 className="font-display text-2xl lg:text-3xl font-semibold text-white mb-3 leading-tight">
+                            Fluency + Strategy + Action
+                          </h3>
+                          <p className="font-body text-white/70 mb-5 max-w-2xl">
+                            The full leadership arc, bundled: daily AI fluency, a 3-year strategic roadmap, and a 90-day pilot launch plan.
+                          </p>
+                          <ul className="space-y-2 mb-6">
+                            <li className="flex gap-2 font-body text-sm text-white/80">
+                              <CheckCircle2 className="w-4 h-4 text-gold mt-0.5 shrink-0" />
+                              <span>AI Communication & Stakeholder Plan (Fluency)</span>
+                            </li>
+                            <li className="flex gap-2 font-body text-sm text-white/80">
+                              <CheckCircle2 className="w-4 h-4 text-gold mt-0.5 shrink-0" />
+                              <span>3-Year AI Strategic Roadmap (Strategy)</span>
+                            </li>
+                            <li className="flex gap-2 font-body text-sm text-white/80">
+                              <CheckCircle2 className="w-4 h-4 text-gold mt-0.5 shrink-0" />
+                              <span>90-Day Pilot Launch Plan (Action)</span>
+                            </li>
+                          </ul>
                         </div>
-                        <h3 className="font-display text-xl font-semibold">Complete Path — $197</h3>
-                        <p className="font-body text-sm text-muted-foreground max-w-2xl">
-                          Fluency + Strategy + Action, bundled. The full leadership arc from daily fluency to shipped pilots.
-                        </p>
+                        <div className="lg:border-l lg:border-white/10 lg:pl-8 flex flex-col gap-4">
+                          <div>
+                            <div className="font-display text-4xl lg:text-5xl font-bold text-white leading-none">
+                              $197
+                            </div>
+                            <div className="font-body text-sm text-white/60 mt-2">
+                              <span className="line-through text-white/40 mr-2">$237</span>
+                              Save $40 vs. buying separately
+                            </div>
+                          </div>
+                          <Button
+                            asChild
+                            className="gold-hover bg-gold text-navy hover:bg-gold font-body font-semibold py-6 text-base"
+                          >
+                            <Link to="/bundle">
+                              Get the bundle
+                              <ArrowRight className="ml-2 h-4 w-4" />
+                            </Link>
+                          </Button>
+                          <Button
+                            asChild
+                            variant="outline"
+                            className="border-white/25 bg-transparent text-white hover:bg-white/10 hover:text-white font-body font-medium"
+                          >
+                            <a href="#pathway-trio">Compare courses</a>
+                          </Button>
+                        </div>
                       </div>
-                      <Button asChild>
-                        <Link to="/bundle">See the bundle <ArrowRight className="ml-2 h-4 w-4" /></Link>
-                      </Button>
                     </CardContent>
                   </Card>
                 )}
