@@ -1,9 +1,9 @@
 import { useEffect, useRef } from "react";
 
 const steps = [
-  { num: 1, title: "Command the Tools", tag: "Fluency", body: "Real capability through practice, not theory. Hands on the work, not slides about it." },
-  { num: 2, title: "Chart the Course", tag: "Strategy", body: "Governance, vision, and the three-year roadmap your board is asking for." },
-  { num: 3, title: "Ship It", tag: "Action", body: "Ninety-day execution: targeted PD, resistance management, and scale-or-stop calls." },
+  { num: 1, title: "Fluency", tag: "Course 1", body: "Real capability through practice, not theory. Hands on the work, not slides about it." },
+  { num: 2, title: "Strategy", tag: "Course 2", body: "Governance, vision, and the three-year roadmap your board is asking for." },
+  { num: 3, title: "Action", tag: "Course 3", body: "Ninety-day execution: targeted PD, resistance management, and scale-or-stop calls." },
 ];
 
 const PathwaySection = () => {

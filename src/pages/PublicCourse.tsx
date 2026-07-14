@@ -36,7 +36,7 @@ interface Module {
 
 const COURSE_FAQS: Record<string, { q: string; a: string }[]> = {
   foundations: [
-    { q: "Do I need any AI background to start?", a: "No. The Launchpad assumes zero technical or AI background. It establishes the shared language every other course in the pathway builds on." },
+    { q: "Do I need any AI background to start?", a: "No. Foundations assumes zero technical or AI background. It establishes the shared language every other course in the pathway builds on." },
     { q: "How long will it take?", a: "Roughly four hours of focused work, broken into short modules. Most leaders finish in two weeks at a module every few days." },
     { q: "What do I leave with?", a: "A completed AI Equity Audit, a personal readiness profile, and a recommended next course matched to your district's largest gap." },
   ],
@@ -47,13 +47,13 @@ const COURSE_FAQS: Record<string, { q: string; a: string }[]> = {
   ],
   strategy: [
     { q: "Will I leave with something I can show my board?", a: "Yes. The course ends in a 3-year AI strategic roadmap built around your district's priorities, structured for board presentation." },
-    { q: "Do I need to finish Foundations first?", a: "Yes. Chart the Course assumes the shared language and readiness profile from The Launchpad." },
+    { q: "Do I need to finish Foundations first?", a: "Yes. Strategy assumes the shared language and readiness profile from Foundations." },
     { q: "Who should take this?", a: "Superintendents, assistant superintendents, technology and curriculum directors, and principals leading district-level AI planning." },
   ],
   action: [
     { q: "What do I build?", a: "A complete pilot design document, a 90-day launch plan, a board communication, and an implementation playbook for change management." },
     { q: "Is this only for tech directors?", a: "No. The course is built for any district leader moving an AI initiative from plan to pilot — including principals, curriculum directors, and superintendents." },
-    { q: "Do I need to finish Foundations and Strategy first?", a: "Foundations is required. Strategy is strongly recommended — Ship It assumes you have a roadmap to execute against." },
+    { q: "Do I need to finish Foundations and Strategy first?", a: "Foundations is required. Strategy is strongly recommended — Action assumes you have a roadmap to execute against." },
   ],
 };
 
@@ -61,22 +61,22 @@ const SITE_URL = "https://edleaderforge.com";
 
 const COURSE_SEO: Record<string, { title: string; description: string }> = {
   foundations: {
-    title: "K-12 AI Foundations Course — The Launchpad | The Leadership Forge",
+    title: "K-12 AI Foundations Course | The Leadership Forge",
     description:
       "Free AI foundations course for K-12 district leaders. Complete the AI Equity Audit and get a personal readiness profile in about four hours.",
   },
   fluency: {
-    title: "K-12 AI Fluency for Leaders — Command the Tools | The Leadership Forge",
+    title: "K-12 AI Fluency for Leaders | The Leadership Forge",
     description:
       "Hands-on AI fluency for superintendents, principals, and district leaders. Build a personal AI workflow you can use the next day.",
   },
   strategy: {
-    title: "K-12 AI Strategy Course — Chart the Course | The Leadership Forge",
+    title: "K-12 AI Strategy Course | The Leadership Forge",
     description:
       "Build a board-ready 3-year AI strategic roadmap for your school district. For superintendents, tech and curriculum directors.",
   },
   action: {
-    title: "K-12 AI Pilot Design — Ship It | The Leadership Forge",
+    title: "K-12 AI Pilot Design & Action | The Leadership Forge",
     description:
       "Design and launch AI pilots with measurable outcomes. Leave with a pilot design, board communication, and 90-day launch plan for your district.",
   },

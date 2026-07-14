@@ -40,9 +40,9 @@ const SITUATIONS: { quote: string; slug: CourseSlug }[] = [
 ];
 
 const COURSE_TITLES: Record<CourseSlug, string> = {
-  fluency: "Command the Tools",
-  strategy: "Chart the Course",
-  action: "Ship It",
+  fluency: "Fluency",
+  strategy: "Strategy",
+  action: "Action",
 };
 
 const RESULT_COPY: Record<CourseSlug, string> = {
