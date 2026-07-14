@@ -144,6 +144,56 @@ const Courses = () => {
     }
   };
 
+  const handleBuyCourse = (course: Course) => {
+    if (!user) {
+      navigate(`/auth?redirect=/courses%23${course.slug}`);
+      return;
+    }
+    if (!paymentsConfigured()) {
+      toast.error('Payments are not configured yet. Please check back shortly.');
+      return;
+    }
+    setCheckout({ mode: 'course', courseId: course.id, courseTitle: course.title });
+  };
+
+  const handleBuyBundle = () => {
+    if (!user) {
+      navigate('/auth?redirect=/courses%23bundle');
+      return;
+    }
+    if (!paymentsConfigured()) {
+      toast.error('Payments are not configured yet. Please check back shortly.');
+      return;
+    }
+    const ownsAny = Array.from(enrolledCourseIds).some((id) => {
+      const slug = courses.find((c) => c.id === id)?.slug;
+      return slug ? COMPLETE_PATH.courseSlugs.includes(slug) : false;
+    });
+    if (ownsAny) {
+      toast.error(
+        'You already own one of the bundle courses — buy the remaining ones individually.',
+      );
+      return;
+    }
+    setCheckout({ mode: 'bundle' });
+  };
+
+  // Scroll to the hash target once courses have rendered.
+  useEffect(() => {
+    if (loading || hashScrolledRef.current) return;
+    const hash = location.hash?.slice(1);
+    if (!hash) return;
+    // Defer to next tick so DOM has painted the card list.
+    const id = requestAnimationFrame(() => {
+      const el = document.getElementById(hash);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        hashScrolledRef.current = true;
+      }
+    });
+    return () => cancelAnimationFrame(id);
+  }, [loading, location.hash]);
+
   const filteredCourses = courses.filter(course =>
     course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     course.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
