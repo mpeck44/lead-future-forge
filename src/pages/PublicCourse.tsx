@@ -371,7 +371,7 @@ const PublicCourse = () => {
                   </div>
                 </div>
                 <Button asChild variant="secondary">
-                  <Link to="/bundle">See the bundle</Link>
+                  <Link to="/courses#bundle">See the bundle</Link>
                 </Button>
               </div>
             )}
