@@ -512,13 +512,11 @@ const Courses = () => {
                             </div>
                           </div>
                           <Button
-                            asChild
+                            onClick={handleBuyBundle}
                             className="gold-hover bg-gold text-navy hover:bg-gold font-body font-semibold py-6 text-base"
                           >
-                            <Link to="/bundle">
-                              Get the bundle
-                              <ArrowRight className="ml-2 h-4 w-4" />
-                            </Link>
+                            Get the bundle
+                            <ArrowRight className="ml-2 h-4 w-4" />
                           </Button>
                           <Button
                             asChild
