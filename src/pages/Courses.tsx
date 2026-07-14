@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
@@ -8,18 +8,23 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { 
-  BookOpen, 
-  Clock, 
-  Users, 
-  Award, 
+import {
+  BookOpen,
+  Clock,
+  Users,
+  Award,
   Search,
   ArrowRight,
-  CheckCircle2
+  CheckCircle2,
+  X,
 } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
 import { logRoutingEvent } from '@/lib/analytics/logRoutingEvent';
+import { StripeEmbeddedCheckoutView } from '@/components/StripeEmbeddedCheckout';
+import { PaymentTestModeBanner } from '@/components/PaymentTestModeBanner';
+import { paymentsConfigured } from '@/lib/stripe';
+import { COMPLETE_PATH } from '@/lib/bundles';
 
 interface Course {
   id: string;
@@ -37,11 +42,18 @@ interface Course {
 const Courses = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [courses, setCourses] = useState<Course[]>([]);
   const [enrolledCourseIds, setEnrolledCourseIds] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [enrollingId, setEnrollingId] = useState<string | null>(null);
+  const [checkout, setCheckout] = useState<
+    | { mode: 'bundle' }
+    | { mode: 'course'; courseId: string; courseTitle: string }
+    | null
+  >(null);
+  const hashScrolledRef = useRef(false);
 
   useEffect(() => {
     const fetchData = async () => {
