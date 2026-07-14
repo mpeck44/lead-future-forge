@@ -131,10 +131,10 @@ const Header = () => {
                 </DropdownMenu>
               ) : (
                 <Button
-                  onClick={() => setWaitlistOpen(true)}
+                  asChild
                   className="gold-hover bg-gold text-navy hover:bg-gold font-body font-semibold px-[1.1rem] py-2 text-[0.9rem] rounded-[10px]"
                 >
-                  Join the waitlist
+                  <Link to="/bundle">Get the bundle</Link>
                 </Button>
               )}
             </div>
@@ -167,10 +167,11 @@ const Header = () => {
                   </Button>
                 ) : (
                   <Button
-                    onClick={() => { setWaitlistOpen(true); setIsMenuOpen(false); }}
+                    asChild
+                    onClick={() => setIsMenuOpen(false)}
                     className="gold-hover bg-gold text-navy hover:bg-gold font-semibold rounded-[10px]"
                   >
-                    Join the waitlist
+                    <Link to="/bundle">Get the bundle</Link>
                   </Button>
                 )}
               </nav>
@@ -243,10 +244,10 @@ const Header = () => {
                 </DropdownMenu>
               ) : (
                 <Button
-                  onClick={() => setWaitlistOpen(true)}
+                  asChild
                   className="gold-hover bg-burnt-orange text-navy hover:bg-burnt-orange font-body font-medium"
                 >
-                  Join the Waitlist
+                  <Link to="/bundle">Get the bundle</Link>
                 </Button>
               )}
             </div>
@@ -279,8 +280,8 @@ const Header = () => {
                 ) : (
                   <>
                     <Link to="/courses" className="py-2" onClick={() => setIsMenuOpen(false)}>Courses</Link>
-                    <Button onClick={() => { setWaitlistOpen(true); setIsMenuOpen(false); }} className="gold-hover bg-burnt-orange text-navy hover:bg-burnt-orange font-body font-medium justify-start">
-                      Join the Waitlist
+                    <Button asChild onClick={() => setIsMenuOpen(false)} className="gold-hover bg-burnt-orange text-navy hover:bg-burnt-orange font-body font-medium justify-start">
+                      <Link to="/bundle">Get the bundle</Link>
                     </Button>
                   </>
                 )}
