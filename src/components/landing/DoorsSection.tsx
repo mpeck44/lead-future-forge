@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/accordion";
 
 interface Props {
-  onAudit: () => void;
+  onAudit?: () => void;
 }
 
 type Build = { title: string; desc: string };
@@ -146,7 +146,7 @@ const doors: Door[] = [
   },
 ];
 
-const DoorsSection = ({ onAudit }: Props) => {
+const DoorsSection = (_props: Props) => {
   const navigate = useNavigate();
   return (
     <section id="doors" className="py-[5.5rem] md:py-[7.5rem] bg-white">
