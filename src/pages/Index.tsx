@@ -80,7 +80,7 @@ const Index = () => {
               "name": "How much time does it take?",
               "acceptedAnswer": {
                 "@type": "Answer",
-                "text": "Each course runs four to five hours of focused work, broken into short modules designed to fit between obligations. It's self-paced — built to be finished in two to three weeks at a module every few days."
+                "text": "Each course runs six to eight hours of focused work, broken into short modules designed to fit between obligations. It's self-paced — built to be finished in two to three weeks at a module every few days."
               }
             },
             {

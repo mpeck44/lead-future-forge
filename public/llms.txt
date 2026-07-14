@@ -37,7 +37,7 @@ After completion, the audit produces a per-category score and a single recommend
 
 ## Format
 
-- Self-paced, four to five hours of focused work per course, broken into short modules.
+- Self-paced, six to eight hours of focused work per course, broken into short modules.
 - Typical leader finishes a course in two to three weeks at a module every few days.
 - Every course issues a certificate of completion with documented hours.
 - Aligned to ISTE and CoSN AI standards, but built around producing artifacts rather than awareness.

@@ -39,7 +39,7 @@ const doors: Door[] = [
     situation:
       "Your teachers are using a dozen AI tools right now. You approved three of them.",
     promise:
-      "In about two hours, the AI work already happening in your district becomes organized, documented, and defensible. You'll have artifacts you can put in front of your supervisor — not opinions, evidence.",
+      "In about six hours, the AI work already happening in your district becomes organized, documented, and defensible. You'll have artifacts you can put in front of your supervisor — not opinions, evidence.",
     builds: [
       {
         title: "AI Tool Evaluation Matrix",
@@ -58,7 +58,7 @@ const doors: Door[] = [
         desc: "The sequence for your first week, so the course doesn't end as a folder of good intentions.",
       },
     ],
-    time: "~2 hours, self-paced",
+    time: "~6 hours, self-paced",
     who: "Tech directors, principals, instructional coaches — anyone judged on execution.",
   },
   {
@@ -76,7 +76,7 @@ const doors: Door[] = [
     situation:
       'If your board asked tonight — "where are we on AI?" — could you point to a plan, or just to activity?',
     promise:
-      "In about four and a half hours, you build the strategic answer: where AI fits in your district's priorities, how you'll learn before you commit, what you're governing against, and the roadmap that gets it funded. It ends with a presentation built for the room you answer to.",
+      "In about eight hours, you build the strategic answer: where AI fits in your district's priorities, how you'll learn before you commit, what you're governing against, and the roadmap that gets it funded. It ends with a presentation built for the room you answer to.",
     builds: [
       {
         title: "Innovation Portfolio Map",
@@ -99,7 +99,7 @@ const doors: Door[] = [
         desc: "The 1–3 year plan and the deck that presents it. This is where the course pays for itself.",
       },
     ],
-    time: "~4.5 hours, self-paced",
+    time: "~8 hours, self-paced",
     who: "Superintendents, assistant superintendents, curriculum directors, principals carrying the strategic question.",
   },
   {
@@ -114,7 +114,7 @@ const doors: Door[] = [
     slug: "action",
     situation: "The policy passed in the spring. It's fall. Nothing in your buildings has changed.",
     promise:
-      "In about four hours, your framework becomes a 90-day execution plan where every line has a name and a date — plus the PD design, resistance strategy, and monitoring system that keep it moving after the launch energy fades.",
+      "In about eight hours, your framework becomes a 90-day execution plan where every line has a name and a date — plus the PD design, resistance strategy, and monitoring system that keep it moving after the launch energy fades.",
     builds: [
       {
         title: "90-Day Launch Plan",
@@ -141,7 +141,7 @@ const doors: Door[] = [
         desc: "The systems that survive your departure: policy, job descriptions, budget lines.",
       },
     ],
-    time: "~4 hours, self-paced",
+    time: "~8 hours, self-paced",
     who: "Any leader holding an adopted plan that isn't moving — including workshop alumni.",
   },
 ];
@@ -191,7 +191,7 @@ const DoorsSection = (_props: Props) => {
                   </div>
                   <div className="flex items-baseline gap-[0.55rem] flex-wrap">
                     <span className="font-display font-semibold text-foreground text-[1.35rem] leading-none">
-                      $75
+                      $79
                     </span>
                     <span className="text-foreground/60 text-[0.85rem]">· {d.time}</span>
                   </div>

@@ -19,7 +19,7 @@ const faqs = [
   },
   {
     q: "How much time does it take?",
-    a: ["Each course runs four to five hours of focused work, broken into short modules designed to fit between obligations. It's self-paced — built to be finished in two to three weeks at a module every few days, not crammed into a Saturday."],
+    a: ["Each course runs six to eight hours of focused work, broken into short modules designed to fit between obligations. It's self-paced — built to be finished in two to three weeks at a module every few days, not crammed into a Saturday."],
   },
   {
     q: "Is this only for tech directors, or can principals take it?",
