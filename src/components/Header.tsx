@@ -134,7 +134,7 @@ const Header = () => {
                   asChild
                   className="gold-hover bg-gold text-navy hover:bg-gold font-body font-semibold px-[1.1rem] py-2 text-[0.9rem] rounded-[10px]"
                 >
-                  <Link to="/courses">Get the bundle</Link>
+                  <Link to="/courses">Start learning today!</Link>
                 </Button>
               )}
             </div>
@@ -171,7 +171,7 @@ const Header = () => {
                     onClick={() => setIsMenuOpen(false)}
                     className="gold-hover bg-gold text-navy hover:bg-gold font-semibold rounded-[10px]"
                   >
-                    <Link to="/courses">Get the bundle</Link>
+                    <Link to="/courses">Start learning today!</Link>
                   </Button>
                 )}
               </nav>
