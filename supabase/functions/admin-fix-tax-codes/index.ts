@@ -28,7 +28,6 @@ Deno.serve(async (req) => {
 
     const results: Array<{ id: string; name: string; before?: string; after: string; skipped?: boolean }> = [];
 
-    // Walk products (paginated). Small catalog, single page is fine.
     const list = await stripe.products.list({ limit: 100, active: true });
     for (const product of list.data) {
       const name = product.name ?? "";
