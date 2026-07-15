@@ -13,12 +13,12 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from "@/hooks/useAuth";
 import { useAdminRole } from "@/hooks/useAdminRole";
 import { supabase } from "@/integrations/supabase/client";
-import WaitlistModal from "./WaitlistModal";
+
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [userName, setUserName] = useState<string | null>(null);
-  const [waitlistOpen, setWaitlistOpen] = useState(false);
+  
   const [scrolled, setScrolled] = useState(false);
   const { user, signOut } = useAuth();
   const { isAdmin } = useAdminRole();
@@ -178,7 +178,6 @@ const Header = () => {
             </div>
           )}
         </header>
-        <WaitlistModal open={waitlistOpen} onOpenChange={setWaitlistOpen} source="header" />
       </>
     );
   }
@@ -290,7 +289,6 @@ const Header = () => {
           )}
         </div>
       </header>
-      <WaitlistModal open={waitlistOpen} onOpenChange={setWaitlistOpen} source="header" />
     </>
   );
 };
