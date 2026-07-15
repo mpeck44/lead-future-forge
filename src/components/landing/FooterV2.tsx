@@ -3,8 +3,9 @@ import { Link } from "react-router-dom";
 const links = [
   { label: "Which one is you?", href: "#doors" },
   { label: "Pathway", href: "#pathway" },
-  { label: "Waitlist", href: "#pricing" },
+  { label: "Pricing", href: "#pricing" },
   { label: "FAQ", href: "#faq" },
+  { label: "Contact", href: "mailto:contact@peckeducation.com" },
   { label: "Privacy & Terms", href: "/privacy-terms" },
 ];
 

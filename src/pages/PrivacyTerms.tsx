@@ -90,7 +90,7 @@ const PrivacyTerms = () => {
                 <h3 className="font-display text-xl font-semibold text-foreground mt-8 mb-3">Information We Collect</h3>
                 <p className="mb-3">We collect information you provide when you:</p>
                 <ul className="list-disc pl-6 space-y-1 mb-4">
-                  <li>Create an account or sign up for the waitlist</li>
+                  <li>Create an account or enroll in a course</li>
                   <li>Complete the AI Readiness &amp; Equity Audit</li>
                   <li>Enroll in or access courses</li>
                   <li>Contact us for support</li>

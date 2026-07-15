@@ -39,7 +39,7 @@ const Footer = () => {
                 </a>
               </li>
               <li>
-                <a href="mailto:hello@theleadershipforge.com" className="font-body text-white/50 hover:text-burnt-orange transition-colors">
+                <a href="mailto:contact@peckeducation.com" className="font-body text-white/50 hover:text-burnt-orange transition-colors">
                   Contact
                 </a>
               </li>
@@ -56,7 +56,7 @@ const Footer = () => {
             <ul className="space-y-3">
               <li>
                 <a
-                  href="mailto:hello@theleadershipforge.com"
+                  href="mailto:contact@peckeducation.com"
                   className="font-body text-white/50 hover:text-burnt-orange transition-colors flex items-center gap-2"
                 >
                   <Mail className="w-4 h-4" />
