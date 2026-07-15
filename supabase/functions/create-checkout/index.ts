@@ -173,8 +173,8 @@ Deno.serve(async (req) => {
       return_url: returnUrl,
       customer: customerId,
       payment_intent_data: { description: productDescription },
-      metadata: sessionMetadata,
-      automatic_tax: { enabled: true },
+      metadata: { ...sessionMetadata, managed_payments: "true" },
+      managed_payments: { enabled: true },
     } as any);
 
     orderInsert.stripe_session_id = session.id;
