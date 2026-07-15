@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Helmet } from "react-helmet-async";
 import Header from "@/components/Header";
 import HeroV2 from "@/components/landing/HeroV2";
@@ -9,22 +8,14 @@ import PathwaySection from "@/components/landing/PathwaySection";
 import DeliverablesSection from "@/components/landing/DeliverablesSection";
 import BioSection from "@/components/landing/BioSection";
 import TestimonialsV2 from "@/components/landing/TestimonialsV2";
-import PricingWaitlist from "@/components/landing/PricingWaitlist";
+import PricingDirect from "@/components/landing/PricingDirect";
 import FaqSection from "@/components/landing/FaqSection";
 import FooterV2 from "@/components/landing/FooterV2";
-import WaitlistModal from "@/components/WaitlistModal";
 import StickyBuyBar from "@/components/landing/StickyBuyBar";
 import { useReveal } from "@/hooks/useReveal";
 
 const Index = () => {
-  const [waitlistOpen, setWaitlistOpen] = useState(false);
-  const [waitlistSource, setWaitlistSource] = useState("hero");
   useReveal();
-
-  const openWaitlist = (source: string) => {
-    setWaitlistSource(source);
-    setWaitlistOpen(true);
-  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -104,19 +95,18 @@ const Index = () => {
       </Helmet>
       <Header />
       <main id="main">
-        <HeroV2 onWaitlist={() => openWaitlist("hero")} />
+        <HeroV2 />
         <ProblemV2 />
         <WhyNotChatGPTSection />
         <BioSection />
-        <DoorsSection onAudit={() => openWaitlist("readiness-audit")} />
+        <DoorsSection />
         <PathwaySection />
         <DeliverablesSection />
         <TestimonialsV2 />
-        <PricingWaitlist />
+        <PricingDirect />
         <FaqSection />
       </main>
       <FooterV2 />
-      <WaitlistModal open={waitlistOpen} onOpenChange={setWaitlistOpen} source={waitlistSource} />
       <StickyBuyBar />
     </div>
   );

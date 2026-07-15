@@ -2,14 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import HeroAppPreview from "./HeroAppPreview";
 
-interface Props {
-  onWaitlist: () => void;
-}
-
-const HeroV2 = ({ onWaitlist }: Props) => {
-  const scrollTo = (id: string) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
-  };
+const HeroV2 = () => {
 
   return (
     <section className="relative overflow-hidden bg-navy text-white/85 pt-[7.5rem] md:pt-[8.5rem] hero-horizon-glow">
@@ -37,10 +30,10 @@ const HeroV2 = ({ onWaitlist }: Props) => {
             <div className="rv rv-d3 mb-10">
               <div className="flex flex-wrap gap-3">
                 <Button
-                  onClick={onWaitlist}
+                  asChild
                   className="gold-hover bg-gold text-navy hover:bg-gold font-body font-semibold px-7 py-6 text-base rounded-[10px]"
                 >
-                  Get your AI readiness score →
+                  <Link to="/courses/foundations">Get your AI readiness score →</Link>
                 </Button>
                 <Button
                   asChild
