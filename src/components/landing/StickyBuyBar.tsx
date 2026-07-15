@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { X, ArrowRight } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { COMPLETE_PATH, formatCents } from "@/lib/bundles";
+import { isFounderActive } from "@/lib/founderDiscount";
 
 const DISMISS_KEY = "sticky-buy-bar-dismissed";
 

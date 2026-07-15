@@ -14,6 +14,7 @@ import { StripeEmbeddedCheckoutView } from "@/components/StripeEmbeddedCheckout"
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import { paymentsConfigured } from "@/lib/stripe";
 import { toast } from "sonner";
+import { isFounderActive } from "@/lib/founderDiscount";
 
 interface Course {
   id: string;
