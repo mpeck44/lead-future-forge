@@ -1,6 +1,8 @@
 // Bundle definitions shared between the create-checkout edge function
 // and the payments-webhook. Keep in sync with src/lib/bundles.ts.
 
+import { getBundleLookupKey, getBundlePriceCents } from "./founderDiscount.ts";
+
 export interface BundleConfig {
   key: string;
   lookupKey: string;
@@ -10,17 +12,18 @@ export interface BundleConfig {
   name: string;
 }
 
-export const BUNDLES: Record<string, BundleConfig> = {
-  complete_path: {
+export function getBundle(key: string): BundleConfig | null {
+  if (key !== "complete_path") return null;
+  return {
     key: "complete_path",
-    lookupKey: "course_bundle_onetime",
+    lookupKey: getBundleLookupKey(),
     courseSlugs: ["fluency", "strategy", "action"],
-    priceCents: 19700,
+    priceCents: getBundlePriceCents(),
     currency: "usd",
     name: "Complete Path — All Three Courses",
-  },
-};
-
-export function getBundle(key: string): BundleConfig | null {
-  return BUNDLES[key] ?? null;
+  };
 }
+
+export const BUNDLES: Record<string, () => BundleConfig> = {
+  complete_path: () => getBundle("complete_path")!,
+};

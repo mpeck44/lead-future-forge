@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { X, ArrowRight } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { COMPLETE_PATH, formatCents } from "@/lib/bundles";
+import { isFounderActive } from "@/lib/founderDiscount";
 
 const DISMISS_KEY = "sticky-buy-bar-dismissed";
 
@@ -61,11 +63,16 @@ const StickyBuyBar = () => {
           </div>
           <div className="flex items-baseline gap-2 mt-0.5">
             <span className="font-body text-white/50 line-through text-xs sm:text-sm">
-              $237
+              {isFounderActive() ? "$197" : "$237"}
             </span>
             <span className="font-display font-bold text-gold text-base sm:text-lg leading-none">
-              $197
+              {formatCents(COMPLETE_PATH.priceCents)}
             </span>
+            {isFounderActive() && (
+              <span className="hidden sm:inline font-body text-[0.7rem] uppercase tracking-[0.12em] text-gold/80 ml-1">
+                Founder · ends Sept 7
+              </span>
+            )}
             <Link
               to="/courses#pathway-trio"
               className="hidden sm:inline font-body text-xs text-white/60 hover:text-gold ml-2"

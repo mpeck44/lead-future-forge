@@ -14,6 +14,7 @@ import { StripeEmbeddedCheckoutView } from "@/components/StripeEmbeddedCheckout"
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import { paymentsConfigured } from "@/lib/stripe";
 import { toast } from "sonner";
+import { isFounderActive } from "@/lib/founderDiscount";
 
 interface Course {
   id: string;
@@ -367,7 +368,9 @@ const PublicCourse = () => {
                 <div>
                   <div className="font-display font-semibold">Want the complete path?</div>
                   <div className="font-body text-sm text-muted-foreground">
-                    Bundle Fluency + Strategy + Action for $197 — save $40 vs. buying separately.
+                    {isFounderActive()
+                      ? "Founder cohort: bundle Fluency + Strategy + Action for $158 through Mon, Sept 7 — save $79 vs. buying separately."
+                      : "Bundle Fluency + Strategy + Action for $197 — save $40 vs. buying separately."}
                   </div>
                 </div>
                 <Button asChild variant="secondary">

@@ -24,7 +24,8 @@ import { logRoutingEvent } from '@/lib/analytics/logRoutingEvent';
 import { StripeEmbeddedCheckoutView } from '@/components/StripeEmbeddedCheckout';
 import { PaymentTestModeBanner } from '@/components/PaymentTestModeBanner';
 import { paymentsConfigured } from '@/lib/stripe';
-import { COMPLETE_PATH } from '@/lib/bundles';
+import { COMPLETE_PATH, formatCents } from '@/lib/bundles';
+import { isFounderActive } from '@/lib/founderDiscount';
 
 interface Course {
   id: string;
@@ -544,12 +545,21 @@ const Courses = () => {
                         </div>
                         <div className="lg:border-l lg:border-white/10 lg:pl-8 flex flex-col gap-4">
                           <div>
+                            {isFounderActive() && (
+                              <div className="mb-2 inline-block rounded-full bg-gold/15 border border-gold/40 px-2.5 py-1 font-body text-[0.65rem] font-semibold tracking-[0.14em] uppercase text-gold">
+                                Founder cohort · ends Sept 7
+                              </div>
+                            )}
                             <div className="font-display text-4xl lg:text-5xl font-bold text-white leading-none">
-                              $197
+                              {formatCents(COMPLETE_PATH.priceCents)}
                             </div>
                             <div className="font-body text-sm text-white/60 mt-2">
-                              <span className="line-through text-white/40 mr-2">$237</span>
-                              Save $40 vs. buying separately
+                              <span className="line-through text-white/40 mr-2">
+                                {isFounderActive() ? "$197" : "$237"}
+                              </span>
+                              {isFounderActive()
+                                ? "Founder pricing ends Mon, Sept 7 · save $79"
+                                : "Save $40 vs. buying separately"}
                             </div>
                           </div>
                           <Button
