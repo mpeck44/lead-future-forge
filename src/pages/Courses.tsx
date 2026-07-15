@@ -24,7 +24,8 @@ import { logRoutingEvent } from '@/lib/analytics/logRoutingEvent';
 import { StripeEmbeddedCheckoutView } from '@/components/StripeEmbeddedCheckout';
 import { PaymentTestModeBanner } from '@/components/PaymentTestModeBanner';
 import { paymentsConfigured } from '@/lib/stripe';
-import { COMPLETE_PATH } from '@/lib/bundles';
+import { COMPLETE_PATH, formatCents } from '@/lib/bundles';
+import { isFounderActive } from '@/lib/founderDiscount';
 
 interface Course {
   id: string;
