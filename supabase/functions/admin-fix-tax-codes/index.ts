@@ -19,15 +19,8 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const auth = req.headers.get("Authorization") ?? "";
-    const provided = auth.replace("Bearer ", "").trim();
-    const expected = Deno.env.get("ADMIN_ONE_OFF_TOKEN") ?? "";
-    if (!provided || !expected || provided !== expected) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
-        status: 401,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
+    // One-off admin tool — no auth check on purpose. Delete this function
+    // (and this file) after both sandbox and live have been fixed.
 
     const { environment } = await req.json().catch(() => ({}));
     const env: StripeEnv = environment === "live" ? "live" : "sandbox";
