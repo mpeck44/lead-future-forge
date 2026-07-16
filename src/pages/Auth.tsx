@@ -103,117 +103,91 @@ const Auth = () => {
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSignupError(null);
     setIsLoading(true);
-    
+
     try {
       emailSchema.parse(signupEmail);
       passwordSchema.parse(signupPassword);
     } catch (err) {
       if (err instanceof z.ZodError) {
-        toast({
-          title: 'Validation Error',
-          description: err.errors[0].message,
-          variant: 'destructive',
-        });
+        setSignupError(err.errors[0].message);
         setIsLoading(false);
         return;
       }
     }
 
     if (signupPassword !== signupConfirmPassword) {
-      toast({
-        title: 'Password Mismatch',
-        description: 'Passwords do not match. Please try again.',
-        variant: 'destructive',
-      });
+      setSignupError('Passwords do not match. Please try again.');
       setIsLoading(false);
       return;
     }
 
     if (!fullName.trim()) {
-      toast({
-        title: 'Missing Information',
-        description: 'Please enter your full name.',
-        variant: 'destructive',
-      });
+      setSignupError('Please enter your full name.');
       setIsLoading(false);
       return;
     }
 
     if (!role) {
-      toast({
-        title: 'Missing Information',
-        description: 'Please select your role.',
-        variant: 'destructive',
-      });
+      setSignupError('Please select your role.');
       setIsLoading(false);
       return;
     }
 
-    const { error } = await signUp(signupEmail, signupPassword, {
-      full_name: fullName,
-      role,
-      district_name: districtName,
-    });
-    
-    if (error) {
-      if (error.message.includes('already registered')) {
-        toast({
-          title: 'Account Exists',
-          description: 'An account with this email already exists. Please log in instead.',
-          variant: 'destructive',
-        });
+    try {
+      const { error } = await signUp(signupEmail, signupPassword, {
+        full_name: fullName,
+        role,
+        district_name: districtName,
+      });
+
+      if (error) {
+        setSignupError(friendlyError(error.message));
       } else {
         toast({
-          title: 'Signup Failed',
-          description: error.message,
-          variant: 'destructive',
+          title: 'Account Created!',
+          description: 'Welcome to The Leadership Forge!',
         });
       }
-    } else {
-      toast({
-        title: 'Account Created!',
-        description: 'Welcome to The Leadership Forge!',
-      });
+    } catch (err) {
+      setSignupError('Something went wrong. Please try again.');
     }
-    
+
     setIsLoading(false);
   };
 
   const handleMagicLink = async (e: React.FormEvent) => {
     e.preventDefault();
+    setMagicLinkError(null);
     setIsLoading(true);
-    
+
     try {
       emailSchema.parse(magicLinkEmail);
     } catch (err) {
       if (err instanceof z.ZodError) {
-        toast({
-          title: 'Validation Error',
-          description: err.errors[0].message,
-          variant: 'destructive',
-        });
+        setMagicLinkError(err.errors[0].message);
         setIsLoading(false);
         return;
       }
     }
 
-    const { error } = await signInWithMagicLink(magicLinkEmail);
-    
-    if (error) {
-      toast({
-        title: 'Error',
-        description: error.message,
-        variant: 'destructive',
-      });
-    } else {
-      toast({
-        title: 'Check your email!',
-        description: 'We sent you a magic link to sign in.',
-      });
-      setMagicLinkEmail('');
+    try {
+      const { error } = await signInWithMagicLink(magicLinkEmail);
+
+      if (error) {
+        setMagicLinkError(friendlyError(error.message));
+      } else {
+        toast({
+          title: 'Check your email!',
+          description: 'We sent you a magic link to sign in.',
+        });
+        setMagicLinkEmail('');
+      }
+    } catch (err) {
+      setMagicLinkError('Something went wrong. Please try again.');
     }
-    
+
     setIsLoading(false);
   };
 
