@@ -221,6 +221,51 @@ const Auth = () => {
     setIsLoading(false);
   };
 
+  if (signupSuccessEmail) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <Helmet>
+          <title>Check your email — EdLeaderForge</title>
+        </Helmet>
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center">
+            <div className="mx-auto mb-4 w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center">
+              <CheckCircle2 className="w-8 h-8 text-primary" />
+            </div>
+            <CardTitle className="font-display text-2xl">Check your email</CardTitle>
+            <CardDescription className="font-body">
+              We sent a confirmation link to <span className="font-semibold text-foreground">{signupSuccessEmail}</span>. Click the link to verify, then come back to log in.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {resendMessage && (
+              <div className="rounded-md border border-border bg-muted/50 px-3 py-2 text-sm text-foreground font-body text-center">
+                {resendMessage}
+              </div>
+            )}
+            <Button
+              onClick={handleResendConfirmation}
+              variant="outline"
+              className="w-full font-body"
+              disabled={resendLoading}
+            >
+              {resendLoading ? 'Resending...' : 'Resend confirmation email'}
+            </Button>
+            <Button
+              onClick={() => {
+                setSignupSuccessEmail(null);
+                setResendMessage(null);
+              }}
+              className="w-full font-body"
+            >
+              Back to log in
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   if (showMagicLink) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
