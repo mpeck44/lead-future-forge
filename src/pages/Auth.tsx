@@ -292,7 +292,7 @@ const Auth = () => {
                         type="email"
                         placeholder="you@example.com"
                         value={loginEmail}
-                        onChange={(e) => setLoginEmail(e.target.value)}
+                        onChange={(e) => { setLoginEmail(e.target.value); setLoginError(null); }}
                         className="pl-10 font-body"
                         required
                       />
@@ -307,12 +307,17 @@ const Auth = () => {
                         type="password"
                         placeholder="••••••••"
                         value={loginPassword}
-                        onChange={(e) => setLoginPassword(e.target.value)}
+                        onChange={(e) => { setLoginPassword(e.target.value); setLoginError(null); }}
                         className="pl-10 font-body"
                         required
                       />
                     </div>
                   </div>
+                  {loginError && (
+                    <div className="rounded-md border border-destructive/50 bg-destructive/10 px-3 py-2 text-sm text-destructive font-body">
+                      {loginError}
+                    </div>
+                  )}
                   <Button type="submit" className="w-full font-body" disabled={isLoading}>
                     {isLoading ? 'Signing in...' : 'Log In'}
                   </Button>
