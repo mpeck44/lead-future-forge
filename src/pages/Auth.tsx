@@ -410,7 +410,7 @@ const Auth = () => {
                         type="password"
                         placeholder="••••••••"
                         value={signupPassword}
-                        onChange={(e) => setSignupPassword(e.target.value)}
+                        onChange={(e) => { setSignupPassword(e.target.value); setSignupError(null); }}
                         className="pl-10 font-body"
                         required
                       />
