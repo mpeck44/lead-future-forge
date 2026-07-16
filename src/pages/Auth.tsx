@@ -426,13 +426,18 @@ const Auth = () => {
                         type="password"
                         placeholder="••••••••"
                         value={signupConfirmPassword}
-                        onChange={(e) => setSignupConfirmPassword(e.target.value)}
+                        onChange={(e) => { setSignupConfirmPassword(e.target.value); setSignupError(null); }}
                         className="pl-10 font-body"
                         required
                       />
                     </div>
                   </div>
                   
+                  {signupError && (
+                    <div className="rounded-md border border-destructive/50 bg-destructive/10 px-3 py-2 text-sm text-destructive font-body">
+                      {signupError}
+                    </div>
+                  )}
                   <Button type="submit" className="w-full font-body" disabled={isLoading}>
                     {isLoading ? 'Creating account...' : 'Create Account'}
                   </Button>
