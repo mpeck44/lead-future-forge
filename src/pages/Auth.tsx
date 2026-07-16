@@ -23,7 +23,27 @@ const Auth = () => {
   
   const [isLoading, setIsLoading] = useState(false);
   const [showMagicLink, setShowMagicLink] = useState(false);
-  
+  const [loginError, setLoginError] = useState<string | null>(null);
+  const [signupError, setSignupError] = useState<string | null>(null);
+  const [magicLinkError, setMagicLinkError] = useState<string | null>(null);
+
+  const friendlyError = (message: string): string => {
+    const msg = message.toLowerCase();
+    if (msg.includes('already registered') || msg.includes('user already')) {
+      return 'An account with this email already exists. Try logging in instead.';
+    }
+    if (msg.includes('invalid login credentials')) {
+      return 'Invalid email or password. Please try again.';
+    }
+    if (msg.includes('email not confirmed')) {
+      return 'Please confirm your email address before signing in. Check your inbox for the confirmation link.';
+    }
+    if (msg.includes('failed to fetch') || msg.includes('network') || msg.includes('networkerror')) {
+      return 'Something went wrong. Please try again.';
+    }
+    return message;
+  };
+
   // Login form state
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
