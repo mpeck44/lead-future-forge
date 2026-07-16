@@ -490,7 +490,32 @@ const Auth = () => {
                         required
                       />
                     </div>
+                    {signupPassword && (
+                      <div className="flex gap-1" aria-label="Password strength">
+                        {[0, 1, 2].map((i) => {
+                          const s = scorePassword(signupPassword);
+                          const color =
+                            s === 0
+                              ? 'bg-muted'
+                              : s === 1
+                              ? 'bg-destructive'
+                              : s === 2
+                              ? 'bg-yellow-500'
+                              : 'bg-green-500';
+                          return (
+                            <div
+                              key={i}
+                              className={`h-1 flex-1 rounded ${i < s ? color : 'bg-muted'}`}
+                            />
+                          );
+                        })}
+                      </div>
+                    )}
+                    <p className="text-xs text-muted-foreground font-body">
+                      Use at least 8 characters with upper and lowercase letters, numbers, and symbols.
+                    </p>
                   </div>
+                  
                   
                   <div className="space-y-2">
                     <Label htmlFor="signup-confirm" className="font-body">Confirm Password</Label>
