@@ -177,10 +177,8 @@ const Auth = () => {
       if (error) {
         setSignupError(friendlyError(error.message));
       } else {
-        toast({
-          title: 'Account Created!',
-          description: 'Welcome to The Leadership Forge!',
-        });
+        setSignupSuccessEmail(signupEmail);
+        setResendMessage(null);
       }
     } catch (err) {
       setSignupError('Something went wrong. Please try again.');
