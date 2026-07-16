@@ -370,7 +370,7 @@ const Auth = () => {
                   
                   <div className="space-y-2">
                     <Label htmlFor="signup-role" className="font-body">Role</Label>
-                    <Select value={role} onValueChange={setRole}>
+                    <Select value={role} onValueChange={(v) => { setRole(v); setSignupError(null); }}>
                       <SelectTrigger className="font-body">
                         <SelectValue placeholder="Select your role" />
                       </SelectTrigger>
