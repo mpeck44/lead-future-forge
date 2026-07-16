@@ -69,6 +69,28 @@ const Auth = () => {
   // Magic link state
   const [magicLinkEmail, setMagicLinkEmail] = useState('');
 
+  // Signup success state
+  const [signupSuccessEmail, setSignupSuccessEmail] = useState<string | null>(null);
+  const [resendLoading, setResendLoading] = useState(false);
+  const [resendMessage, setResendMessage] = useState<string | null>(null);
+
+  const handleResendConfirmation = async () => {
+    if (!signupSuccessEmail) return;
+    setResendLoading(true);
+    setResendMessage(null);
+    const { error } = await supabase.auth.resend({
+      type: 'signup',
+      email: signupSuccessEmail,
+      options: { emailRedirectTo: `${window.location.origin}/dashboard` },
+    });
+    if (error) {
+      setResendMessage(friendlyError(error.message));
+    } else {
+      setResendMessage('Confirmation email sent. Check your inbox.');
+    }
+    setResendLoading(false);
+  };
+
   // Redirect if already logged in
   useEffect(() => {
     if (user) {
