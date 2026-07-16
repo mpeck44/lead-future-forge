@@ -219,12 +219,17 @@ const Auth = () => {
                     type="email"
                     placeholder="you@example.com"
                     value={magicLinkEmail}
-                    onChange={(e) => setMagicLinkEmail(e.target.value)}
+                    onChange={(e) => { setMagicLinkEmail(e.target.value); setMagicLinkError(null); }}
                     className="pl-10 font-body"
                     required
                   />
                 </div>
               </div>
+              {magicLinkError && (
+                <div className="rounded-md border border-destructive/50 bg-destructive/10 px-3 py-2 text-sm text-destructive font-body">
+                  {magicLinkError}
+                </div>
+              )}
               <Button type="submit" className="w-full font-body" disabled={isLoading}>
                 {isLoading ? 'Sending...' : 'Send Magic Link'}
               </Button>
