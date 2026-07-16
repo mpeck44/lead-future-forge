@@ -361,7 +361,7 @@ const Auth = () => {
                         type="email"
                         placeholder="you@example.com"
                         value={signupEmail}
-                        onChange={(e) => setSignupEmail(e.target.value)}
+                        onChange={(e) => { setSignupEmail(e.target.value); setSignupError(null); }}
                         className="pl-10 font-body"
                         required
                       />
