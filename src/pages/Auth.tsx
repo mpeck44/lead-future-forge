@@ -23,7 +23,27 @@ const Auth = () => {
   
   const [isLoading, setIsLoading] = useState(false);
   const [showMagicLink, setShowMagicLink] = useState(false);
-  
+  const [loginError, setLoginError] = useState<string | null>(null);
+  const [signupError, setSignupError] = useState<string | null>(null);
+  const [magicLinkError, setMagicLinkError] = useState<string | null>(null);
+
+  const friendlyError = (message: string): string => {
+    const msg = message.toLowerCase();
+    if (msg.includes('already registered') || msg.includes('user already')) {
+      return 'An account with this email already exists. Try logging in instead.';
+    }
+    if (msg.includes('invalid login credentials')) {
+      return 'Invalid email or password. Please try again.';
+    }
+    if (msg.includes('email not confirmed')) {
+      return 'Please confirm your email address before signing in. Check your inbox for the confirmation link.';
+    }
+    if (msg.includes('failed to fetch') || msg.includes('network') || msg.includes('networkerror')) {
+      return 'Something went wrong. Please try again.';
+    }
+    return message;
+  };
+
   // Login form state
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
@@ -49,156 +69,125 @@ const Auth = () => {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoginError(null);
     setIsLoading(true);
-    
+
     try {
       emailSchema.parse(loginEmail);
       passwordSchema.parse(loginPassword);
     } catch (err) {
       if (err instanceof z.ZodError) {
-        toast({
-          title: 'Validation Error',
-          description: err.errors[0].message,
-          variant: 'destructive',
-        });
+        setLoginError(err.errors[0].message);
         setIsLoading(false);
         return;
       }
     }
 
-    const { error } = await signIn(loginEmail, loginPassword);
-    
-    if (error) {
-      toast({
-        title: 'Login Failed',
-        description: error.message === 'Invalid login credentials' 
-          ? 'Invalid email or password. Please try again.' 
-          : error.message,
-        variant: 'destructive',
-      });
-    } else {
-      toast({
-        title: 'Welcome back!',
-        description: 'You have successfully logged in.',
-      });
+    try {
+      const { error } = await signIn(loginEmail, loginPassword);
+
+      if (error) {
+        setLoginError(friendlyError(error.message));
+      } else {
+        toast({
+          title: 'Welcome back!',
+          description: 'You have successfully logged in.',
+        });
+      }
+    } catch (err) {
+      setLoginError('Something went wrong. Please try again.');
     }
-    
+
     setIsLoading(false);
   };
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSignupError(null);
     setIsLoading(true);
-    
+
     try {
       emailSchema.parse(signupEmail);
       passwordSchema.parse(signupPassword);
     } catch (err) {
       if (err instanceof z.ZodError) {
-        toast({
-          title: 'Validation Error',
-          description: err.errors[0].message,
-          variant: 'destructive',
-        });
+        setSignupError(err.errors[0].message);
         setIsLoading(false);
         return;
       }
     }
 
     if (signupPassword !== signupConfirmPassword) {
-      toast({
-        title: 'Password Mismatch',
-        description: 'Passwords do not match. Please try again.',
-        variant: 'destructive',
-      });
+      setSignupError('Passwords do not match. Please try again.');
       setIsLoading(false);
       return;
     }
 
     if (!fullName.trim()) {
-      toast({
-        title: 'Missing Information',
-        description: 'Please enter your full name.',
-        variant: 'destructive',
-      });
+      setSignupError('Please enter your full name.');
       setIsLoading(false);
       return;
     }
 
     if (!role) {
-      toast({
-        title: 'Missing Information',
-        description: 'Please select your role.',
-        variant: 'destructive',
-      });
+      setSignupError('Please select your role.');
       setIsLoading(false);
       return;
     }
 
-    const { error } = await signUp(signupEmail, signupPassword, {
-      full_name: fullName,
-      role,
-      district_name: districtName,
-    });
-    
-    if (error) {
-      if (error.message.includes('already registered')) {
-        toast({
-          title: 'Account Exists',
-          description: 'An account with this email already exists. Please log in instead.',
-          variant: 'destructive',
-        });
+    try {
+      const { error } = await signUp(signupEmail, signupPassword, {
+        full_name: fullName,
+        role,
+        district_name: districtName,
+      });
+
+      if (error) {
+        setSignupError(friendlyError(error.message));
       } else {
         toast({
-          title: 'Signup Failed',
-          description: error.message,
-          variant: 'destructive',
+          title: 'Account Created!',
+          description: 'Welcome to The Leadership Forge!',
         });
       }
-    } else {
-      toast({
-        title: 'Account Created!',
-        description: 'Welcome to The Leadership Forge!',
-      });
+    } catch (err) {
+      setSignupError('Something went wrong. Please try again.');
     }
-    
+
     setIsLoading(false);
   };
 
   const handleMagicLink = async (e: React.FormEvent) => {
     e.preventDefault();
+    setMagicLinkError(null);
     setIsLoading(true);
-    
+
     try {
       emailSchema.parse(magicLinkEmail);
     } catch (err) {
       if (err instanceof z.ZodError) {
-        toast({
-          title: 'Validation Error',
-          description: err.errors[0].message,
-          variant: 'destructive',
-        });
+        setMagicLinkError(err.errors[0].message);
         setIsLoading(false);
         return;
       }
     }
 
-    const { error } = await signInWithMagicLink(magicLinkEmail);
-    
-    if (error) {
-      toast({
-        title: 'Error',
-        description: error.message,
-        variant: 'destructive',
-      });
-    } else {
-      toast({
-        title: 'Check your email!',
-        description: 'We sent you a magic link to sign in.',
-      });
-      setMagicLinkEmail('');
+    try {
+      const { error } = await signInWithMagicLink(magicLinkEmail);
+
+      if (error) {
+        setMagicLinkError(friendlyError(error.message));
+      } else {
+        toast({
+          title: 'Check your email!',
+          description: 'We sent you a magic link to sign in.',
+        });
+        setMagicLinkEmail('');
+      }
+    } catch (err) {
+      setMagicLinkError('Something went wrong. Please try again.');
     }
-    
+
     setIsLoading(false);
   };
 
@@ -230,12 +219,17 @@ const Auth = () => {
                     type="email"
                     placeholder="you@example.com"
                     value={magicLinkEmail}
-                    onChange={(e) => setMagicLinkEmail(e.target.value)}
+                    onChange={(e) => { setMagicLinkEmail(e.target.value); setMagicLinkError(null); }}
                     className="pl-10 font-body"
                     required
                   />
                 </div>
               </div>
+              {magicLinkError && (
+                <div className="rounded-md border border-destructive/50 bg-destructive/10 px-3 py-2 text-sm text-destructive font-body">
+                  {magicLinkError}
+                </div>
+              )}
               <Button type="submit" className="w-full font-body" disabled={isLoading}>
                 {isLoading ? 'Sending...' : 'Send Magic Link'}
               </Button>
@@ -276,7 +270,11 @@ const Auth = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Tabs defaultValue="login" className="w-full">
+            <Tabs
+              defaultValue="login"
+              className="w-full"
+              onValueChange={() => { setLoginError(null); setSignupError(null); }}
+            >
               <TabsList className="grid w-full grid-cols-2 mb-6">
                 <TabsTrigger value="login" className="font-body">Log In</TabsTrigger>
                 <TabsTrigger value="signup" className="font-body">Sign Up</TabsTrigger>
@@ -294,7 +292,7 @@ const Auth = () => {
                         type="email"
                         placeholder="you@example.com"
                         value={loginEmail}
-                        onChange={(e) => setLoginEmail(e.target.value)}
+                        onChange={(e) => { setLoginEmail(e.target.value); setLoginError(null); }}
                         className="pl-10 font-body"
                         required
                       />
@@ -309,12 +307,17 @@ const Auth = () => {
                         type="password"
                         placeholder="••••••••"
                         value={loginPassword}
-                        onChange={(e) => setLoginPassword(e.target.value)}
+                        onChange={(e) => { setLoginPassword(e.target.value); setLoginError(null); }}
                         className="pl-10 font-body"
                         required
                       />
                     </div>
                   </div>
+                  {loginError && (
+                    <div className="rounded-md border border-destructive/50 bg-destructive/10 px-3 py-2 text-sm text-destructive font-body">
+                      {loginError}
+                    </div>
+                  )}
                   <Button type="submit" className="w-full font-body" disabled={isLoading}>
                     {isLoading ? 'Signing in...' : 'Log In'}
                   </Button>
@@ -342,7 +345,7 @@ const Auth = () => {
                         type="text"
                         placeholder="John Doe"
                         value={fullName}
-                        onChange={(e) => setFullName(e.target.value)}
+                        onChange={(e) => { setFullName(e.target.value); setSignupError(null); }}
                         className="pl-10 font-body"
                         required
                       />
@@ -358,7 +361,7 @@ const Auth = () => {
                         type="email"
                         placeholder="you@example.com"
                         value={signupEmail}
-                        onChange={(e) => setSignupEmail(e.target.value)}
+                        onChange={(e) => { setSignupEmail(e.target.value); setSignupError(null); }}
                         className="pl-10 font-body"
                         required
                       />
@@ -367,7 +370,7 @@ const Auth = () => {
                   
                   <div className="space-y-2">
                     <Label htmlFor="signup-role" className="font-body">Role</Label>
-                    <Select value={role} onValueChange={setRole}>
+                    <Select value={role} onValueChange={(v) => { setRole(v); setSignupError(null); }}>
                       <SelectTrigger className="font-body">
                         <SelectValue placeholder="Select your role" />
                       </SelectTrigger>
@@ -407,7 +410,7 @@ const Auth = () => {
                         type="password"
                         placeholder="••••••••"
                         value={signupPassword}
-                        onChange={(e) => setSignupPassword(e.target.value)}
+                        onChange={(e) => { setSignupPassword(e.target.value); setSignupError(null); }}
                         className="pl-10 font-body"
                         required
                       />
@@ -423,13 +426,18 @@ const Auth = () => {
                         type="password"
                         placeholder="••••••••"
                         value={signupConfirmPassword}
-                        onChange={(e) => setSignupConfirmPassword(e.target.value)}
+                        onChange={(e) => { setSignupConfirmPassword(e.target.value); setSignupError(null); }}
                         className="pl-10 font-body"
                         required
                       />
                     </div>
                   </div>
                   
+                  {signupError && (
+                    <div className="rounded-md border border-destructive/50 bg-destructive/10 px-3 py-2 text-sm text-destructive font-body">
+                      {signupError}
+                    </div>
+                  )}
                   <Button type="submit" className="w-full font-body" disabled={isLoading}>
                     {isLoading ? 'Creating account...' : 'Create Account'}
                   </Button>
