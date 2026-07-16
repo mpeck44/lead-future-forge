@@ -270,7 +270,11 @@ const Auth = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Tabs defaultValue="login" className="w-full">
+            <Tabs
+              defaultValue="login"
+              className="w-full"
+              onValueChange={() => { setLoginError(null); setSignupError(null); }}
+            >
               <TabsList className="grid w-full grid-cols-2 mb-6">
                 <TabsTrigger value="login" className="font-body">Log In</TabsTrigger>
                 <TabsTrigger value="signup" className="font-body">Sign Up</TabsTrigger>
