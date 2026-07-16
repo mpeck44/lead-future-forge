@@ -345,7 +345,7 @@ const Auth = () => {
                         type="text"
                         placeholder="John Doe"
                         value={fullName}
-                        onChange={(e) => setFullName(e.target.value)}
+                        onChange={(e) => { setFullName(e.target.value); setSignupError(null); }}
                         className="pl-10 font-body"
                         required
                       />
