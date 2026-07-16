@@ -69,40 +69,35 @@ const Auth = () => {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoginError(null);
     setIsLoading(true);
-    
+
     try {
       emailSchema.parse(loginEmail);
       passwordSchema.parse(loginPassword);
     } catch (err) {
       if (err instanceof z.ZodError) {
-        toast({
-          title: 'Validation Error',
-          description: err.errors[0].message,
-          variant: 'destructive',
-        });
+        setLoginError(err.errors[0].message);
         setIsLoading(false);
         return;
       }
     }
 
-    const { error } = await signIn(loginEmail, loginPassword);
-    
-    if (error) {
-      toast({
-        title: 'Login Failed',
-        description: error.message === 'Invalid login credentials' 
-          ? 'Invalid email or password. Please try again.' 
-          : error.message,
-        variant: 'destructive',
-      });
-    } else {
-      toast({
-        title: 'Welcome back!',
-        description: 'You have successfully logged in.',
-      });
+    try {
+      const { error } = await signIn(loginEmail, loginPassword);
+
+      if (error) {
+        setLoginError(friendlyError(error.message));
+      } else {
+        toast({
+          title: 'Welcome back!',
+          description: 'You have successfully logged in.',
+        });
+      }
+    } catch (err) {
+      setLoginError('Something went wrong. Please try again.');
     }
-    
+
     setIsLoading(false);
   };
 
