@@ -13,6 +13,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from "@/hooks/useAuth";
 import { useAdminRole } from "@/hooks/useAdminRole";
 import { supabase } from "@/integrations/supabase/client";
+import { stashIntent } from "@/lib/intent";
 
 
 const Header = () => {
@@ -49,6 +50,14 @@ const Header = () => {
     await signOut();
     navigate("/");
     setIsMenuOpen(false);
+  };
+
+  // "Start learning today!" / "Get the bundle" — send to catalog view
+  // and stash a "browse" intent so a signup round-trip lands back here.
+  const goToCatalog = () => {
+    setIsMenuOpen(false);
+    stashIntent({ type: "browse" });
+    navigate(user ? "/dashboard?view=catalog" : "/auth");
   };
 
   const getInitials = (name: string) =>
@@ -131,10 +140,10 @@ const Header = () => {
                 </DropdownMenu>
               ) : (
                 <Button
-                  asChild
+                  onClick={goToCatalog}
                   className="gold-hover bg-gold text-navy hover:bg-gold font-body font-semibold px-[1.1rem] py-2 text-[0.9rem] rounded-[10px]"
                 >
-                  <Link to="/courses">Start learning today!</Link>
+                  Start learning today!
                 </Button>
               )}
             </div>
@@ -170,11 +179,10 @@ const Header = () => {
                   </Button>
                 ) : (
                   <Button
-                    asChild
-                    onClick={() => setIsMenuOpen(false)}
+                    onClick={goToCatalog}
                     className="gold-hover bg-gold text-navy hover:bg-gold font-semibold rounded-[10px]"
                   >
-                    <Link to="/courses">Start learning today!</Link>
+                    Start learning today!
                   </Button>
                 )}
               </nav>
@@ -246,10 +254,10 @@ const Header = () => {
                 </DropdownMenu>
               ) : (
                 <Button
-                  asChild
+                  onClick={goToCatalog}
                   className="gold-hover bg-burnt-orange text-navy hover:bg-burnt-orange font-body font-medium"
                 >
-                  <Link to="/courses">Get the bundle</Link>
+                  Get the bundle
                 </Button>
               )}
             </div>
@@ -284,9 +292,9 @@ const Header = () => {
                   </>
                 ) : (
                   <>
-                    <Link to="/courses" className="py-2" onClick={() => setIsMenuOpen(false)}>Courses</Link>
-                    <Button asChild onClick={() => setIsMenuOpen(false)} className="gold-hover bg-burnt-orange text-navy hover:bg-burnt-orange font-body font-medium justify-start">
-                      <Link to="/courses">Get the bundle</Link>
+                    <Link to="/dashboard?view=catalog" className="py-2" onClick={() => setIsMenuOpen(false)}>Courses</Link>
+                    <Button onClick={goToCatalog} className="gold-hover bg-burnt-orange text-navy hover:bg-burnt-orange font-body font-medium justify-start">
+                      Get the bundle
                     </Button>
                   </>
                 )}

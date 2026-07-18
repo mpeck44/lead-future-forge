@@ -15,9 +15,10 @@ interface DashboardHeroProps {
     href: string;
   } | null;
   ctaWhenEmpty?: { label: string; href: string };
+  onEmptyCtaClick?: () => void;
 }
 
-const DashboardHero = ({ firstName, subtitle, continueCard, ctaWhenEmpty }: DashboardHeroProps) => {
+const DashboardHero = ({ firstName, subtitle, continueCard, ctaWhenEmpty, onEmptyCtaClick }: DashboardHeroProps) => {
   const pct = continueCard && continueCard.totalLessons > 0
     ? Math.round((continueCard.completedLessons / continueCard.totalLessons) * 100)
     : 0;
@@ -90,12 +91,22 @@ const DashboardHero = ({ firstName, subtitle, continueCard, ctaWhenEmpty }: Dash
               <p className="font-body text-sm text-muted-foreground mb-5">
                 Pick a course and walk away with real documents, frameworks, and tools you can use in your district next week.
               </p>
-              <Link
-                to={ctaWhenEmpty?.href || "/courses"}
-                className="w-full inline-flex items-center justify-center gap-2 bg-gold text-navy font-body font-semibold px-6 py-3 rounded-lg hover:bg-[hsl(43,72%,66%)] hover:-translate-y-0.5 hover:shadow-lg transition-all"
-              >
-                {ctaWhenEmpty?.label || "Explore Courses"} <ArrowRight className="h-4 w-4" />
-              </Link>
+              {onEmptyCtaClick ? (
+                <button
+                  type="button"
+                  onClick={onEmptyCtaClick}
+                  className="w-full inline-flex items-center justify-center gap-2 bg-gold text-navy font-body font-semibold px-6 py-3 rounded-lg hover:bg-[hsl(43,72%,66%)] hover:-translate-y-0.5 hover:shadow-lg transition-all"
+                >
+                  {ctaWhenEmpty?.label || "Get started"} <ArrowRight className="h-4 w-4" />
+                </button>
+              ) : (
+                <Link
+                  to={ctaWhenEmpty?.href || "/dashboard?view=catalog"}
+                  className="w-full inline-flex items-center justify-center gap-2 bg-gold text-navy font-body font-semibold px-6 py-3 rounded-lg hover:bg-[hsl(43,72%,66%)] hover:-translate-y-0.5 hover:shadow-lg transition-all"
+                >
+                  {ctaWhenEmpty?.label || "Explore Courses"} <ArrowRight className="h-4 w-4" />
+                </Link>
+              )}
             </div>
           )}
         </div>

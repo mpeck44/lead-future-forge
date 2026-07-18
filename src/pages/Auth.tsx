@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useToast } from '@/hooks/use-toast';
 import { Mail, Lock, User, Building, ArrowLeft, CheckCircle2 } from 'lucide-react';
 import { z } from 'zod';
+import { consumeIntent } from '@/lib/intent';
 
 const emailSchema = z.string().email('Please enter a valid email address');
 const passwordSchema = z.string().min(6, 'Password must be at least 6 characters');
@@ -91,12 +92,53 @@ const Auth = () => {
     setResendLoading(false);
   };
 
-  // Redirect if already logged in
+  // Redirect if already logged in. Honor stashed intent (buy/enroll/browse).
   useEffect(() => {
-    if (user) {
+    if (!user) return;
+    const intent = consumeIntent();
+
+    (async () => {
+      if (intent?.type === 'enroll') {
+        // Auto-enroll and jump straight into the course.
+        try {
+          const { data: course } = await supabase
+            .from('courses')
+            .select('id')
+            .eq('slug', intent.slug)
+            .maybeSingle();
+          if (course?.id) {
+            await supabase
+              .from('enrollments')
+              .insert({
+                user_id: user.id,
+                course_id: course.id,
+                status: 'active',
+                amount_paid: 0,
+              });
+          }
+        } catch (err) {
+          console.warn('Auto-enroll failed:', err);
+        }
+        navigate(`/course/${intent.slug}`, { replace: true });
+        return;
+      }
+      if (intent?.type === 'bundle') {
+        navigate('/dashboard?checkout=bundle', { replace: true });
+        return;
+      }
+      if (intent?.type === 'course') {
+        navigate(`/dashboard?checkout=course&slug=${encodeURIComponent(intent.slug)}`, {
+          replace: true,
+        });
+        return;
+      }
+      if (intent?.type === 'browse') {
+        navigate('/dashboard?view=catalog', { replace: true });
+        return;
+      }
       const from = (location.state as { from?: { pathname: string } })?.from?.pathname || '/dashboard';
       navigate(from, { replace: true });
-    }
+    })();
   }, [user, navigate, location]);
 
   const handleLogin = async (e: React.FormEvent) => {

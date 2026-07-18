@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import HeroAppPreview from "./HeroAppPreview";
+import { stashIntent } from "@/lib/intent";
 
 const HeroV2 = () => {
 
@@ -37,6 +38,7 @@ const HeroV2 = () => {
                 </Button>
                 <Button
                   asChild
+                  onClick={() => stashIntent({ type: "browse" })}
                   variant="outline"
                   className="border-[1.5px] border-white/20 bg-transparent text-white hover:bg-transparent hover:text-gold hover:border-gold font-body font-semibold px-7 py-6 text-base rounded-[10px]"
                 >
