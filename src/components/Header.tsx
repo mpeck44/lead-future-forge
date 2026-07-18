@@ -140,10 +140,10 @@ const Header = () => {
                 </DropdownMenu>
               ) : (
                 <Button
-                  asChild
+                  onClick={goToCatalog}
                   className="gold-hover bg-gold text-navy hover:bg-gold font-body font-semibold px-[1.1rem] py-2 text-[0.9rem] rounded-[10px]"
                 >
-                  <Link to="/courses">Start learning today!</Link>
+                  Start learning today!
                 </Button>
               )}
             </div>
