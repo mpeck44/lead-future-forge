@@ -179,11 +179,10 @@ const Header = () => {
                   </Button>
                 ) : (
                   <Button
-                    asChild
-                    onClick={() => setIsMenuOpen(false)}
+                    onClick={goToCatalog}
                     className="gold-hover bg-gold text-navy hover:bg-gold font-semibold rounded-[10px]"
                   >
-                    <Link to="/courses">Start learning today!</Link>
+                    Start learning today!
                   </Button>
                 )}
               </nav>
