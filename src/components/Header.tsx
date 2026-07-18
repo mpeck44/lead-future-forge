@@ -254,10 +254,10 @@ const Header = () => {
                 </DropdownMenu>
               ) : (
                 <Button
-                  asChild
+                  onClick={goToCatalog}
                   className="gold-hover bg-burnt-orange text-navy hover:bg-burnt-orange font-body font-medium"
                 >
-                  <Link to="/courses">Get the bundle</Link>
+                  Get the bundle
                 </Button>
               )}
             </div>
@@ -292,9 +292,9 @@ const Header = () => {
                   </>
                 ) : (
                   <>
-                    <Link to="/courses" className="py-2" onClick={() => setIsMenuOpen(false)}>Courses</Link>
-                    <Button asChild onClick={() => setIsMenuOpen(false)} className="gold-hover bg-burnt-orange text-navy hover:bg-burnt-orange font-body font-medium justify-start">
-                      <Link to="/courses">Get the bundle</Link>
+                    <Link to="/dashboard?view=catalog" className="py-2" onClick={() => setIsMenuOpen(false)}>Courses</Link>
+                    <Button onClick={goToCatalog} className="gold-hover bg-burnt-orange text-navy hover:bg-burnt-orange font-body font-medium justify-start">
+                      Get the bundle
                     </Button>
                   </>
                 )}
