@@ -1,70 +1,92 @@
-# Plan: Mobile menu a11y + lightweight client error logging
+## Problem
 
-## 1. Mobile menu a11y (small fix)
+Post-signup flow drops users on a generic dashboard with no path forward. The deeper issue: `/courses` is a separate destination that competes with the dashboard, so both surfaces have to compensate for each other. The fix is to collapse them into one state-driven surface and route users through the audit before showing them a price grid.
 
-The hamburger button already toggles the mobile panel — it isn't dead. But it's missing ARIA state, so add:
+## Core principles
 
-- `type="button"`, `aria-expanded={isMenuOpen}`, `aria-controls="mobile-menu"` on both toggle buttons in `src/components/Header.tsx`.
-- `id="mobile-menu"` on both mobile panel `<div>`s.
+- **Honor the CTA that got them here.** "Start Foundations free" → start Foundations. "Get the bundle" → open bundle checkout. Never dump either into a catalog.
+- **Audit-gated pricing.** Cold price grids convert worse than personalized recommendations. Foundations ends in the audit; the audit unlocks the purchase block.
+- **One surface, many states.** `/courses` becomes a redirect. The dashboard is the only logged-in destination.
 
-## 2. Lightweight client error logger
+## 1. Preserve intent through signup (buy + learn)
 
-No Sentry. Errors flow: browser → edge function → DB table → admin page.
+On any logged-out CTA, stash intent in `sessionStorage` before `/auth`:
+- `{ type: "bundle" }`
+- `{ type: "course", slug }` — paid course buy
+- `{ type: "enroll", slug: "foundations" }` — free start
 
-### Database (migration)
+After successful sign-in / email confirm, read the intent and:
+- `bundle` / `course` → open the shared `<CheckoutModal>` immediately on `/dashboard`.
+- `enroll` → auto-enroll via existing enrollment path, then `navigate` straight to `/course/foundations` (Lesson 1). No dashboard flash, no catalog.
 
-New table `public.client_error_logs`:
-- `id uuid pk`, `created_at timestamptz default now()`
-- `user_id uuid null` (nullable — errors can happen logged-out)
-- `message text not null`
-- `stack text null`
-- `source text null` (file/line if available)
-- `url text null`
-- `user_agent text null`
-- `kind text not null` ('error' | 'unhandledrejection' | 'manual')
-- `context jsonb null`
+Implementation:
+- `useAuth.tsx`: `emailRedirectTo` carries `?intent=<encoded>` so email-confirm survives. Fallback `/dashboard`.
+- `Auth.tsx`: on success, consume intent and dispatch (checkout modal or enrollment redirect).
+- Factor a shared `<CheckoutModal courseSlug|bundleKey>` used from Header, Dashboard, and post-auth handler.
 
-Order: CREATE TABLE → GRANTs → ENABLE RLS → POLICIES.
-- `GRANT ALL ON public.client_error_logs TO service_role;`
-- `GRANT SELECT ON public.client_error_logs TO authenticated;` (admin read gated by RLS)
-- Policy: admins can SELECT via `has_role(auth.uid(), 'admin')`. No insert policy — writes come from the edge function using the service role, which bypasses RLS.
-- Index on `created_at DESC`.
+## 2. Merge `/courses` into the dashboard as a state-driven zone
 
-### Edge function `log-client-error`
+Keep `/courses` as a redirect to `/dashboard` (with anchor if needed for legacy links like `#bundle` → dashboard opens the purchase block). Delete the standalone catalog page from active use.
 
-- Public (no JWT). CORS enabled.
-- Body validated with Zod: `message` required (max 4KB), rest optional and length-capped.
-- Uses `SUPABASE_SERVICE_ROLE_KEY` client to insert.
-- Extracts `user_id` from `Authorization: Bearer ...` via `getClaims()` when present (best-effort — never blocks).
-- Simple in-memory IP rate limit (e.g. 30/min) to prevent flooding.
-- No config.toml change needed (default `verify_jwt=false`).
+Dashboard renders one of five states:
 
-### Client wiring
+| State | Hero | Course zone |
+|---|---|---|
+| A. Zero enrollments (cold arrival) | "Start Foundations free" | Locked previews of Fluency/Strategy/Action. No pricing. |
+| B. Foundations in progress | "Continue: <Module N>" | Locked previews. No pricing. |
+| C. Foundations done, audit not taken | Single CTA: "Take your audit" | Course zone suppressed. |
+| D. Audit complete, unpaid | Recommended course, framed by audit answers | Purchase block: recommended course primary; bundle beside it; other two below. |
+| E. Any paid enrollment | Continue module + portfolio | Remaining courses shown as purchasable. |
 
-- `src/lib/logClientError.ts` — `logClientError(payload)` helper that POSTs via `supabase.functions.invoke('log-client-error', ...)`. Wrapped in try/catch so logging failures never surface.
-- `src/main.tsx` — install:
-  - `window.addEventListener('error', ...)` → send `{ kind:'error', message, source, stack, url, userAgent }`
-  - `window.addEventListener('unhandledrejection', ...)` → send `{ kind:'unhandledrejection', message: reason?.message ?? String(reason), stack: reason?.stack }`
-  - Skip in `import.meta.env.DEV` to avoid noise (or keep on — I'll gate it with a small `if (import.meta.env.PROD)`).
+State detection uses existing signals:
+- Enrollments query (already there).
+- `profiles.recommended_course` (already populated by audit).
+- New/existing signal for "audit completed" — verify against the Foundations audit lesson's `user_progress` row or an `audits` table (need to confirm in build phase; likely `user_progress` on the audit lesson id, or a dedicated audit-submissions table).
 
-### Admin errors page
+The purchase block from Lovable's original item 2 gets built — just rendered at state D, not state A.
 
-- New route `/admin/errors` in `src/App.tsx` inside `AdminProtectedRoute`.
-- `src/pages/admin/AdminErrors.tsx` using `AdminLayout` pattern:
-  - Table: created_at, kind, message (truncated), url, user_id → email lookup, expand-row for stack + context.
-  - Filters: kind, last 24h/7d/30d/all, search on message.
-  - Pagination (50/page).
-- Sidebar entry in `src/components/admin/AdminSidebar.tsx`: "Errors" with a `Bug` icon.
+## 3. Correction: Foundations is a course, not "the audit"
 
-## Files touched / created
+The prior plan called Foundations "the free audit." It isn't — Foundations is a free course that ends with the audit. Any code or copy that treats Foundations as a single audit lesson needs a pass during build to correct that assumption.
 
-- `src/components/Header.tsx` (edit)
-- `src/main.tsx` (edit)
-- `src/lib/logClientError.ts` (new)
-- `supabase/functions/log-client-error/index.ts` (new)
-- migration for `client_error_logs`
-- `src/App.tsx` (add route)
-- `src/pages/admin/AdminErrors.tsx` (new)
-- `src/components/admin/AdminSidebar.tsx` (add nav item)
+## 4. Escape hatch
 
-No secrets required — `SUPABASE_SERVICE_ROLE_KEY` is already available to edge functions.
+Persistent low-emphasis text link in the header, all states: **"Browse all courses and pricing"** → opens the purchase block on the dashboard directly (state D layout, regardless of current state). Findable, not promoted. Leaders who arrived purchase-ready are one click from checkout; audit-path users are never shoved into a price grid.
+
+## 5. Founder-pricing urgency banner
+
+Slim dismissible banner, all states, sitewide top:
+
+> Founder pricing ends September 7. [X] seats remain.
+
+Dismiss state stored in `localStorage`. Uses existing `FOUNDER_CUTOFF_ISO` from `founderDiscount.ts`. Seats-remaining number: static config for now (e.g. from an env-like constant), refined later if a real counter is wired.
+
+## 6. Dropped from the earlier plan
+
+- Original item 2 (add purchase block to dashboard for zero-enrollment users) — moved to state D.
+- Original item 3 (soften "Foundations = up next", change subtitle to "Pick your path below") — dropped. It severs the funnel and contradicts the CTA the user just clicked.
+- Original item 4 (leave Foundations manual enroll, just add copy hint) — replaced by auto-enroll on `enroll` intent.
+
+## Files touched
+
+- `src/hooks/useAuth.tsx` — intent-aware `emailRedirectTo`.
+- `src/pages/Auth.tsx` — consume intent on success.
+- `src/pages/Dashboard.tsx` — five-state renderer.
+- `src/pages/Courses.tsx` — replace with a redirect component to `/dashboard` (keep hashes).
+- `src/App.tsx` — route unchanged, component swap.
+- `src/components/Header.tsx` — "Browse all courses and pricing" link; bundle CTA stashes intent.
+- `src/components/landing/*` — landing CTAs stash intent instead of routing to `/courses`.
+- New `src/components/CheckoutModal.tsx` — shared modal (bundle + course).
+- New `src/components/FounderPricingBanner.tsx` — sitewide dismissible banner.
+- New dashboard subcomponents: `PurchaseBlock.tsx` (state D), `LockedPreviews.tsx` (states A/B), `AuditPromptCard.tsx` (state C).
+- `src/lib/intent.ts` — small util for stash/consume.
+
+## Out of scope
+
+- Real seat-remaining counter (static value for now).
+- Any change to audit questions or scoring.
+- Schema changes (verify audit-completion signal reuses existing tables before adding one).
+
+## Success signal
+
+Compare audit-gated conversion vs. the previous cold-catalog conversion over the first ~10 enrollments. If audit-gated underperforms, that's real signal about the audit's role — not just the funnel.
