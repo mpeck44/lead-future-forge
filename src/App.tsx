@@ -21,6 +21,7 @@ import AdminCourses from "./pages/admin/AdminCourses";
 import AdminCourseContent from "./pages/admin/AdminCourseContent";
 import AdminUsers from "./pages/admin/AdminUsers";
 import AdminWaitlist from "./pages/admin/AdminWaitlist";
+import AdminErrors from "./pages/admin/AdminErrors";
 import AdminAudits from "./pages/admin/AdminAudits";
 import AdminResources from "./pages/admin/AdminResources";
 import AdminResourceEdit from "./pages/admin/AdminResourceEdit";
@@ -111,6 +112,14 @@ const App = () => (
               element={
                 <AdminProtectedRoute>
                   <AdminWaitlist />
+                </AdminProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/errors"
+              element={
+                <AdminProtectedRoute>
+                  <AdminErrors />
                 </AdminProtectedRoute>
               }
             />
