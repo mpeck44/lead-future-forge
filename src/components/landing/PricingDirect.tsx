@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { stashIntent } from "@/lib/intent";
 
 const PricingDirect = () => {
   return (
@@ -24,9 +25,10 @@ const PricingDirect = () => {
         <div className="rv max-w-[520px] mx-auto flex flex-col sm:flex-row gap-3 justify-center">
           <Button
             asChild
+            onClick={() => stashIntent({ type: "bundle" })}
             className="gold-hover bg-gold text-navy hover:bg-gold font-body font-semibold px-7 py-6 text-base rounded-[10px]"
           >
-            <Link to="/courses#bundle">Get the bundle</Link>
+            <Link to="/dashboard?view=catalog&checkout=bundle">Get the bundle</Link>
           </Button>
           <Button
             asChild

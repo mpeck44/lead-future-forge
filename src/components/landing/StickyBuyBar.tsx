@@ -4,6 +4,7 @@ import { X, ArrowRight } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { COMPLETE_PATH, formatCents } from "@/lib/bundles";
 import { isFounderActive } from "@/lib/founderDiscount";
+import { stashIntent } from "@/lib/intent";
 
 const DISMISS_KEY = "sticky-buy-bar-dismissed";
 
@@ -82,7 +83,8 @@ const StickyBuyBar = () => {
           </div>
         </div>
         <Link
-          to="/courses#bundle"
+          to="/dashboard?view=catalog&checkout=bundle"
+          onClick={() => stashIntent({ type: "bundle" })}
           className="gold-hover inline-flex items-center gap-1.5 rounded-[10px] bg-gold px-4 py-2.5 font-body font-semibold text-navy text-sm whitespace-nowrap"
         >
           Buy the bundle
