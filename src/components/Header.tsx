@@ -152,7 +152,7 @@ const Header = () => {
           </div>
 
           {isMenuOpen && (
-            <div className="md:hidden bg-navy/95 backdrop-blur-md border-t border-white/15 animate-fade-in">
+            <div id="mobile-menu" className="md:hidden bg-navy/95 backdrop-blur-md border-t border-white/15 animate-fade-in">
               <nav className="w-[min(1120px,100%-2.5rem)] mx-auto py-4 flex flex-col gap-3">
                 {landingLinks.map((l) => (
                   <a
