@@ -33,7 +33,7 @@ function loadEnv(): Record<string, string> {
   return out;
 }
 
-async function fetchPublishedCourseSlugs(): Promise<string[]> {
+async function fetchPublishedCourses(): Promise<Array<{ slug: string; updated_at?: string }>> {
   const env = { ...loadEnv(), ...process.env } as Record<string, string>;
   const url = env.VITE_SUPABASE_URL;
   const key = env.VITE_SUPABASE_PUBLISHABLE_KEY || env.VITE_SUPABASE_ANON_KEY;
@@ -50,7 +50,7 @@ async function fetchPublishedCourseSlugs(): Promise<string[]> {
       return [];
     }
     const rows = (await res.json()) as Array<{ slug: string; updated_at?: string }>;
-    return rows.map((r) => r.slug).filter(Boolean);
+    return rows.filter((r) => r.slug);
   } catch (err) {
     console.warn("[sitemap] Course fetch error:", err);
     return [];
