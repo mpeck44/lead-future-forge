@@ -255,16 +255,19 @@ const Header = () => {
             </div>
 
             <button
+              type="button"
               className="md:hidden p-2 text-foreground"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               aria-label="Toggle menu"
+              aria-expanded={isMenuOpen}
+              aria-controls="mobile-menu-app"
             >
               {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
           </div>
 
           {isMenuOpen && (
-            <div className="md:hidden py-4 border-t border-border animate-fade-in">
+            <div id="mobile-menu-app" className="md:hidden py-4 border-t border-border animate-fade-in">
               <nav className="flex flex-col gap-4">
                 {user ? (
                   <>
