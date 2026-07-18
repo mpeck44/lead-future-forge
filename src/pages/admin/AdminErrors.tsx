@@ -255,7 +255,7 @@ export default function AdminErrors() {
                       </td>
                     </tr>
                   )}
-                </>
+                </Fragment>
               ))}
             </tbody>
           </table>
