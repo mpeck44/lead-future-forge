@@ -99,12 +99,13 @@ function buildXml(entries: SitemapEntry[]): string {
 }
 
 (async () => {
-  const [slugs, resources] = await Promise.all([
-    fetchPublishedCourseSlugs(),
+  const [courses, resources] = await Promise.all([
+    fetchPublishedCourses(),
     fetchPublishedResources(),
   ]);
-  const courseEntries: SitemapEntry[] = slugs.map((slug) => ({
-    path: `/courses/${slug}`,
+  const courseEntries: SitemapEntry[] = courses.map((c) => ({
+    path: `/courses/${c.slug}`,
+    lastmod: c.updated_at ? c.updated_at.slice(0, 10) : undefined,
     changefreq: "monthly",
     priority: "0.8",
   }));
