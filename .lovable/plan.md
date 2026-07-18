@@ -1,92 +1,37 @@
-## Problem
+## Diagnosis (no fix needed for most of it)
 
-Post-signup flow drops users on a generic dashboard with no path forward. The deeper issue: `/courses` is a separate destination that competes with the dashboard, so both surfaces have to compensate for each other. The fix is to collapse them into one state-driven surface and route users through the audit before showing them a price grid.
+**"Page with redirect" (3 URLs)** — This is your `http://`, `www.`, and `http://www.` versions correctly redirecting to `https://edleaderforge.com/`. This is the desired canonical behavior. Not an error, no action needed.
 
-## Core principles
+**"Discovered – currently not indexed" (7 URLs)** — Google found these pages via your sitemap but hasn't crawled them yet. This is a **crawl-priority** issue common for new sites, not a technical block. The homepage IS indexed, so crawling works.
 
-- **Honor the CTA that got them here.** "Start Foundations free" → start Foundations. "Get the bundle" → open bundle checkout. Never dump either into a catalog.
-- **Audit-gated pricing.** Cold price grids convert worse than personalized recommendations. Foundations ends in the audit; the audit unlocks the purchase block.
-- **One surface, many states.** `/courses` becomes a redirect. The dashboard is the only logged-in destination.
+## What resolves it (mostly outside code)
 
-## 1. Preserve intent through signup (buy + learn)
+The highest-impact fix is manual: in Google Search Console, open URL Inspection for each of the 7 URLs and click **"Request indexing."** Google will usually crawl within a few days. Also confirm `https://edleaderforge.com/sitemap.xml` is submitted under GSC → Sitemaps.
 
-On any logged-out CTA, stash intent in `sessionStorage` before `/auth`:
-- `{ type: "bundle" }`
-- `{ type: "course", slug }` — paid course buy
-- `{ type: "enroll", slug: "foundations" }` — free start
+## Code changes to help crawl priority
 
-After successful sign-in / email confirm, read the intent and:
-- `bundle` / `course` → open the shared `<CheckoutModal>` immediately on `/dashboard`.
-- `enroll` → auto-enroll via existing enrollment path, then `navigate` straight to `/course/foundations` (Lesson 1). No dashboard flash, no catalog.
+Two small edits — nothing else in the codebase needs to change:
 
-Implementation:
-- `useAuth.tsx`: `emailRedirectTo` carries `?intent=<encoded>` so email-confirm survives. Fallback `/dashboard`.
-- `Auth.tsx`: on success, consume intent and dispatch (checkout modal or enrollment redirect).
-- Factor a shared `<CheckoutModal courseSlug|bundleKey>` used from Header, Dashboard, and post-auth handler.
+1. **Per-course unique metadata on `/courses/fluency`, `/courses/strategy`, `/courses/action`.**
+   Read `src/pages/PublicCourse.tsx` and confirm each course page renders a `<Helmet>` block with a **unique** `<title>`, `<meta name="description">`, and `<link rel="canonical">` derived from the course's own data (name, outcome, deliverable). Right now these three pages likely share very similar head tags, which makes Google treat them as near-duplicates and deprioritize them. If they're already unique, no change needed — otherwise wire them to the course row's fields.
 
-## 2. Merge `/courses` into the dashboard as a state-driven zone
+2. **Add a `<lastmod>` on the 4 course entries in `public/sitemap.xml`** (or in `scripts/generate-sitemap.ts` if it drives the file). A fresh `lastmod` nudges Google to recrawl. Two of the resource entries already have `lastmod`; the course entries don't. Pull `updated_at` from the `courses` table the same way `generate-sitemap.ts` already does for resources.
 
-Keep `/courses` as a redirect to `/dashboard` (with anchor if needed for legacy links like `#bundle` → dashboard opens the purchase block). Delete the standalone catalog page from active use.
+## What I won't touch
 
-Dashboard renders one of five states:
+- `robots.txt` — already correct (public routes allowed, private routes disallowed).
+- Sitemap structure — already valid and lists all 7 URLs.
+- Redirects — the http→https and www→apex behavior is correct; do not change it.
+- `/auth` and `/resources` — these will index naturally once you request indexing in GSC; no code change would speed that up.
 
-| State | Hero | Course zone |
-|---|---|---|
-| A. Zero enrollments (cold arrival) | "Start Foundations free" | Locked previews of Fluency/Strategy/Action. No pricing. |
-| B. Foundations in progress | "Continue: <Module N>" | Locked previews. No pricing. |
-| C. Foundations done, audit not taken | Single CTA: "Take your audit" | Course zone suppressed. |
-| D. Audit complete, unpaid | Recommended course, framed by audit answers | Purchase block: recommended course primary; bundle beside it; other two below. |
-| E. Any paid enrollment | Continue module + portfolio | Remaining courses shown as purchasable. |
+## Technical notes
 
-State detection uses existing signals:
-- Enrollments query (already there).
-- `profiles.recommended_course` (already populated by audit).
-- New/existing signal for "audit completed" — verify against the Foundations audit lesson's `user_progress` row or an `audits` table (need to confirm in build phase; likely `user_progress` on the audit lesson id, or a dedicated audit-submissions table).
+- Files to read before editing: `src/pages/PublicCourse.tsx`, `scripts/generate-sitemap.ts`.
+- The sitemap generator already fetches `updated_at` for resources; extending it to courses is a one-line change to the `courses` select and one field in the entry mapping.
+- No database migration, no edge function change.
 
-The purchase block from Lovable's original item 2 gets built — just rendered at state D, not state A.
+## What you should do in parallel (GSC, not code)
 
-## 3. Correction: Foundations is a course, not "the audit"
-
-The prior plan called Foundations "the free audit." It isn't — Foundations is a free course that ends with the audit. Any code or copy that treats Foundations as a single audit lesson needs a pass during build to correct that assumption.
-
-## 4. Escape hatch
-
-Persistent low-emphasis text link in the header, all states: **"Browse all courses and pricing"** → opens the purchase block on the dashboard directly (state D layout, regardless of current state). Findable, not promoted. Leaders who arrived purchase-ready are one click from checkout; audit-path users are never shoved into a price grid.
-
-## 5. Founder-pricing urgency banner
-
-Slim dismissible banner, all states, sitewide top:
-
-> Founder pricing ends September 7. [X] seats remain.
-
-Dismiss state stored in `localStorage`. Uses existing `FOUNDER_CUTOFF_ISO` from `founderDiscount.ts`. Seats-remaining number: static config for now (e.g. from an env-like constant), refined later if a real counter is wired.
-
-## 6. Dropped from the earlier plan
-
-- Original item 2 (add purchase block to dashboard for zero-enrollment users) — moved to state D.
-- Original item 3 (soften "Foundations = up next", change subtitle to "Pick your path below") — dropped. It severs the funnel and contradicts the CTA the user just clicked.
-- Original item 4 (leave Foundations manual enroll, just add copy hint) — replaced by auto-enroll on `enroll` intent.
-
-## Files touched
-
-- `src/hooks/useAuth.tsx` — intent-aware `emailRedirectTo`.
-- `src/pages/Auth.tsx` — consume intent on success.
-- `src/pages/Dashboard.tsx` — five-state renderer.
-- `src/pages/Courses.tsx` — replace with a redirect component to `/dashboard` (keep hashes).
-- `src/App.tsx` — route unchanged, component swap.
-- `src/components/Header.tsx` — "Browse all courses and pricing" link; bundle CTA stashes intent.
-- `src/components/landing/*` — landing CTAs stash intent instead of routing to `/courses`.
-- New `src/components/CheckoutModal.tsx` — shared modal (bundle + course).
-- New `src/components/FounderPricingBanner.tsx` — sitewide dismissible banner.
-- New dashboard subcomponents: `PurchaseBlock.tsx` (state D), `LockedPreviews.tsx` (states A/B), `AuditPromptCard.tsx` (state C).
-- `src/lib/intent.ts` — small util for stash/consume.
-
-## Out of scope
-
-- Real seat-remaining counter (static value for now).
-- Any change to audit questions or scoring.
-- Schema changes (verify audit-completion signal reuses existing tables before adding one).
-
-## Success signal
-
-Compare audit-gated conversion vs. the previous cold-catalog conversion over the first ~10 enrollments. If audit-gated underperforms, that's real signal about the audit's role — not just the funnel.
+1. GSC → URL Inspection → paste each of the 7 URLs → **Request indexing**.
+2. GSC → Sitemaps → verify `sitemap.xml` is listed as "Success."
+3. Wait 3–7 days and recheck. This category typically clears on its own once Google has crawled the sites at least once.
