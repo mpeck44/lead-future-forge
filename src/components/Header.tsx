@@ -13,6 +13,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from "@/hooks/useAuth";
 import { useAdminRole } from "@/hooks/useAdminRole";
 import { supabase } from "@/integrations/supabase/client";
+import { stashIntent } from "@/lib/intent";
 
 
 const Header = () => {
@@ -49,6 +50,14 @@ const Header = () => {
     await signOut();
     navigate("/");
     setIsMenuOpen(false);
+  };
+
+  // "Start learning today!" / "Get the bundle" — send to catalog view
+  // and stash a "browse" intent so a signup round-trip lands back here.
+  const goToCatalog = () => {
+    setIsMenuOpen(false);
+    stashIntent({ type: "browse" });
+    navigate(user ? "/dashboard?view=catalog" : "/auth");
   };
 
   const getInitials = (name: string) =>
