@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Input } from "@/components/ui/input";
@@ -187,7 +187,7 @@ export default function AdminErrors() {
                 </tr>
               )}
               {rows.map((r) => (
-                <>
+                <Fragment key={r.id}>
                   <tr
                     key={r.id}
                     className="bg-slate-950 hover:bg-slate-900 cursor-pointer"
