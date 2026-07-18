@@ -1,4 +1,4 @@
-import { LayoutDashboard, BookOpen, Users, ClipboardList, ClipboardCheck, FileText, ArrowLeft } from 'lucide-react';
+import { LayoutDashboard, BookOpen, Users, ClipboardList, ClipboardCheck, FileText, Bug, ArrowLeft } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import { Link } from 'react-router-dom';
 import {
@@ -20,6 +20,7 @@ const adminNavItems = [
   { title: 'Resources', url: '/admin/resources', icon: FileText },
   { title: 'Audits', url: '/admin/audits', icon: ClipboardCheck },
   { title: 'Waitlist', url: '/admin/waitlist', icon: ClipboardList },
+  { title: 'Errors', url: '/admin/errors', icon: Bug },
   { title: 'Users', url: '/admin/users', icon: Users },
 ];
 
