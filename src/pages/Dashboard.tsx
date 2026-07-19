@@ -408,6 +408,16 @@ const Dashboard = () => {
           onEmptyCtaClick={heroCta?.onClick}
         />
 
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl -mt-2 mb-4 flex justify-end">
+          <Link
+            to="/profile"
+            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <Settings className="h-4 w-4" />
+            Account settings
+          </Link>
+        </div>
+
         {state === "D" && (
           <RecommendationCard
             recommendedSlug={profile?.recommended_course ?? null}
