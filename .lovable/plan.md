@@ -1,37 +1,44 @@
-## Diagnosis (no fix needed for most of it)
+## Context
 
-**"Page with redirect" (3 URLs)** — This is your `http://`, `www.`, and `http://www.` versions correctly redirecting to `https://edleaderforge.com/`. This is the desired canonical behavior. Not an error, no action needed.
+An account management page already exists at `/profile` and is linked from the header user menu (desktop dropdown + mobile). It lets users edit their name, district, role, view account creation date, and delete their account (with "DELETE" typed confirmation via the existing `delete-user` edge function).
 
-**"Discovered – currently not indexed" (7 URLs)** — Google found these pages via your sitemap but hasn't crawled them yet. This is a **crawl-priority** issue common for new sites, not a technical block. The homepage IS indexed, so crawling works.
+**No new page is needed.** But there's one real bug and one small UX gap.
 
-## What resolves it (mostly outside code)
+## Problems to fix
 
-The highest-impact fix is manual: in Google Search Console, open URL Inspection for each of the 7 URLs and click **"Request indexing."** Google will usually crawl within a few days. Also confirm `https://edleaderforge.com/sitemap.xml` is submitted under GSC → Sitemaps.
+1. **Email change is fake.** The form's email field writes to `profiles.email` only. `auth.users.email` (the actual login credential) is never updated. Users think they changed their email but still have to log in with the old one, and Supabase auth emails still go to the old address.
+2. **Discoverability.** The Profile link lives only inside the header avatar dropdown. A user who just signed up may not find it.
 
-## Code changes to help crawl priority
+## Changes
 
-Two small edits — nothing else in the codebase needs to change:
+### 1. Wire email changes through Supabase Auth (`src/pages/Profile.tsx`)
 
-1. **Per-course unique metadata on `/courses/fluency`, `/courses/strategy`, `/courses/action`.**
-   Read `src/pages/PublicCourse.tsx` and confirm each course page renders a `<Helmet>` block with a **unique** `<title>`, `<meta name="description">`, and `<link rel="canonical">` derived from the course's own data (name, outcome, deliverable). Right now these three pages likely share very similar head tags, which makes Google treat them as near-duplicates and deprioritize them. If they're already unique, no change needed — otherwise wire them to the course row's fields.
+- Detect when the submitted email differs from the current `user.email`.
+- If it does, call `supabase.auth.updateUser({ email: newEmail })` with `emailRedirectTo: ${origin}/dashboard`. This triggers Supabase's built-in email-change confirmation flow (a confirmation link is sent to the new address; the change only takes effect when confirmed).
+- Show a toast: "Check your new email to confirm the change." Do NOT update `profiles.email` yet — let it sync after confirmation on next login, or update it after `auth.updateUser` succeeds so admin views stay accurate (acceptable since RLS scopes the row to the user).
+- If only non-email fields changed, keep the existing `profiles` update path.
+- Handle the "email already in use" and "rate limit" errors with a friendly inline message (reuse the pattern from `Auth.tsx`).
+- Add a small helper note under the email field: "Changing your email requires confirmation from the new address."
 
-2. **Add a `<lastmod>` on the 4 course entries in `public/sitemap.xml`** (or in `scripts/generate-sitemap.ts` if it drives the file). A fresh `lastmod` nudges Google to recrawl. Two of the resource entries already have `lastmod`; the course entries don't. Pull `updated_at` from the `courses` table the same way `generate-sitemap.ts` already does for resources.
+### 2. Add a "Account" quick link on the Dashboard
 
-## What I won't touch
+In `src/pages/Dashboard.tsx`, add a subtle "Account settings" link (icon + text) near the welcome header or in the user's greeting area, routing to `/profile`. Keeps discoverability without cluttering the dashboard.
 
-- `robots.txt` — already correct (public routes allowed, private routes disallowed).
-- Sitemap structure — already valid and lists all 7 URLs.
-- Redirects — the http→https and www→apex behavior is correct; do not change it.
-- `/auth` and `/resources` — these will index naturally once you request indexing in GSC; no code change would speed that up.
+### 3. Minor polish on `/profile`
 
-## Technical notes
+- Show the current login email (`user.email`) as read-only helper text below the email input when a pending change exists, so the user knows which one is still active.
+- Group cards under an h2 hierarchy so the page reads: Profile Information → Account Management (delete).
 
-- Files to read before editing: `src/pages/PublicCourse.tsx`, `scripts/generate-sitemap.ts`.
-- The sitemap generator already fetches `updated_at` for resources; extending it to courses is a one-line change to the `courses` select and one field in the entry mapping.
-- No database migration, no edge function change.
+## Out of scope
 
-## What you should do in parallel (GSC, not code)
+- Password change UI (can add later if requested — would use `supabase.auth.updateUser({ password })` plus a "current password" reauth step).
+- Two-factor / MFA.
+- Avatar upload.
+- Any change to the delete flow — it already works correctly.
 
-1. GSC → URL Inspection → paste each of the 7 URLs → **Request indexing**.
-2. GSC → Sitemaps → verify `sitemap.xml` is listed as "Success."
-3. Wait 3–7 days and recheck. This category typically clears on its own once Google has crawled the sites at least once.
+## Files touched
+
+- `src/pages/Profile.tsx` — email-change logic, helper text, error handling
+- `src/pages/Dashboard.tsx` — add "Account settings" link
+
+No database migrations, no new edge functions, no new routes.
