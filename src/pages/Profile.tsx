@@ -121,22 +121,56 @@ const Profile = () => {
 
     setSaving(true);
     try {
-      const { error } = await supabase
+      // Update profile fields (excluding email — email is the auth credential)
+      const { error: profileError } = await supabase
         .from("profiles")
         .update({
           full_name: data.full_name,
-          email: data.email,
           district_name: data.district_name,
           role: data.role,
         })
         .eq("id", user.id);
 
-      if (error) throw error;
+      if (profileError) throw profileError;
 
-      toast({
-        title: "Profile updated",
-        description: "Your profile has been saved successfully.",
-      });
+      // If email changed, trigger Supabase auth email-change flow
+      const currentEmail = (user.email || "").toLowerCase();
+      const nextEmail = data.email.trim().toLowerCase();
+      const emailChanged = nextEmail && nextEmail !== currentEmail;
+
+      if (emailChanged) {
+        const { error: emailError } = await supabase.auth.updateUser(
+          { email: nextEmail },
+          { emailRedirectTo: `${window.location.origin}/dashboard` }
+        );
+
+        if (emailError) {
+          const msg = emailError.message?.toLowerCase() || "";
+          let friendly = emailError.message;
+          if (msg.includes("already") || msg.includes("registered") || msg.includes("in use")) {
+            friendly = "That email is already in use by another account.";
+          } else if (msg.includes("rate") || msg.includes("limit")) {
+            friendly = "Too many attempts. Please try again in a few minutes.";
+          }
+          toast({
+            title: "Email change failed",
+            description: friendly,
+            variant: "destructive",
+          });
+          // Revert the input to the current login email
+          form.setValue("email", user.email || "");
+        } else {
+          toast({
+            title: "Check your new email",
+            description: `We sent a confirmation link to ${nextEmail}. Your login email won't change until you confirm.`,
+          });
+        }
+      } else {
+        toast({
+          title: "Profile updated",
+          description: "Your profile has been saved successfully.",
+        });
+      }
     } catch (error) {
       console.error("Error updating profile:", error);
       toast({
