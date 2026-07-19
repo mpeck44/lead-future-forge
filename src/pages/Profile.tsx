@@ -280,7 +280,7 @@ const Profile = () => {
                           <Input type="email" placeholder="Enter your email" {...field} />
                         </FormControl>
                         <FormDescription>
-                          This is the email associated with your account
+                          Changing your email requires confirmation from the new address before it takes effect. Your current login email is <span className="font-medium">{user?.email}</span>.
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
