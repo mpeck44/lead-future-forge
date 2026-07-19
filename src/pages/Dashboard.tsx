@@ -17,7 +17,7 @@ import { CheckoutModal, CheckoutTarget } from "@/components/CheckoutModal";
 import { paymentsConfigured } from "@/lib/stripe";
 import { COMPLETE_PATH, formatCents } from "@/lib/bundles";
 import { isFounderActive, INDIVIDUAL_SUM_CENTS } from "@/lib/founderDiscount";
-import { ArrowRight, Lock, Check } from "lucide-react";
+import { ArrowRight, Lock, Check, Settings } from "lucide-react";
 
 interface Profile {
   full_name: string | null;
