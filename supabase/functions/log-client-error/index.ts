@@ -1,38 +1,46 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
+import { z } from "https://esm.sh/zod@3.23.8";
+import { buildCorsHeaders, corsPreflight } from "../_shared/cors.ts";
+import { rateLimit, clientIp } from "../_shared/rateLimit.ts";
+import {
+  ClientError,
+  newRequestId,
+  safeErrorResponse,
+  scrubSecrets,
+} from "../_shared/validation.ts";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-};
+const BodySchema = z.object({
+  message: z.string().min(1).max(4000),
+  stack: z.string().max(8000).nullable().optional(),
+  source: z.string().max(500).nullable().optional(),
+  url: z.string().max(1000).nullable().optional(),
+  user_agent: z.string().max(500).nullable().optional(),
+  kind: z.enum(["error", "unhandledrejection", "manual"]).optional(),
+  context: z.record(z.unknown()).nullable().optional(),
+});
 
-// naive in-memory IP rate limit
-const RATE_LIMIT = 30; // requests per window
-const WINDOW_MS = 60_000;
-const hits = new Map<string, { count: number; resetAt: number }>();
-
-function rateLimited(ip: string): boolean {
-  const now = Date.now();
-  const entry = hits.get(ip);
-  if (!entry || entry.resetAt < now) {
-    hits.set(ip, { count: 1, resetAt: now + WINDOW_MS });
-    return false;
-  }
-  entry.count += 1;
-  return entry.count > RATE_LIMIT;
+function clip(v: string | null | undefined, max: number): string | null {
+  if (v == null) return null;
+  const scrubbed = scrubSecrets(String(v));
+  return scrubbed.length > max ? scrubbed.slice(0, max) : scrubbed;
 }
 
-function clip(v: unknown, max: number): string | null {
-  if (v == null) return null;
-  const s = String(v);
-  return s.length > max ? s.slice(0, max) : s;
+function sanitizeContext(ctx: Record<string, unknown> | null | undefined): Record<string, unknown> | null {
+  if (!ctx) return null;
+  try {
+    const s = JSON.stringify(ctx);
+    // Cap serialized size at 4KB.
+    const capped = s.length > 4096 ? s.slice(0, 4096) : s;
+    return JSON.parse(scrubSecrets(capped));
+  } catch {
+    return null;
+  }
 }
 
 Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
-  }
+  const corsHeaders = buildCorsHeaders(req);
+  if (req.method === "OPTIONS") return corsPreflight(req);
+  const requestId = newRequestId();
 
   if (req.method !== "POST") {
     return new Response(JSON.stringify({ error: "Method not allowed" }), {
@@ -41,86 +49,70 @@ Deno.serve(async (req) => {
     });
   }
 
-  const ip =
-    req.headers.get("x-forwarded-for")?.split(",")[0].trim() ||
-    req.headers.get("cf-connecting-ip") ||
-    "unknown";
-
-  if (rateLimited(ip)) {
-    return new Response(JSON.stringify({ error: "Rate limited" }), {
-      status: 429,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
-  }
-
-  let body: Record<string, unknown>;
   try {
-    body = await req.json();
-  } catch {
-    return new Response(JSON.stringify({ error: "Invalid JSON" }), {
-      status: 400,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
-  }
-
-  const message = clip(body.message, 4000);
-  if (!message) {
-    return new Response(JSON.stringify({ error: "message required" }), {
-      status: 400,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
-  }
-
-  const kindRaw = String(body.kind ?? "error");
-  const kind = ["error", "unhandledrejection", "manual"].includes(kindRaw)
-    ? kindRaw
-    : "error";
-
-  const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-  const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-  const admin = createClient(supabaseUrl, serviceKey);
-
-  // Best-effort user attribution
-  let userId: string | null = null;
-  const authHeader = req.headers.get("Authorization");
-  if (authHeader?.startsWith("Bearer ")) {
-    try {
-      const anon = createClient(
-        supabaseUrl,
-        Deno.env.get("SUPABASE_ANON_KEY")!,
-        { global: { headers: { Authorization: authHeader } } }
-      );
-      const token = authHeader.replace("Bearer ", "");
-      const { data } = await anon.auth.getClaims(token);
-      userId = (data?.claims?.sub as string | undefined) ?? null;
-    } catch {
-      // ignore
+    const ip = clientIp(req);
+    const rl = rateLimit(`log-err:${ip}`, { limit: 30, windowMs: 60_000 });
+    if (!rl.allowed) {
+      return new Response(JSON.stringify({ error: "Rate limited" }), {
+        status: 429,
+        headers: {
+          ...corsHeaders,
+          "Content-Type": "application/json",
+          "Retry-After": String(Math.ceil(rl.retryAfterMs / 1000)),
+        },
+      });
     }
-  }
 
-  const row = {
-    user_id: userId,
-    message,
-    stack: clip(body.stack, 8000),
-    source: clip(body.source, 500),
-    url: clip(body.url, 1000),
-    user_agent: clip(body.user_agent ?? req.headers.get("user-agent"), 500),
-    kind,
-    context:
-      body.context && typeof body.context === "object" ? body.context : null,
-  };
+    let raw: unknown;
+    try {
+      raw = await req.json();
+    } catch {
+      throw new ClientError("Invalid JSON");
+    }
+    const parsed = BodySchema.safeParse(raw);
+    if (!parsed.success) throw new ClientError("Invalid request");
+    const body = parsed.data;
 
-  const { error } = await admin.from("client_error_logs").insert(row);
-  if (error) {
-    console.error("insert failed", error);
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const admin = createClient(supabaseUrl, serviceKey);
+
+    let userId: string | null = null;
+    const authHeader = req.headers.get("Authorization");
+    if (authHeader?.startsWith("Bearer ")) {
+      try {
+        const anon = createClient(
+          supabaseUrl,
+          Deno.env.get("SUPABASE_ANON_KEY")!,
+          { global: { headers: { Authorization: authHeader } } },
+        );
+        const token = authHeader.replace("Bearer ", "");
+        const { data } = await anon.auth.getClaims(token);
+        userId = (data?.claims?.sub as string | undefined) ?? null;
+      } catch {
+        // ignore
+      }
+    }
+
+    const row = {
+      user_id: userId,
+      message: clip(body.message, 4000)!,
+      stack: clip(body.stack, 8000),
+      source: clip(body.source, 500),
+      url: clip(body.url, 1000),
+      user_agent: clip(body.user_agent ?? req.headers.get("user-agent"), 500),
+      kind: body.kind ?? "error",
+      context: sanitizeContext(body.context),
+    };
+
+    const { error } = await admin.from("client_error_logs").insert(row);
+    if (error) throw error;
+
+    return new Response(JSON.stringify({ ok: true }), {
+      status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
+  } catch (err) {
+    return safeErrorResponse(err, requestId, corsHeaders);
   }
-
-  return new Response(JSON.stringify({ ok: true }), {
-    status: 200,
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
-  });
 });
