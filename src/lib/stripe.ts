@@ -1,3 +1,6 @@
+// SECURITY: Only the Stripe *publishable* key (pk_test_ / pk_live_) belongs
+// in the frontend. Never import or reference a Stripe secret key (sk_...) or
+// any Lovable-managed connection key here — those must stay in edge functions.
 import { loadStripe, Stripe } from "@stripe/stripe-js";
 
 type StripeEnv = "sandbox" | "live";
