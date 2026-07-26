@@ -1,44 +1,85 @@
-## Context
 
-An account management page already exists at `/profile` and is linked from the header user menu (desktop dropdown + mobile). It lets users edit their name, district, role, view account creation date, and delete their account (with "DELETE" typed confirmation via the existing `delete-user` edge function).
+# Pre-launch security review
 
-**No new page is needed.** But there's one real bug and one small UX gap.
+Findings from scanning the live database, edge functions, and frontend, mapped to your 5 areas.
 
-## Problems to fix
+## 1. Privacy policy & data location
 
-1. **Email change is fake.** The form's email field writes to `profiles.email` only. `auth.users.email` (the actual login credential) is never updated. Users think they changed their email but still have to log in with the old one, and Supabase auth emails still go to the old address.
-2. **Discoverability.** The Profile link lives only inside the header avatar dropdown. A user who just signed up may not find it.
+**Current state (verified):**
+- `src/pages/PrivacyTerms.tsx` exists and is routed.
+- User data lives in Lovable Cloud (Supabase, US region): `profiles`, `user_roles`, `orders`, `enrollments`, `audit_*`, `portfolio_items`, `waitlist_leads`, `client_error_logs`. Payment card data never touches your DB — Stripe handles it.
 
-## Changes
+**Action:** I'll audit `PrivacyTerms.tsx` and update it to explicitly disclose:
+- Data categories collected (name, email, role, district, audit responses, payment metadata from Stripe, portfolio uploads).
+- Sub-processors: Stripe (payments), Lovable Cloud/Supabase (hosting + DB, US), Google Analytics.
+- User rights (access, deletion via /profile, contact email `contact@peckeducation.com`).
+- Cookie/analytics disclosure for the GA tag.
+- Last-updated date + link in footer confirmed.
 
-### 1. Wire email changes through Supabase Auth (`src/pages/Profile.tsx`)
+I will only add legally-defensible, app-visible facts — no compliance certification claims.
 
-- Detect when the submitted email differs from the current `user.email`.
-- If it does, call `supabase.auth.updateUser({ email: newEmail })` with `emailRedirectTo: ${origin}/dashboard`. This triggers Supabase's built-in email-change confirmation flow (a confirmation link is sent to the new address; the change only takes effect when confirmed).
-- Show a toast: "Check your new email to confirm the change." Do NOT update `profiles.email` yet — let it sync after confirmation on next login, or update it after `auth.updateUser` succeeds so admin views stay accurate (acceptable since RLS scopes the row to the user).
-- If only non-email fields changed, keep the existing `profiles` update path.
-- Handle the "email already in use" and "rate limit" errors with a friendly inline message (reuse the pattern from `Auth.tsx`).
-- Add a small helper note under the email field: "Changing your email requires confirmation from the new address."
+## 2. Row Level Security
 
-### 2. Add a "Account" quick link on the Dashboard
+**Verified via linter + direct DB inspection:**
+- Every public table has RLS enabled with policies (no naked tables).
+- 1 permissive-policy warning: `waitlist_leads` INSERT uses `WITH CHECK (true)` for anon. This is **intentional** (public lead capture) and is already fronted by SECURITY DEFINER RPC `upsert_waitlist_lead`. The direct INSERT policy is redundant.
+- 8 SECURITY DEFINER function grant warnings. Review:
+  - `has_role`, `get_audit_summary`, `upsert_waitlist_lead` — executable by `anon` (`has_role` and `get_audit_summary` don't need anon).
+  - Admin functions correctly restricted to `authenticated` + gated by `has_role` check inside.
 
-In `src/pages/Dashboard.tsx`, add a subtle "Account settings" link (icon + text) near the welcome header or in the user's greeting area, routing to `/profile`. Keeps discoverability without cluttering the dashboard.
+**Action (single migration):**
+- Drop the redundant `Anyone can submit to waitlist` INSERT policy on `waitlist_leads` (keep the RPC path only).
+- `REVOKE EXECUTE ... FROM anon` on `has_role` and `get_audit_summary` (keep `authenticated`).
+- Leave `upsert_waitlist_lead` callable by anon (needed for public capture) and document in security memory.
 
-### 3. Minor polish on `/profile`
+## 3. Auth failure-path testing
 
-- Show the current login email (`user.email`) as read-only helper text below the email input when a pending change exists, so the user knows which one is still active.
-- Group cards under an h2 hierarchy so the page reads: Profile Information → Account Management (delete).
+**Action:** I'll drive Playwright against the running app to test:
+- Wrong password 5x (verify no lockout bypass, error messaging).
+- Password reset for non-existent email (should not enumerate).
+- Signup with an existing email (already handled by `friendlyError`).
+- Verification link re-click behavior.
+- Empty/invalid inputs on all three forms (login, signup, magic link).
 
-## Out of scope
+Fix any issues surfaced. Report a pass/fail matrix.
 
-- Password change UI (can add later if requested — would use `supabase.auth.updateUser({ password })` plus a "current password" reauth step).
-- Two-factor / MFA.
-- Avatar upload.
-- Any change to the delete flow — it already works correctly.
+## 4. Security headers baseline
 
-## Files touched
+**Current state:** No custom headers (Lovable static hosting sets defaults; no meta CSP configured).
 
-- `src/pages/Profile.tsx` — email-change logic, helper text, error handling
-- `src/pages/Dashboard.tsx` — add "Account settings" link
+**Action:** Add a conservative baseline via `<meta>` tags in `index.html` where the platform allows (Referrer-Policy, X-Content-Type-Options equivalent via meta is limited — CSP via meta is the main lever). Add:
+- `<meta http-equiv="Content-Security-Policy" ...>` scoped to allow Stripe, Supabase, Google Fonts, GA, self.
+- `<meta name="referrer" content="strict-origin-when-cross-origin">`.
+- Confirm `rel="noopener noreferrer"` on external links.
 
-No database migrations, no new edge functions, no new routes.
+I will test CSP in report-only style first by verifying no breakage in checkout, GA, fonts, Supabase before enforcing.
+
+## 5. OWASP quick review
+
+**Verified:**
+- **A03 Injection / XSS:** `src/lib/sanitize.ts` uses DOMPurify; `dangerouslySetInnerHTML` sites already sanitized. Zod validation on Auth inputs. Supabase parameterized queries throughout.
+- **A01 Broken access control:** RBAC via `user_roles` + `has_role` SECURITY DEFINER (correct pattern). `AdminProtectedRoute` gates admin UI.
+- **A02 Crypto failures:** HIBP password check — need to verify it's enabled.
+- **A07 Auth failures:** Password min 6 chars — weak vs OWASP recommendation (8+).
+- **A09 Logging:** `client_error_logs` in place.
+
+**Action:**
+- Enable `password_hibp_enabled: true` via `configure_auth`.
+- Bump min password to 8 chars in `Auth.tsx` zod schema (matches helper text already shown).
+- Sweep for any remaining `dangerouslySetInnerHTML` without DOMPurify.
+- Verify edge functions (`create-checkout`, `delete-user`, `log-client-error`, `export-course`, `payments-webhook`) validate JWT / signatures correctly.
+
+## Deliverable
+
+One combined pass:
+1. DB migration (RLS + function grants cleanup).
+2. `configure_auth` for HIBP + stronger password rule.
+3. `index.html` header additions.
+4. `PrivacyTerms.tsx` refresh.
+5. Playwright auth failure-path run + fixes.
+6. Update `mem://security-memory` documenting intentional public paths (waitlist RPC, published courses).
+
+## Technical notes
+
+- CSP tuning: needs `connect-src` for `*.supabase.co`, `api.stripe.com`, `www.google-analytics.com`; `frame-src` for `js.stripe.com`, `hooks.stripe.com`; `script-src` allowing Stripe, GA, and Lovable badge.
+- No Sentry — you use custom `logClientError` → `log-client-error` edge fn → `client_error_logs`. Keep as-is.
