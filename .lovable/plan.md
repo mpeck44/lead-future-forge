@@ -1,85 +1,66 @@
+# Security Hardening — Items 6–11
 
-# Pre-launch security review
+Applying your answers: no CAPTCHA, add in-memory rate limits, delete `admin-fix-tax-codes`.
 
-Findings from scanning the live database, edge functions, and frontend, mapped to your 5 areas.
+## 6. Server-side validation on every endpoint
 
-## 1. Privacy policy & data location
+- Add `zod` schemas to every edge function that reads a request body: `create-checkout`, `log-client-error`, `delete-user`, `export-course`, `payments-webhook` (query param `env`).
+- On validation failure return `400` with a generic `"Invalid request"` message; keep field-level detail in server logs only.
+- Keep existing client-side validation for UX; treat it as untrusted.
 
-**Current state (verified):**
-- `src/pages/PrivacyTerms.tsx` exists and is routed.
-- User data lives in Lovable Cloud (Supabase, US region): `profiles`, `user_roles`, `orders`, `enrollments`, `audit_*`, `portfolio_items`, `waitlist_leads`, `client_error_logs`. Payment card data never touches your DB — Stripe handles it.
+## 7. Credential / sensitive data leak sweep
 
-**Action:** I'll audit `PrivacyTerms.tsx` and update it to explicitly disclose:
-- Data categories collected (name, email, role, district, audit responses, payment metadata from Stripe, portfolio uploads).
-- Sub-processors: Stripe (payments), Lovable Cloud/Supabase (hosting + DB, US), Google Analytics.
-- User rights (access, deletion via /profile, contact email `contact@peckeducation.com`).
-- Cookie/analytics disclosure for the GA tag.
-- Last-updated date + link in footer confirmed.
+- **Frontend `.env`**: `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`, `VITE_PAYMENTS_CLIENT_TOKEN` — all public-safe. Document in security memory so scans don't re-flag.
+- **API responses**: admin RPCs return PII but are gated by `has_role('admin')`. `create-checkout` / `payments-webhook` only return `clientSecret` / status. OK.
+- **Logs**: replace `console.error("... error:", e.message)` in edge functions with a structured log that keeps stack server-side and returns a generic message with a `request_id` (see item 11).
+- **`log-client-error`**: cap `context` object size and scrub obvious secret patterns (`sk_`, `Bearer `, JWT `eyJ` prefix) before insert.
 
-I will only add legally-defensible, app-visible facts — no compliance certification claims.
+## 8. No API keys in the frontend
 
-## 2. Row Level Security
+- Confirmed clean: no service role key, Stripe secret, or `LOVABLE_API_KEY` in `src/`. All privileged calls proxy through edge functions.
+- Add a header comment in `src/lib/stripe.ts` reminding future edits to keep secret keys server-side only.
+- **Delete `supabase/functions/admin-fix-tax-codes/`** — the function has no auth check and is no longer needed.
 
-**Verified via linter + direct DB inspection:**
-- Every public table has RLS enabled with policies (no naked tables).
-- 1 permissive-policy warning: `waitlist_leads` INSERT uses `WITH CHECK (true)` for anon. This is **intentional** (public lead capture) and is already fronted by SECURITY DEFINER RPC `upsert_waitlist_lead`. The direct INSERT policy is redundant.
-- 8 SECURITY DEFINER function grant warnings. Review:
-  - `has_role`, `get_audit_summary`, `upsert_waitlist_lead` — executable by `anon` (`has_role` and `get_audit_summary` don't need anon).
-  - Admin functions correctly restricted to `authenticated` + gated by `has_role` check inside.
+## 9. Rate limits on paid-API endpoints (in-memory)
 
-**Action (single migration):**
-- Drop the redundant `Anyone can submit to waitlist` INSERT policy on `waitlist_leads` (keep the RPC path only).
-- `REVOKE EXECUTE ... FROM anon` on `has_role` and `get_audit_summary` (keep `authenticated`).
-- Leave `upsert_waitlist_lead` callable by anon (needed for public capture) and document in security memory.
+Reuse the small IP+user limiter pattern from `log-client-error`, extracted to `_shared/rateLimit.ts`. Applied caps:
 
-## 3. Auth failure-path testing
+- `create-checkout`: 10 / min / user.
+- `delete-user`: 3 / min / user.
+- `export-course`: 20 / min / IP (already key-gated, this is belt-and-suspenders).
+- `log-client-error`: keep existing 30 / min / IP.
+- `payments-webhook`: no limit (Stripe-signed).
 
-**Action:** I'll drive Playwright against the running app to test:
-- Wrong password 5x (verify no lockout bypass, error messaging).
-- Password reset for non-existent email (should not enumerate).
-- Signup with an existing email (already handled by `friendlyError`).
-- Verification link re-click behavior.
-- Empty/invalid inputs on all three forms (login, signup, magic link).
+Tradeoff noted: limits are per-instance and reset on cold start. Enough to stop a runaway client loop, not a distributed attacker.
 
-Fix any issues surfaced. Report a pass/fail matrix.
+## 10. CORS lockdown (no CAPTCHA)
 
-## 4. Security headers baseline
+- Extract `_shared/cors.ts` with an allow-list: `https://edleaderforge.com`, `https://www.edleaderforge.com`, `https://lead-future-forge.lovable.app`, and the Lovable preview origin (`*.lovable.app`).
+- Replace `Access-Control-Allow-Origin: *` in `create-checkout`, `log-client-error`, `export-course`, `payments-webhook` with the allow-list. Requests from other origins get a 403.
+- `delete-user` already allow-lists — align it with the shared helper.
 
-**Current state:** No custom headers (Lovable static hosting sets defaults; no meta CSP configured).
+## 11. Safe error messages
 
-**Action:** Add a conservative baseline via `<meta>` tags in `index.html` where the platform allows (Referrer-Policy, X-Content-Type-Options equivalent via meta is limited — CSP via meta is the main lever). Add:
-- `<meta http-equiv="Content-Security-Policy" ...>` scoped to allow Stripe, Supabase, Google Fonts, GA, self.
-- `<meta name="referrer" content="strict-origin-when-cross-origin">`.
-- Confirm `rel="noopener noreferrer"` on external links.
+- Small mapper in `_shared/validation.ts`: known validation errors → friendly message; everything else → `"Something went wrong. Please try again."` with a generated `request_id`.
+- Server-side: keep `console.error` with full stack + `request_id` so `/admin/errors` stays useful.
+- Frontend audit: `Auth.tsx`, `CheckoutModal.tsx`, `Profile.tsx` — ensure no raw Postgres / Stripe strings leak into toasts/banners; fall back to the generic message when the edge function returns one.
 
-I will test CSP in report-only style first by verifying no breakage in checkout, GA, fonts, Supabase before enforcing.
+## Files touched
 
-## 5. OWASP quick review
+```text
+supabase/functions/_shared/
+  cors.ts          (new)
+  validation.ts    (new — zod + safe-error mapper)
+  rateLimit.ts     (new)
+supabase/functions/create-checkout/index.ts
+supabase/functions/delete-user/index.ts
+supabase/functions/export-course/index.ts
+supabase/functions/log-client-error/index.ts
+supabase/functions/payments-webhook/index.ts
+supabase/functions/admin-fix-tax-codes/   (deleted)
+src/pages/Auth.tsx                (generic error fallback)
+src/components/CheckoutModal.tsx  (generic error fallback)
+src/lib/stripe.ts                 (comment)
+```
 
-**Verified:**
-- **A03 Injection / XSS:** `src/lib/sanitize.ts` uses DOMPurify; `dangerouslySetInnerHTML` sites already sanitized. Zod validation on Auth inputs. Supabase parameterized queries throughout.
-- **A01 Broken access control:** RBAC via `user_roles` + `has_role` SECURITY DEFINER (correct pattern). `AdminProtectedRoute` gates admin UI.
-- **A02 Crypto failures:** HIBP password check — need to verify it's enabled.
-- **A07 Auth failures:** Password min 6 chars — weak vs OWASP recommendation (8+).
-- **A09 Logging:** `client_error_logs` in place.
-
-**Action:**
-- Enable `password_hibp_enabled: true` via `configure_auth`.
-- Bump min password to 8 chars in `Auth.tsx` zod schema (matches helper text already shown).
-- Sweep for any remaining `dangerouslySetInnerHTML` without DOMPurify.
-- Verify edge functions (`create-checkout`, `delete-user`, `log-client-error`, `export-course`, `payments-webhook`) validate JWT / signatures correctly.
-
-## Deliverable
-
-One combined pass:
-1. DB migration (RLS + function grants cleanup).
-2. `configure_auth` for HIBP + stronger password rule.
-3. `index.html` header additions.
-4. `PrivacyTerms.tsx` refresh.
-5. Playwright auth failure-path run + fixes.
-6. Update `mem://security-memory` documenting intentional public paths (waitlist RPC, published courses).
-
-## Technical notes
-
-- CSP tuning: needs `connect-src` for `*.supabase.co`, `api.stripe.com`, `www.google-analytics.com`; `frame-src` for `js.stripe.com`, `hooks.stripe.com`; `script-src` allowing Stripe, GA, and Lovable badge.
-- No Sentry — you use custom `logClientError` → `log-client-error` edge fn → `client_error_logs`. Keep as-is.
+No DB migrations required.
