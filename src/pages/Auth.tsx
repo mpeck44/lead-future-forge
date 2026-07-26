@@ -15,7 +15,7 @@ import { z } from 'zod';
 import { consumeIntent } from '@/lib/intent';
 
 const emailSchema = z.string().email('Please enter a valid email address');
-const passwordSchema = z.string().min(6, 'Password must be at least 6 characters');
+const passwordSchema = z.string().min(8, 'Password must be at least 8 characters');
 
 const scorePassword = (pwd: string): number => {
   let score = 0;
